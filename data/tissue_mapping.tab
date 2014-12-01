@@ -1,0 +1,209 @@
+A10.272.497.Epidermis	A10.272.497	Epidermis	Tissues
+A10.165.114.830.500.Abdominal.Fat	A10.165.114.830.500	Abdominal Fat	Tissues
+A10.165.114.830.500.750.Subcutaneous.Fat..Abdominal	A10.165.114.830.500.750	Subcutaneous Fat  Abdominal	Tissues
+A10.272.Epithelium	A10.272	Epithelium	Tissues
+A11.329.114.Adipocytes	A11.329.114	Adipocytes	Cells
+A10.615.550.760.Respiratory.Mucosa	A10.615.550.760	Respiratory Mucosa	Tissues
+A04.531.520.Nasal.Mucosa	A04.531.520	Nasal Mucosa	Respiratory System
+A09.531.Nose	A09.531	Nose	Sense Organs
+A10.165.114.830.750.Subcutaneous.Fat	A10.165.114.830.750	Subcutaneous Fat	Tissues
+A10.165.114.830.Adipose.Tissue..White	A10.165.114.830	Adipose Tissue  White	Tissues
+A10.165.114.Adipose.Tissue	A10.165.114	Adipose Tissue	Tissues
+A11.329.372.600.Macrophages..Alveolar	A11.329.372.600	Macrophages  Alveolar	Cells
+A11.066.Antigen.Presenting.Cells	A11.066	Antigen Presenting Cells	Cells
+A15.382.812.260.Dendritic.Cells	A15.382.812.260	Dendritic Cells	Hemic and Immune Systems
+A15.382.812.522.Macrophages	A15.382.812.522	Macrophages	Hemic and Immune Systems
+A14.549.167.646.Periodontium	A14.549.167.646	Periodontium	Stomatognathic System
+A15.382.812.Mononuclear.Phagocyte.System	A15.382.812	Mononuclear Phagocyte System	Hemic and Immune Systems
+A14.549.885.Tongue	A14.549.885	Tongue	Stomatognathic System
+A11.063.Antibody.Producing.Cells	A11.063	Antibody Producing Cells	Cells
+A11.118.637.555.567.562.B.Lymphocytes	A11.118.637.555.567.562	B Lymphocytes	Cells
+A11.627.Myeloid.Cells	A11.627	Myeloid Cells	Cells
+A11.872.378.590.817.Megakaryocyte.Erythroid.Progenitor.Cells	A11.872.378.590.817	Megakaryocyte Erythroid Progenitor Cells	Cells
+A15.378.316.378.590.837.250.Erythroid.Precursor.Cells	A15.378.316.378.590.837.250	Erythroid Precursor Cells	Hemic and Immune Systems
+A15.145.229.637.555.Leukocytes..Mononuclear	A15.145.229.637.555	Leukocytes  Mononuclear	Hemic and Immune Systems
+A08.186.211.730.885.287.500.571.735.Visual.Cortex	A08.186.211.730.885.287.500.571.735	Visual Cortex	Nervous System
+A15.145.229.637.555.567.562.725.Plasma.Cells	A15.145.229.637.555.567.562.725	Plasma Cells	Hemic and Immune Systems
+A15.145.693.Plasma	A15.145.693	Plasma	Hemic and Immune Systems
+A15.382.680.Phagocytes	A15.382.680	Phagocytes	Hemic and Immune Systems
+A08.186.211.730.885.287.500.571.Occipital.Lobe	A08.186.211.730.885.287.500.571	Occipital Lobe	Nervous System
+A15.378.316.580.Monocytes	A15.378.316.580	Monocytes	Hemic and Immune Systems
+A15.378.316.Bone.Marrow.Cells	A15.378.316	Bone Marrow Cells	Hemic and Immune Systems
+A15.378.Hematopoietic.System	A15.378	Hematopoietic System	Hemic and Immune Systems
+A11.118.637.Leukocytes	A11.118.637	Leukocytes	Cells
+A15.145.229.Blood.Cells	A15.145.229	Blood Cells	Hemic and Immune Systems
+A15.382.490.555.567.Lymphocytes	A15.382.490.555.567	Lymphocytes	Hemic and Immune Systems
+A11.872.378.Hematopoietic.Stem.Cells	A11.872.378	Hematopoietic Stem Cells	Cells
+A05.810.453.Kidney	A05.810.453	Kidney	Urogenital System
+A10.615.550.Mucous.Membrane	A10.615.550	Mucous Membrane	Tissues
+A02.633.567.850.Quadriceps.Muscle	A02.633.567.850	Quadriceps Muscle	Musculoskeletal System
+A10.690.552.Muscle..Striated	A10.690.552	Muscle  Striated	Tissues
+A10.690.552.500.Muscle..Skeletal	A10.690.552.500	Muscle  Skeletal	Tissues
+A15.145.Blood	A15.145	Blood	Hemic and Immune Systems
+A05.810.Urinary.Tract	A05.810	Urinary Tract	Urogenital System
+A11.627.635.Myeloid.Progenitor.Cells	A11.627.635	Myeloid Progenitor Cells	Cells
+A05.360.490.690.Ovum	A05.360.490.690	Ovum	Urogenital System
+A11.497.497.600.Oocytes	A11.497.497.600	Oocytes	Cells
+A03.620.Liver	A03.620	Liver	Digestive System
+A05.360.319.114.Adnexa.Uteri	A05.360.319.114	Adnexa Uteri	Urogenital System
+A05.360.319.114.630.Ovary	A05.360.319.114.630	Ovary	Urogenital System
+A15.145.229.334.Erythrocytes	A15.145.229.334	Erythrocytes	Hemic and Immune Systems
+A06.407.312.Gonads	A06.407.312	Gonads	Endocrine System
+A10.336.707.Prostate	A10.336.707	Prostate	Tissues
+A14.549.Mouth	A14.549	Mouth	Stomatognathic System
+A15.382.Immune.System	A15.382	Immune System	Hemic and Immune Systems
+A05.360.Genitalia	A05.360	Genitalia	Urogenital System
+A10.336.Exocrine.Glands	A10.336	Exocrine Glands	Tissues
+A11.443.Erythroid.Cells	A11.443	Erythroid Cells	Cells
+A11.118.637.415.Granulocytes	A11.118.637.415	Granulocytes	Cells
+A15.382.490.315.583.Neutrophils	A15.382.490.315.583	Neutrophils	Hemic and Immune Systems
+A02.835.232.043.300.710.Tarsal.Bones	A02.835.232.043.300.710	Tarsal Bones	Musculoskeletal System
+A02.835.232.043.300.Foot.Bones	A02.835.232.043.300	Foot Bones	Musculoskeletal System
+A02.835.583.443.800.800.Synovial.Fluid	A02.835.583.443.800.800	Synovial Fluid	Musculoskeletal System
+A11.872.653.Neural.Stem.Cells	A11.872.653	Neural Stem Cells	Cells
+A02.835.232.043.Bones.of.Lower.Extremity	A02.835.232.043	Bones of Lower Extremity	Musculoskeletal System
+A10.615.Membranes	A10.615	Membranes	Tissues
+A05.360.319.114.373.Fallopian.Tubes	A05.360.319.114.373	Fallopian Tubes	Urogenital System
+A08.186.211.730.885.287.249.Basal.Ganglia	A08.186.211.730.885.287.249	Basal Ganglia	Nervous System
+A14.724.557.Nasopharynx	A14.724.557	Nasopharynx	Stomatognathic System
+A09.371.337.168.Conjunctiva	A09.371.337.168	Conjunctiva	Sense Organs
+A09.371.337.Eyelids	A09.371.337	Eyelids	Sense Organs
+A11.118.637.555.567.569.200.700.T.Lymphocytes..Regulatory	A11.118.637.555.567.569.200.700	T Lymphocytes  Regulatory	Cells
+A09.371.060.Anterior.Eye.Segment	A09.371.060	Anterior Eye Segment	Sense Organs
+A15.145.300.Fetal.Blood	A15.145.300	Fetal Blood	Hemic and Immune Systems
+A05.360.319.Genitalia..Female	A05.360.319	Genitalia  Female	Urogenital System
+A10.615.550.599.Mouth.Mucosa	A10.615.550.599	Mouth Mucosa	Tissues
+A15.145.229.637.555.567.569.200.CD4.Positive.T.Lymphocytes	A15.145.229.637.555.567.569.200	CD4 Positive T Lymphocytes	Hemic and Immune Systems
+A03.556.875.500.Esophagus	A03.556.875.500	Esophagus	Digestive System
+A15.382.490.555.567.622.Lymphocytes..Null	A15.382.490.555.567.622	Lymphocytes  Null	Hemic and Immune Systems
+A08.186.211.730.317.Diencephalon	A08.186.211.730.317	Diencephalon	Nervous System
+A09.371.Eye	A09.371	Eye	Sense Organs
+A10.690.Muscles	A10.690	Muscles	Tissues
+A06.407.Endocrine.Glands	A06.407	Endocrine Glands	Endocrine System
+A08.186.211.730.885.287.500.270.Frontal.Lobe	A08.186.211.730.885.287.500.270	Frontal Lobe	Nervous System
+A11.436.348.Hepatocytes	A11.436.348	Hepatocytes	Cells
+A05.360.444.Genitalia..Male	A05.360.444	Genitalia  Male	Urogenital System
+A11.118.637.555.567.562.440.Precursor.Cells..B.Lymphoid	A11.118.637.555.567.562.440	Precursor Cells  B Lymphoid	Cells
+A11.872.378.294.Lymphoid.Progenitor.Cells	A11.872.378.294	Lymphoid Progenitor Cells	Cells
+A08.186.211.730.Prosencephalon	A08.186.211.730	Prosencephalon	Nervous System
+A08.186.211.464.710.Parahippocampal.Gyrus	A08.186.211.464.710	Parahippocampal Gyrus	Nervous System
+A08.186.211.464.710.225.Entorhinal.Cortex	A08.186.211.464.710.225	Entorhinal Cortex	Nervous System
+A15.382.490.555.567.537.Killer.Cells..Natural	A15.382.490.555.567.537	Killer Cells  Natural	Hemic and Immune Systems
+A08.186.211.730.885.287.500.863.Temporal.Lobe	A08.186.211.730.885.287.500.863	Temporal Lobe	Nervous System
+A08.186.211.730.885.287.Cerebrum	A08.186.211.730.885.287	Cerebrum	Nervous System
+A11.118.637.555.567.569.T.Lymphocytes	A11.118.637.555.567.569	T Lymphocytes	Cells
+A08.186.211.730.885.Telencephalon	A08.186.211.730.885	Telencephalon	Nervous System
+A08.186.211.653.Mesencephalon	A08.186.211.653	Mesencephalon	Nervous System
+A05.360.319.114.630.535.Ovarian.Follicle	A05.360.319.114.630.535	Ovarian Follicle	Urogenital System
+A11.436.329.Granulosa.Cells	A11.436.329	Granulosa Cells	Cells
+A06.407.312.497.535.300.500.Cumulus.Cells	A06.407.312.497.535.300.500	Cumulus Cells	Endocrine System
+A08.186.211.730.885.287.500.Cerebral.Cortex	A08.186.211.730.885.287.500	Cerebral Cortex	Nervous System
+A05.360.490.Germ.Cells	A05.360.490	Germ Cells	Urogenital System
+A14.724.Pharynx	A14.724	Pharynx	Stomatognathic System
+A11.627.340.360.Granulocyte.Precursor.Cells	A11.627.340.360	Granulocyte Precursor Cells	Cells
+A02.165.Cartilage	A02.165	Cartilage	Musculoskeletal System
+A11.872.378.590.635.Granulocyte.Macrophage.Progenitor.Cells	A11.872.378.590.635	Granulocyte Macrophage Progenitor Cells	Cells
+A08.186.211.730.885.287.500.670.Parietal.Lobe	A08.186.211.730.885.287.500.670	Parietal Lobe	Nervous System
+A06.407.312.782.Testis	A06.407.312.782	Testis	Endocrine System
+A08.186.211.730.317.357.Hypothalamus	A08.186.211.730.317.357	Hypothalamus	Nervous System
+A03.556.124.369.Intestinal.Mucosa	A03.556.124.369	Intestinal Mucosa	Digestive System
+A15.382.216.Bone.Marrow	A15.382.216	Bone Marrow	Hemic and Immune Systems
+A08.186.211.730.885.287.249.487.Corpus.Striatum	A08.186.211.730.885.287.249.487	Corpus Striatum	Nervous System
+A08.186.211.Brain	A08.186.211	Brain	Nervous System
+A08.186.211.464.Limbic.System	A08.186.211.464	Limbic System	Nervous System
+A08.186.Central.Nervous.System	A08.186	Central Nervous System	Nervous System
+A11.627.624.249.Monocyte.Macrophage.Precursor.Cells	A11.627.624.249	Monocyte Macrophage Precursor Cells	Cells
+A11.382.Endocrine.Cells	A11.382	Endocrine Cells	Cells
+A10.165.Connective.Tissue	A10.165	Connective Tissue	Tissues
+A07.541.358.100.Atrial.Appendage	A07.541.358.100	Atrial Appendage	Cardiovascular System
+A02.835.232.Bone.and.Bones	A02.835.232	Bone and Bones	Musculoskeletal System
+A06.407.900.Thyroid.Gland	A06.407.900	Thyroid Gland	Endocrine System
+A02.835.Skeleton	A02.835	Skeleton	Musculoskeletal System
+A08.713.Neurosecretory.Systems	A08.713	Neurosecretory Systems	Nervous System
+A08.186.211.730.317.357.352.Hypothalamus..Middle	A08.186.211.730.317.357.352	Hypothalamus  Middle	Nervous System
+A08.186.211.730.317.357.352.435.Hypothalamo.Hypophyseal.System	A08.186.211.730.317.357.352.435	Hypothalamo Hypophyseal System	Nervous System
+A07.541.358.Heart.Atria	A07.541.358	Heart Atria	Cardiovascular System
+A11.436.Epithelial.Cells	A11.436	Epithelial Cells	Cells
+A03.556.249.249.356.668.Colon..Sigmoid	A03.556.249.249.356.668	Colon  Sigmoid	Digestive System
+A05.360.319.679.Uterus	A05.360.319.679	Uterus	Urogenital System
+A15.382.520.604.700.Spleen	A15.382.520.604.700	Spleen	Hemic and Immune Systems
+A14.549.167.Dentition	A14.549.167	Dentition	Stomatognathic System
+A03.556.249.249.209.Cecum	A03.556.249.249.209	Cecum	Digestive System
+A08.186.211.464.405.Hippocampus	A08.186.211.464.405	Hippocampus	Nervous System
+A05.360.319.679.490.Endometrium	A05.360.319.679.490	Endometrium	Urogenital System
+A05.360.319.887.Vulva	A05.360.319.887	Vulva	Urogenital System
+A11.436.294.064.Glucagon.Secreting.Cells	A11.436.294.064	Glucagon Secreting Cells	Cells
+A11.382.625.Enteroendocrine.Cells	A11.382.625	Enteroendocrine Cells	Cells
+A05.360.319.679.690.Myometrium	A05.360.319.679.690	Myometrium	Urogenital System
+A15.382.520.604.800.Palatine.Tonsil	A15.382.520.604.800	Palatine Tonsil	Hemic and Immune Systems
+A04.623.603.Oropharynx	A04.623.603	Oropharynx	Respiratory System
+A09.371.729.Retina	A09.371.729	Retina	Sense Organs
+A17.815.Skin	A17.815	Skin	Integumentary System
+A10.549.400.Lymph.Nodes	A10.549.400	Lymph Nodes	Tissues
+A15.382.520.Lymphatic.System	A15.382.520	Lymphatic System	Hemic and Immune Systems
+A10.549.Lymphoid.Tissue	A10.549	Lymphoid Tissue	Tissues
+A03.556.Gastrointestinal.Tract	A03.556	Gastrointestinal Tract	Digestive System
+A05.360.319.679.256.Cervix.Uteri	A05.360.319.679.256	Cervix Uteri	Urogenital System
+A15.145.229.188.Blood.Platelets	A15.145.229.188	Blood Platelets	Hemic and Immune Systems
+A03.556.500.760.Salivary.Glands	A03.556.500.760	Salivary Glands	Digestive System
+A03.556.249.124.Ileum	A03.556.249.124	Ileum	Digestive System
+A07.541.560.Heart.Ventricles	A07.541.560	Heart Ventricles	Cardiovascular System
+A08.186.211.132.Brain.Stem	A08.186.211.132	Brain Stem	Nervous System
+A03.556.124.Intestines	A03.556.124	Intestines	Digestive System
+A03.556.124.526.767.Rectum	A03.556.124.526.767	Rectum	Digestive System
+A11.436.397.Keratinocytes	A11.436.397	Keratinocytes	Cells
+A07.541.Heart	A07.541	Heart	Cardiovascular System
+A03.556.500.760.464.Parotid.Gland	A03.556.500.760.464	Parotid Gland	Digestive System
+A03.556.124.684.Intestine..Small	A03.556.124.684	Intestine  Small	Digestive System
+A08.186.211.132.810.428.200.Cerebellum	A08.186.211.132.810.428.200	Cerebellum	Nervous System
+A08.186.211.865.Rhombencephalon	A08.186.211.865	Rhombencephalon	Nervous System
+A08.186.211.865.428.Metencephalon	A08.186.211.865.428	Metencephalon	Nervous System
+A11.872.190.Embryonic.Stem.Cells	A11.872.190	Embryonic Stem Cells	Cells
+A11.329.Connective.Tissue.Cells	A11.329	Connective Tissue Cells	Cells
+A03.556.249.249.Intestine..Large	A03.556.249.249	Intestine  Large	Digestive System
+A03.556.249.249.356.Colon	A03.556.249.249.356	Colon	Digestive System
+A03.556.249.Lower.Gastrointestinal.Tract	A03.556.249	Lower Gastrointestinal Tract	Digestive System
+A02.835.583.Joints	A02.835.583	Joints	Musculoskeletal System
+A02.835.583.443.800.Synovial.Membrane	A02.835.583.443.800	Synovial Membrane	Musculoskeletal System
+A02.835.583.443.Joint.Capsule	A02.835.583.443	Joint Capsule	Musculoskeletal System
+A11.872.700.Pluripotent.Stem.Cells	A11.872.700	Pluripotent Stem Cells	Cells
+A11.872.700.500.Induced.Pluripotent.Stem.Cells	A11.872.700.500	Induced Pluripotent Stem Cells	Cells
+A03.556.875.Upper.Gastrointestinal.Tract	A03.556.875	Upper Gastrointestinal Tract	Digestive System
+A06.407.071.Adrenal.Glands	A06.407.071	Adrenal Glands	Endocrine System
+A11.872.190.260.Embryoid.Bodies	A11.872.190.260	Embryoid Bodies	Cells
+A10.615.789.Serous.Membrane	A10.615.789	Serous Membrane	Tissues
+A07.541.510.Heart.Valves	A07.541.510	Heart Valves	Cardiovascular System
+A07.541.510.110.Aortic.Valve	A07.541.510.110	Aortic Valve	Cardiovascular System
+A06.407.071.140.Adrenal.Cortex	A06.407.071.140	Adrenal Cortex	Endocrine System
+A11.329.629.Osteoblasts	A11.329.629	Osteoblasts	Cells
+A07.231.114.Arteries	A07.231.114	Arteries	Cardiovascular System
+A05.810.890.Urinary.Bladder	A05.810.890	Urinary Bladder	Urogenital System
+A11.872.Stem.Cells	A11.872	Stem Cells	Cells
+A04.411.Lung	A04.411	Lung	Respiratory System
+A03.734.414.Islets.of.Langerhans	A03.734.414	Islets of Langerhans	Digestive System
+A11.872.040.Adult.Stem.Cells	A11.872.040	Adult Stem Cells	Cells
+A03.556.875.875.Stomach	A03.556.875.875	Stomach	Digestive System
+A05.360.444.492.Penis	A05.360.444.492	Penis	Urogenital System
+A10.615.284.Extraembryonic.Membranes	A10.615.284	Extraembryonic Membranes	Tissues
+A10.615.284.473.Chorion	A10.615.284.473	Chorion	Tissues
+A05.360.444.492.362.Foreskin	A05.360.444.492.362	Foreskin	Urogenital System
+A02.835.232.834.Spine	A02.835.232.834	Spine	Musculoskeletal System
+A02.835.232.834.151.Cervical.Vertebrae	A02.835.232.834.151	Cervical Vertebrae	Musculoskeletal System
+A11.620.Muscle.Cells	A11.620	Muscle Cells	Cells
+A11.620.520.Myocytes..Smooth.Muscle	A11.620.520	Myocytes  Smooth Muscle	Cells
+A07.231.908.Veins	A07.231.908	Veins	Cardiovascular System
+A11.329.171.Chondrocytes	A11.329.171	Chondrocytes	Cells
+A05.810.453.324.Kidney.Cortex	A05.810.453.324	Kidney Cortex	Urogenital System
+A07.231.908.670.874.Umbilical.Veins	A07.231.908.670.874	Umbilical Veins	Cardiovascular System
+A07.231.908.670.Portal.System	A07.231.908.670	Portal System	Cardiovascular System
+A10.690.467.Muscle..Smooth	A10.690.467	Muscle  Smooth	Tissues
+A11.436.275.Endothelial.Cells	A11.436.275	Endothelial Cells	Cells
+A15.145.846.Serum	A15.145.846	Serum	Hemic and Immune Systems
+A11.329.830.Stromal.Cells	A11.329.830	Stromal Cells	Cells
+A11.872.580.Mesenchymal.Stem.Cells	A11.872.580	Mesenchymal Stem Cells	Cells
+A10.165.450.Granulation.Tissue	A10.165.450	Granulation Tissue	Tissues
+A10.165.450.300.Cicatrix	A10.165.450.300	Cicatrix	Tissues
+A10.165.450.300.425.Keloid	A10.165.450.300.425	Keloid	Tissues
+A03.734.Pancreas	A03.734	Pancreas	Digestive System
+A07.231.Blood.Vessels	A07.231	Blood Vessels	Cardiovascular System
+A11.329.228.Fibroblasts	A11.329.228	Fibroblasts	Cells
