@@ -137,7 +137,7 @@ def write_loci(collectionfile,depict_gene_file,depict_gene_information_file,snpf
 	depict_genes = read_single_column_file(depict_gene_file)
 	
 	# Read SNPsnap collection
-	collection = pd.read_csv(collectionfile, index_col=0, header=0, delimiter="\t") #,compression = 'bz2')
+	collection = pd.read_csv(collectionfile, index_col=0, header=0, delimiter="\t", compression = 'gzip')
 
 	# Extract user SNPs
 	collection_usersnps = collection.loc[usersnps,:]

@@ -1,10 +1,15 @@
 #!/usr/bin/env python2.7
-#use Python-2.7
+
+# Install
+#	Python-2.7
+#	sudo pip install bx-python
+#	pandas
+#		Latest versiion (sudo pip install --upgrade pandas)
 
 import os
 from depict_library import write_loci
 
-depict_jar = "/cvar/jhlab/tp/DEPICT/dist/Depict.jar" # Path to DEPICT jar file (clone it from GitHub)
+depict_jar = "/home/projects/depict/DEPICT/dist/Depict.jar" # Path to DEPICT jar file (clone it from GitHub)
 depict_folder = os.getcwd() # Path to DEPICT-example (clone it from GibHub)
 
 study_label = "any_mig.gwama.out.isq75.nstud12.clean_p5e-8_loci_real_juha"
@@ -17,7 +22,7 @@ depict_genelist_file = "GPL570ProbeENSGInfo+HGNC_reformatted.ens"
 reconstituted_genesets_file = "%s/data/reconstituted_genesets_example.txt"%depict_folder
 depict_gene_file = "%s/data/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_folder
 depict_gene_information_file = "%s/data/ENSGToGeneNameHGNCBiotypeChromosomeStartStopStrandAndDescriptionV65.txt"%depict_folder
-collection_file = "%s/data/ld0.5_collection_depict_150302.txt"%depict_folder
+collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_folder
 hla_start = 25000000
 hla_stop = 35000000
 
