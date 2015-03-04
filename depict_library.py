@@ -170,18 +170,6 @@ def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_
 	return log_dict
 
 
-# Helper function to read mappings
-def get_mapping2(genotype_data_plink_prefix):
-	infile = open("%s.bim"%genotype_data_plink_prefix,'r')
-	lines = infile.readlines()
-	infile.close()
-	mapping = {}
-	for line in lines:
-		words = line.strip().split()
-		mapping["%s:%s"%(words[0],words[1])] = words[2] 
-	return mapping
-
-
 # Helper function to save SNPs that are in my data
 def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,genotype_data_plink_prefix):
 
