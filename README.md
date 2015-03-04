@@ -2,14 +2,14 @@
 
 ## Dependencies
 * Python version 2.7 and onwards
-  * https://www.python.org/downloads/
+  * [Python.org](https://www.python.org/downloads/)
 * Python-bx
-  * sudo pip install python-bx   
+  * `sudo pip install python-bx`   
 * Pandas
-  * sudo pip install pandas
+  * `sudo pip install pandas`
 
 ## Data used in this example
 
-LDL GWAS summary statistics (Teslovich Nature 2012) was used as example input data is from Teslovich et al. (http://csg.sph.umich.edu/abecasis/public/lipids2010/). We included all SNPs with P < 5e-8 and manually added chromosome and position columns.
+LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids2010/) from [Teslovich Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html) are used as input in this example. We included all SNPs with P < 5e-8 and manually added chromosome and position columns (hg19/GRCh37).
 
-# Quick start
+## Quick start
