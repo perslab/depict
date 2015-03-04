@@ -24,6 +24,6 @@ LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids201
 * Run DEPICT
   * `python depict.py`
 * Investigate the results which have been written to the following files
-  * DEPICT loci `XXX`
-  * DEPICT gene prioritization results `XXX`
-  * DEPICT gene set enrichemtn results `XXX`
+  * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
+  * DEPICT gene prioritization results `ldl_teslovich_nature2010__geneprioritization.txt`
+  * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010__genesetenrichment.txt`
