@@ -1,9 +1,8 @@
 #!/usr/bin/env python2.7
 
-#use Python-2.7
-
-import pdb,math
+import pdb,math,sys,gzip,os
 import pandas as pd
+from glob import glob
 from bx.intervals.cluster import ClusterTree
 from bx.intervals.intersection import Interval
 from bx.intervals.intersection import IntervalTree
@@ -45,27 +44,27 @@ def merge_loci(df):
 
 
 # Function to identify and record missing SNPs
-def record_missing_snps(df,df_log):
+def record_missing_snps(df,log_dict):
 	missing_index = df.locus_start.isnull()
 	if len(df.index[missing_index]) > 0:
-		df_log.set_value('snps_not_found', 'Markers', ';'.join(df.index[missing_index]))
-	return missing_index
+		log_dict['snps_not_found'] = ';'.join(df.index[missing_index])
+	return missing_index,log_dict
 
 
 # Function to identify and record HLA SNPs
-def record_hla_snps(df,df_log,hla_start,hla_stop):
+def record_hla_snps(df,log_dict,hla_start,hla_stop):
 	hla_index = df.apply(lambda x : True if ( (x.chr == '6') and ( ( x.locus_stop > hla_start and x.locus_stop < hla_stop ) or ( x.locus_start > hla_start and x.locus_start < hla_stop ) ) ) else False, axis = 1)
 	if len(df.index[hla_index]) > 0:
-		df_log.set_value('snps_hla', 'Markers', ';'.join(df.index[hla_index]))
-	return hla_index	
+		log_dict['snps_hla'] = ';'.join(df.index[hla_index])
+	return hla_index, log_dict
 
 
 # Function to identify and record non-autosomal SNPs
-def record_sex_chr_snps(df,df_log):
+def record_sex_chr_snps(df,log_dict):
 	non_autosomal_index = df.apply(lambda x : True if x.chr in [str(y) for y in range(1,23,1)] else False, axis = 1)
 	if len(df.index[non_autosomal_index]) > 0:
-		df_log.set_value('snps_non-autosomal', 'Markers', ';'.join(df.index[non_autosomal_index]))
-	return non_autosomal_index 
+		log_dict['snps_non-autosomal'] = ';'.join(df.index[non_autosomal_index])
+	return non_autosomal_index, log_dict
 
 
 # Function to construct gene interval tree
@@ -127,11 +126,15 @@ def convert(x):
 
 
 # Read SNPsnap collection and input SNPs from user
-def write_loci(collectionfile,depict_gene_file,depict_gene_information_file,snpfile,outfile,hla_start,hla_stop):
+def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_file,depict_gene_information_file,outfile,hla_start,hla_stop):
+
+	print "\nWriting DEPICT input loci"
+
+	# Dictionary with log information
+	log_dict = {}
 
 	# Read users SNPs
-	with open (snpfile,'r') as infile:
-	        usersnps = [line.strip() for line in infile.readlines() ]
+	user_snps = get_plink_index_snps(analysis_path,label,cutoff)
 
 	# DEPICT gene universe
 	depict_genes = read_single_column_file(depict_gene_file)
@@ -140,14 +143,13 @@ def write_loci(collectionfile,depict_gene_file,depict_gene_information_file,snpf
 	collection = pd.read_csv(collectionfile, index_col=0, header=0, delimiter="\t", compression = 'gzip')
 
 	# Extract user SNPs
-	collection_usersnps = collection.loc[usersnps,:]
+	collection_usersnps = collection.loc[user_snps,:]
 	
 	# Identify and remove SNPs missing	
-	df_log = pd.DataFrame()
 	df_index_remove = pd.DataFrame()
-	index_snps_missing = record_missing_snps(collection_usersnps,df_log)
-	index_snps_hla = record_hla_snps(collection_usersnps,df_log,hla_start,hla_stop)
-	index_snps_non_autosomal = record_sex_chr_snps(collection_usersnps,df_log)
+	index_snps_missing, log_dict = record_missing_snps(collection_usersnps,log_dict)
+	index_snps_hla, log_dict = record_hla_snps(collection_usersnps,log_dict,hla_start,hla_stop)
+	index_snps_non_autosomal, log_dict = record_sex_chr_snps(collection_usersnps,log_dict)
 	collection_usersnps.drop(collection_usersnps.index[ ( index_snps_missing | index_snps_hla ) | index_snps_non_autosomal] , inplace=True)
 	
 	# Redefine locus boundaries based on gene boundaries
@@ -164,6 +166,85 @@ def write_loci(collectionfile,depict_gene_file,depict_gene_information_file,snpf
 	df_final.locus_start = df_final.locus_start.apply(convert)
 	df_final.locus_end = df_final.locus_end.apply(convert)
 	df_final.to_csv(outfile, index=False, quoting=0, doublequote = False, sep='\t',columns=["snp_id","chr","locus_start","locus_end","nearest_gene","genes_in_locus"])
-	df_log.to_csv(outfile.replace('.txt','.log'), index=True, quoting=0, doublequote = False, sep='\t')
 
-	return 1
+	return log_dict
+
+
+# Helper function to read mappings
+def get_mapping2(genotype_data_plink_prefix):
+	infile = open("%s.bim"%genotype_data_plink_prefix,'r')
+	lines = infile.readlines()
+	infile.close()
+	mapping = {}
+	for line in lines:
+		words = line.strip().split()
+		mapping["%s:%s"%(words[0],words[1])] = words[2] 
+	return mapping
+
+
+# Helper function to save SNPs that are in my data
+def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,genotype_data_plink_prefix):
+
+	print "\nReading user input and writing PLINK output"
+
+	# Read mapping (Faster than usgin pandas dataframe, because constructing a chr:pos index takes a hell of time
+	infile = open("%s.bim"%genotype_data_plink_prefix,'r')
+	lines = infile.readlines()
+	infile.close()
+	mapping = {}
+	for line in lines:
+		words = line.strip().split()
+		mapping["%s:%s"%(words[0],words[3])] = words[1] 
+
+	# Read users SNP file
+	with ( gzip.open("%s/%s"%(path,filename),'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s%s.tab"%(path,label),'w') as outfile:
+		outfile.write("SNP_chr_pos\tSNP\tChr\tPos\tP\n")
+		for line in infile.readlines()[1:]:
+			words = line.strip().split(sep)
+			if marker_col is not None:
+				chrom = int(words[marker_col].split(":")[0])
+				pos = int(words[marker_col].split(":")[1])
+				marker_id = words[marker_col] 
+			elif chrom_col is not None and pos_col is not None:
+				chrom = int(words[chrom_col])
+				pos = int(words[pos_col])
+				marker_id = "%s:%s"%(chrom,pos)
+			else:
+				sys.exit('Please specify either a column for the marker (format <chr:pos>) or the chromosome and position columns.')	
+
+			if marker_id in mapping:
+				outfile.write("%s\t%s\t%s\t%s\t%s\n"%(marker_id,mapping[marker_id],chrom,pos,words[p_col]))
+			else:
+				outfile.write("%s\t-\t%s\t%s\t%s\n"%(marker_id,chrom,pos,words[p_col]))
+	return 0
+	
+
+# Helper function to run PLINK
+def run_plink(path, label, genotypes_1kg, plink_binary, plink_extra_params, cutoff, distance, r2): 
+
+	print "\nRunning PLINK"
+
+	plink_prefix = "%s --bfile %s %s"%(plink_binary,genotypes_1kg,plink_extra_params)
+	cmd = "%s --clump-p1 %s --clump-kb %s --clump-r2 %s --clump %s/%s.tab --out %s/%s"%(plink_prefix,cutoff,distance,r2,path,label,path,label) 
+	return os.popen(cmd).readlines()
+
+
+# Helper function to retrieve PLINK Index SNPs
+def get_plink_index_snps(path,label,cutoff):
+
+	# Read file with correct SNP indices
+	id_df = pd.read_csv("%s%s.tab"%(path,label),index_col=0,header=0,sep="\t")
+
+	# Read PLINK results
+	index_snp_col = 7
+	index_snps = []
+	with open("%s/%s.clumped"%(path,label),'r') as infile:
+		lines = infile.readlines()[1:]
+		for line in lines:
+			words = line.strip().split(' ') 
+			if len(words) >= index_snp_col-1: 
+				index_snps.append(words[index_snp_col]) if words[index_snp_col] != '' else None
+
+	# Re-map to chr:pos
+	return id_df.index[id_df.SNP.isin(index_snps)]
+
