@@ -1,0 +1,28 @@
+PLINK v1.90b3f 64-bit (2 Mar 2015) 
+7 arguments: --bfile /home/data/1000G/data/phase1/bed_CEU_GBR_TSI_unrelated/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes --extract /tmp/ldl_teslovich_nature2010.rsID --make-bed --out CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010
+Hostname: fur
+Working directory: /home/projects/depict/DEPICT-example/misc
+Start time: Wed Mar  4 13:38:26 2015
+
+Random number seed: 1425494306
+193443 MB RAM detected; reserving 96721 MB for main workspace.
+38219238 variants loaded from .bim file.
+268 people (0 males, 0 females, 268 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to
+CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010.nosex
+.
+--extract: 1692 variants remaining.
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 268 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+1692 variants and 268 people pass filters and QC.
+Note: No phenotypes present.
+--make-bed to
+CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010.bed
++
+CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010.bim
++
+CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010.fam
+... done.
+
+End time: Wed Mar  4 13:38:39 2015
