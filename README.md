@@ -16,6 +16,6 @@ LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids201
 
 ## Quick start
 * Modify depict.py
-  * Change the `path` to `XXX`
+  * Change the `analysis_path` to the path of the `DEPICT-example` folder
 * Run DEPICT
   * `python depict.py`
