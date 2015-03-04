@@ -19,3 +19,7 @@ LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids201
   * Change the `analysis_path` to the path of the `DEPICT-example` folder
 * Run DEPICT
   * `python depict.py`
+* Investigate the results which have been written to the following files
+  * DEPICT loci `XXX`
+  * DEPICT gene prioritization results `XXX`
+  * DEPICT gene set enrichemtn results `XXX`
