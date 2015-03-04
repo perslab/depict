@@ -1,7 +1,8 @@
 # DEPICT-example
 
 ## Dependencies
-* Java version XXX (or higher)
+* Java version 8 (or higher)
+  * [Java.com](https://www.java.com/en/download/)
 * Python version 2.7 (or higher)
   * [Python.org](https://www.python.org/downloads/)
 * Python-bx
@@ -15,6 +16,6 @@ LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids201
 
 ## Quick start
 * Modify depict.py
-  * Change the path to XXX
+  * Change the `path` to `XXX`
 * Run DEPICT
   * `python depict.py`
