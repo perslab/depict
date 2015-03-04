@@ -23,26 +23,26 @@ from depict_library import construct_depict_loci,write_plink_input,run_plink
 
 
 # PLEASE SPECIFY: Paths
-analysis_path = "/tmp/test" # Path to directory where input file lives and all output files are written
+analysis_path = "/home/projects/depict/DEPICT-example" # Path to directory where input file lives and all output files are written
 depict_path = "/home/projects/depict/DEPICT-example" # Path to DEPICT-example (clone it from GibHub)
 depict_code_path = "/home/projects/depict/DEPICT"  # Path to DEPICT jar file (clone it from GitHub)
 
 
 # PLEASE SPECIFY: Steps that shall be run
-step_write_plink_output = True
-step_run_plink = True
+step_write_plink_output = False
+step_run_plink = False
 step_construct_depict_loci = True
 step_run_depict = True
 
 
 # PLEASE SPECIFY: GWAS summary statistics input file parameters (only autosomal SNPs are included)
 cutoff =  "5e-8" # "1e-5" 
-label = "P5e-4.N100k.EduYears.STDERR.METAANALYSIS1.TBL.oldSTR" # n=58 SNPs
-filename = "%s.txt.gz"%(label) 
-pvalue_col = 6 # NB: Counting starts from 0, ie. first columns is referred to as '0'
-marker_col = 0 # Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used and this column should be set to 'None'
-chr_col = None # Does not need to be set if marker_col is set
-pos_col = None # Does not need to be set if marker_col is set
+label = "ldl_teslovich_nature2010" # "P5e-4.N100k.EduYears.STDERR.METAANALYSIS1.TBL.oldSTR" # n=58 SNPs
+filename = "%s.txt"%(label) 
+pvalue_col = 3 # NB: Counting starts from 0, ie. first columns is referred to as '0'
+marker_col = None # Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used and this column should be set to 'None'
+chr_col = 1 # Does not need to be set if marker_col is set
+pos_col = 2 # Does not need to be set if marker_col is set
 sep = '\t'
 
 
@@ -55,7 +55,7 @@ genotype_data_plink_prefix = "/home/data/1000G/data/phase1/bed_CEU_GBR_TSI_unrel
 # Locus construction paramenters  (ADVICE: keep default settings)
 distance = 1000 # 1000 #distance = 500 
 r2 = 0.5 # 0.5 
-collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path
+collection_file = "%s/data/ld0.5_collection_depict_150302_ldl_teslovich_nature2010.txt.gz"%depict_path
 locus_file = "%s/%s_loci.txt"%(analysis_path,label)
 hla_start = 25000000
 hla_stop = 35000000

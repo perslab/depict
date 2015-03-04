@@ -197,7 +197,7 @@ def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,g
 		mapping["%s:%s"%(words[0],words[3])] = words[1] 
 
 	# Read users SNP file
-	with ( gzip.open("%s/%s"%(path,filename),'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s%s.tab"%(path,label),'w') as outfile:
+	with ( gzip.open("%s/%s"%(path,filename),'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s/%s.tab"%(path,label),'w') as outfile:
 		outfile.write("SNP_chr_pos\tSNP\tChr\tPos\tP\n")
 		for line in infile.readlines()[1:]:
 			words = line.strip().split(sep)
@@ -205,8 +205,8 @@ def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,g
 				chrom = int(words[marker_col].split(":")[0])
 				pos = int(words[marker_col].split(":")[1])
 				marker_id = words[marker_col] 
-			elif chrom_col is not None and pos_col is not None:
-				chrom = int(words[chrom_col])
+			elif chr_col is not None and pos_col is not None:
+				chrom = int(words[chr_col])
 				pos = int(words[pos_col])
 				marker_id = "%s:%s"%(chrom,pos)
 			else:
@@ -233,7 +233,7 @@ def run_plink(path, label, genotypes_1kg, plink_binary, plink_extra_params, cuto
 def get_plink_index_snps(path,label,cutoff):
 
 	# Read file with correct SNP indices
-	id_df = pd.read_csv("%s%s.tab"%(path,label),index_col=0,header=0,sep="\t")
+	id_df = pd.read_csv("%s/%s.tab"%(path,label),index_col=0,header=0,sep="\t")
 
 	# Read PLINK results
 	index_snp_col = 7
