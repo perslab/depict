@@ -6,6 +6,8 @@
   * [Java.com](https://www.java.com/en/download/)
 * Python version 2.7 (or higher)
   * [Python.org](https://www.python.org/downloads/)
+* PIP (used for install Python libraries)
+  * `sudo easy_install pip` 
 * Python-bx
   * `sudo pip install bx-python`   
 * Pandas
