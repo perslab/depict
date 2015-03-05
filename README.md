@@ -8,11 +8,11 @@
   * [Python.org](https://www.python.org/downloads/)
 * PIP (used for install Python libraries)
   * `sudo easy_install pip` 
-* Python-bx (On Mac OS X you may be prompted to install XCode)
+* Python-bx (on Mac OS X you may be prompted to install XCode)
   * `sudo pip install bx-python`   
 * Pandas
   * `sudo pip install pandas`
-* PLINK (Only needed if you want to construct loci yourself instead of using the precomputed onces for this example.)
+* PLINK (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
   * [PLINK version 1](http://pngu.mgh.harvard.edu/~purcell/plink/) or [PLINK version 2](https://www.cog-genomics.org/plink2/) 
 
 ## Data used in this example
