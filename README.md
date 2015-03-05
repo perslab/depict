@@ -2,7 +2,7 @@
 
 ## Dependencies
 * Mac OS X, or UNIX operating system (Microsoft Windows is not supported)
-* Java version 8 (or higher)
+* Java SE 6 (or higher)
   * [Java.com](https://www.java.com/en/download/)
 * Python version 2.7 (or higher)
   * [Python.org](https://www.python.org/downloads/)
