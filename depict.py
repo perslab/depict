@@ -6,8 +6,8 @@ from depict_library import construct_depict_loci,write_plink_input,run_plink
 
 
 # PLEASE SPECIFY: Paths
-analysis_path = "/home/projects/depict/DEPICT-example" # Path to directory where input file lives and all output files are written
-depict_path = "/home/projects/depict/DEPICT-example" # Path to DEPICT-example (clone it from GibHub)
+depict_path = os.getcwd() # Path to DEPICT-example (clone it from GibHub)
+analysis_path = depict_path # Path to directory where input file lives and all output files are written
 
 
 # PLEASE SPECIFY: Steps that shall be run
@@ -30,8 +30,7 @@ sep = '\t'
 
 # PLEASE SPECIFY: PLINK and genotype files
 plink_binary = "/home/tools/plink/plink_v1-90_stable_beta_3f_2-Mar/plink"
-plink_extra_params = "--exclude /home/data/1000G/data/phase1/bed_CEU_GBR_TSI_unrelated/duplicate_markers.rsID"
-#genotype_data_plink_prefix = "/home/data/1000G/data/phase1/bed_CEU_GBR_TSI_unrelated/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes" 
+plink_extra_params = ""
 genotype_data_plink_prefix = "%s/data/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010"%depict_path
 
 
@@ -56,7 +55,7 @@ depict_gene_information_file = "%s/data/ENSGToGeneNameHGNCBiotypeChromosomeStart
 
 # Logging (ADVICE: keep default settings)
 log_filename = '%s/%s_log.txt'%(analysis_path,label)
-logging.basicConfig(filename=log_filename, level=logging.INFO)
+logging.basicConfig(filename=log_filename, filemode='w', level=logging.INFO)
 
 
 # Parse and discards SNPs not in my 1KG data
