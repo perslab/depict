@@ -2,12 +2,13 @@
 
 import os,sys,pdb,logging
 from glob import glob
-from depict_library import construct_depict_loci,write_plink_input,run_plink
 
 
 # PLEASE SPECIFY: Paths
 depict_path = os.getcwd() # Path to DEPICT-example (clone it from GibHub)
 analysis_path = depict_path # Path to directory where input file lives and all output files are written
+sys.path.append("%s/src/"%depict_path)
+from depict_library import construct_depict_loci,write_plink_input,run_plink
 
 
 # PLEASE SPECIFY: Steps that shall be run
