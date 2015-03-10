@@ -25,7 +25,6 @@ The following steps outline how to run DEPICT based on a precomputed LDL locus f
 1. Run DEPICT 
   * `python depict.py`
 2. Investigate the results which have been written to the following files
-  * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
   * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
   * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_genesetenrichment.txt`
 
@@ -33,11 +32,14 @@ The following steps outline how to run DEPICT based on a precomputed LDL locus f
 The following steps outline how to run DEPICT directly on the LDL cholesterol summary statistics file. (This file has been precomputed and was used directly in the above example.)
 
 1. Specify the path to the PLINK executable on our system
-  * `plink_binary = `<path to PLINK on your system> 
+  * `plink_binary = `path to PLINK on your system
 2. Set 
   * `step_write_plink_output = True`
   * `step_run_plink = True`
   * `step_construct_depict_loci = True`
 3. Run DEPICT 
   * `python depict.py`
-4. Inspect the DEPICT output, that is the files listed in the above example step #2.
+4. Investigate the results which have been written to the following files
+  * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
+  * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
+  * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_genesetenrichment.txt`
