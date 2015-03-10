@@ -32,7 +32,7 @@ The following steps outline how to run DEPICT based on a *precomputed LDL choles
 The following steps outline how to run DEPICT directly on the *LDL cholesterol summary statistics file*. (This file has been precomputed and was used directly in the above example.)
 
 1. Specify in `depict.py` the path to the PLINK executable on our system
-  * `plink_binary = <path to PLINK on your system>`
+  * `plink_binary = ...` # Eg. "/usr/bin/plink"
 2. Download the latest precomputed collection of nearest gene and gene to SNP mappings
   * [LD r2 0.5 locus collection (1KG Project Phase 1 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz)
 3. Copy the collection to
@@ -64,9 +64,9 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
   * `step_run_plink = True`
   * `step_construct_depict_loci = True`
 5. In depict.py modify the following parameters
-  * `cutoff =  "5e-8"`
-  * `label = "ldl_teslovich_nature2010"`
-  * `filename = "%s.txt"%(label)`
+  * `cutoff =  ...` # E.g. "5e-8"
+  * `label = ... ` # E.g. "ldl_teslovich_nature2010"
+  * `filename_extension = ...` # E.g. ".txt"
   * `pvalue_col = 3` # NB: Counting starts from 0, ie. first columns is referred to as '0'`
   * `marker_col` = None # Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used and this column should be set to 'None'
   * `chr_col = 1` # Does not need to be set if marker_col is set
