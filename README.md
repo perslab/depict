@@ -33,13 +33,19 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
 
 1. Specify the path to the PLINK executable on our system
   * `plink_binary = <path to PLINK on your system>`
-2. Set 
+2. Download the latest precomputed collection of nearest gene and gene to SNP mappings
+  * [LD r2 0.5 locus collection (1KG Project Phase 1 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz)
+3. Copy the file to
+  * `DEPICT-example/data/`
+3. Specify the path to the new collection file:
+  * `collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path`
+4. Tell DEPICT to clump the LDL cholesterol summary statistics and construct loci 
   * `step_write_plink_output = True`
   * `step_run_plink = True`
   * `step_construct_depict_loci = True`
-3. Run DEPICT 
+5. Run DEPICT 
   * `python depict.py`
-4. Investigate the results which have been written to the following files
+6. Investigate the results which have been written to the following files
   * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
   * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
   * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_genesetenrichment.txt`
