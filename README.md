@@ -32,7 +32,7 @@ The following steps outline how to run DEPICT based on a precomputed LDL locus f
 The following steps outline how to run DEPICT directly on the LDL cholesterol summary statistics file. (This file has been precomputed and was used directly in the above example.)
 
 1. Specify the path to the PLINK executable on our system
-  * `plink_binary = `path to PLINK on your system
+  * `plink_binary = <strong>path to PLINK on your system</strong>`
 2. Set 
   * `step_write_plink_output = True`
   * `step_run_plink = True`
