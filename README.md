@@ -33,7 +33,10 @@ The following steps outline how to run DEPICT based on a precomputed LDL locus f
 The following steps outline how to run DEPICT directly on the LDL cholesterol summary statistics file. (This file has been precomputed and was used directly in the above example.)
 
 1. Point the `plink_binary` to the PLINK executable on your system
-2. Set `step_write_plink_output`, `step_run_plink` and `step_construct_depict_loci` equal to `True`
+2. Set 
+  * `step_write_plink_output = True`
+  * `step_run_plink = True`
+  * `step_construct_depict_loci = True`
 3. Run DEPICT 
   * `python depict.py`
 4. Inspect the DEPICT output, that is the files listed in the above example step #2.
