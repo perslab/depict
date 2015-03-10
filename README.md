@@ -49,3 +49,5 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
   * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
   * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
   * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_genesetenrichment.txt`
+
+# Getting started on your data
