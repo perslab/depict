@@ -20,7 +20,7 @@
 LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids2010/) from [Teslovich Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html) are used as input in this example. We included all SNPs with P < 5e-8 and manually added chromosome and position columns (hg19/GRCh37).
 
 ## Example 1 - Run DEPICT based on the LDL cholesterol example locus file
-The following steps outline how to run DEPICT based on a precomputed LDL locus file.  The locus file specifices which genes map to a given LDL associated SNP.
+The following steps outline how to run DEPICT based on a *precomputed LDL cholesterol DEPICT loci file*.  For a particular phenotype, the DEPICT loci file specifices which genes map to given set of associated GWAS SNPs.
 
 1. Run DEPICT 
   * `python depict.py`
@@ -29,7 +29,7 @@ The following steps outline how to run DEPICT based on a precomputed LDL locus f
   * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_genesetenrichment.txt`
 
 ## Example 2 - Run DEPICT based LDL cholesterol summary statistics
-The following steps outline how to run DEPICT directly on the LDL cholesterol summary statistics file. (This file has been precomputed and was used directly in the above example.)
+The following steps outline how to run DEPICT directly on the *LDL cholesterol summary statistics file*. (This file has been precomputed and was used directly in the above example.)
 
 1. Specify the path to the PLINK executable on our system
   * `plink_binary = <path to PLINK on your system>`
