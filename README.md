@@ -1,6 +1,4 @@
-# DEPICT-example
-
-## Dependencies
+# Dependencies
 * Mac OS X, or UNIX operating system (Microsoft Windows is not supported)
 * Java SE 6 (or higher)
   * [Java.com](https://www.java.com/en/download/)
@@ -14,6 +12,8 @@
   * `sudo pip install pandas`
 * PLINK (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
   * [PLINK version 1](http://pngu.mgh.harvard.edu/~purcell/plink/) or [PLINK version 2](https://www.cog-genomics.org/plink2/) 
+
+# DEPICT-example
 
 ## Data used in this example
 
