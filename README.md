@@ -36,7 +36,7 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
 2. Download the latest precomputed collection of nearest gene and gene to SNP mappings
   * [LD r2 0.5 locus collection (1KG Project Phase 1 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz)
 3. Copy the collection to (do not unzip it)
-  * `cp ld0.5_collection_depict_150302.txt.gz DEPICT-example/data/`
+  * `cp ld0.5_collection_depict_150302.txt.gz DEPICT/data/`
 3. Specify in `depict.py` the path to the new collection file
   * `collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path`
 4. Specify in `depict.py` that you would like to clump the LDL cholesterol summary statistics and construct the DEPICT locus file
@@ -56,8 +56,8 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
 2. Download the latest precomputed collection of nearest gene and gene to SNP mappings
   * [LD r2 0.5 locus collection (1KG Project Phase 1 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz)
 3. Copy the collection to (do not unzip it)
-  * `cp ld0.5_collection_depict_150302.txt.gz DEPICT-example/data/`
-3. Specify in `depict.py` the path to the new collection file
+  * `cp ld0.5_collection_depict_150302.txt.gz DEPICT/data/`
+3. Make sure that in `depict.py` the path to the above collection file is correct
   * `collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path`
 4. Specify in `depict.py` that you would like to clump the LDL cholesterol summary statistics and construct the DEPICT locus file
   * `step_write_plink_output = True`
@@ -68,7 +68,7 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
   * `label = ... ` # E.g. "ldl_teslovich_nature2010"
   * `filename_extension = ...` # E.g. ".txt"
   * `pvalue_col = 3` # NB: Counting starts from 0, ie. first columns is referred to as '0'`
-  * `marker_col` = None # Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used and this column should be set to 'None'
-  * `chr_col = 1` # Does not need to be set if marker_col is set
-  * `pos_col = 2` # Does not need to be set if marker_col is set
+  * `marker_col = None` # Format: <chr:pos>, ie. '6:2321'.  Should be set to `None` if the below `chr_col` and `pos_col` are used
+  * `chr_col = 1` # Does not need to be set if `marker_col` is set
+  * `pos_col = 2` # Does not need to be set if `marker_col` is set
   * `sep = '\t'`
