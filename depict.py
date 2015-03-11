@@ -12,9 +12,9 @@ from depict_library import construct_depict_loci,write_plink_input,run_plink
 
 
 # PLEASE SPECIFY: Steps that shall be run
-step_write_plink_output = False
-step_run_plink = False
-step_construct_depict_loci = False # If you want to run this and the preceeding step please specificy path to PLINK (see below)
+step_write_plink_output = True
+step_run_plink = True
+step_construct_depict_loci = True # If you want to run this and the preceeding step please specificy path to PLINK (see below)
 step_run_depict = True
 
 
@@ -38,7 +38,7 @@ genotype_data_plink_prefix = "%s/data/CEU_GBR_TSI_unrelated.phase1_release_v3.20
 # Locus construction paramenters  (ADVICE: keep default settings)
 distance = 1000 
 r2 = 0.5 
-collection_file = "%s/data/ld0.5_collection_depict_150302_ldl_teslovich_nature2010.txt.gz"%depict_path
+collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path
 locus_file = "%s/%s_loci.txt"%(analysis_path,label)
 hla_start = 25000000
 hla_stop = 35000000
@@ -78,6 +78,18 @@ if step_construct_depict_loci:
 
 # Gene prioritization and reconstituted gene set enrichment analysis
 if step_run_depict:
+	# Arguments to Java binary
+        #  0  String dataDirectory
+        #  1  String filenameLociDefinedBySignificantSNPssAndLDInformation
+        #  2  String outputFileLabel
+        #  3  boolean conductNetworkAnalysis (Integer coding)
+        #  4  boolean conductPathwayAnalysis
+        #  5  boolean conductTissueAnalysis
+        #  6  int nrCores
+        #  7  String resultsDirectory
+        #  8  String cofuncMatrixPath
+        #  9  String filenameGeneAnnotation = dataDirectory + "/" + args[9]
+        #  10 String confineAnalysisToSubsetOfEnsemblGenes = dataDirectory + "/" + args[10]
 	depict_log = os.popen("java -Xms512m -Xmx16000m -XX:+UseParallelGC -XX:ParallelGCThreads=3 -jar %s %s %s %s 1 1 0 %s %s %s %s %s "% \
 		(depict_jar,"%s/data/"%depict_path,locus_file,label,ncores,analysis_path,reconstituted_genesets_file,gene_annotation,depict_genelist_file)).readlines()
 	logging.info(depict_log)
