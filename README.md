@@ -53,16 +53,27 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
 # Getting started on your own GWAS summary statistics
 The following steps will show you how to run DEPICT on your own GWAS summary statistics.  If Example 2 worked, the following steps should be straightforward.
 
-2. Download the latest precomputed collection of nearest gene and gene to SNP mappings
-  * [LD r2 0.5 locus collection (1KG Project Phase 1 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz)
-3. Copy the collection to (do not unzip it)
-  * `cp ld0.5_collection_depict_150302.txt.gz DEPICT/data/`
-3. Make sure that in `depict.py` the path to the above collection file is correct
-  * `collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path`
-4. Specify in `depict.py` that you would like to clump the LDL cholesterol summary statistics and construct the DEPICT locus file
-  * `step_write_plink_output = True`
-  * `step_run_plink = True`
-  * `step_construct_depict_loci = True`
+1. Retrieve the latest precomputed collection of nearest gene and gene to SNP mappings
+  * Download [LD r2 0.5 locus collection (1KG Project Phase 1 data; 249M)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz) to `DEPICT/data/` (do not unzip it)
+  * Make sure that in `depict.py` the path to the above collection file is correct
+    * `collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path`
+2. Retrieve sets of precomputed background loci
+  * Download [depict_backgrounds_10-400.tar.gz; 571M](http://www.broadinstitute.org/mpg/depict/depict_download/backgrounds/depict_backgrounds_10-400.tar.gz) to `DEPICT/data/`
+  * Extract the zipped archive (say 'yes' to overwrite any existing files in `DEPICT/data/backgrounds/`)
+    * `tar xfz depict_backgrounds_10-400.tar.gz`
+3. Retrieve reconstituted gene sets
+  * Download [;M]() to `DEPICT/data/`
+  * Extract the zipped archive
+    * tar xvfz `GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.tgz`
+  * Specify in `depict.py` the path to the reconstituted gene sets
+    * `reconstituted_genesets_file = "%s/data/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary"%depict_path` 
+4. Tell DEPICT where to find tools/data for clumping our summary statistics
+  * Specify in `depict.py` the path to the PLINK executable on our system
+    * `plink_binary = ...` # Eg. "/usr/bin/plink"
+  * Download our [1000 Genomes Project PLINK binary-formatted genotypes (CEU super population), 405M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to a directory on your system ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
+  * Extract the zipped archive
+  * Specify in `depict.py` the path to genotypes. Specific the complete path and filename (except the extension, see `depict_example.py` for an example.
+    * `genotype_data_plink_prefix =  ...` 
 5. In depict.py modify the following parameters
   * `cutoff =  ...` # E.g. "5e-8"
   * `label = ... ` # E.g. "ldl_teslovich_nature2010"
@@ -72,3 +83,7 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
   * `chr_col = 1` # Does not need to be set if `marker_col` is set
   * `pos_col = 2` # Does not need to be set if `marker_col` is set
   * `sep = '\t'`
+6. Specify in `depict.py` that you would like to clump your summary statistics and construct the DEPICT locus file
+  * `step_write_plink_output = True`
+  * `step_run_plink = True`
+  * `step_construct_depict_loci = True`
