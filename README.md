@@ -13,9 +13,9 @@
 * PLINK (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
   * [PLINK version 1](http://pngu.mgh.harvard.edu/~purcell/plink/) or [PLINK version 2](https://www.cog-genomics.org/plink2/) 
 
-# DEPICT-example
+# Examples
 
-## Data used in this example
+## Data used in these examples
 
 LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids2010/) from [Teslovich Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html) are used as input in this example. We included all SNPs with P < 5e-8 and manually added chromosome and position columns (hg19/GRCh37).
 
