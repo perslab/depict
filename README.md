@@ -35,7 +35,7 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
   * `plink_binary = ...` # Eg. "/usr/bin/plink"
 2. Download the latest precomputed collection of nearest gene and gene to SNP mappings
   * [LD r2 0.5 locus collection (1KG Project Phase 1 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz)
-3. Copy the collection to
+3. Copy the collection to (do not unzip it)
   * `cp ld0.5_collection_depict_150302.txt.gz DEPICT-example/data/`
 3. Specify in `depict.py` the path to the new collection file
   * `collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path`
