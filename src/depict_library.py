@@ -31,7 +31,9 @@ def merge_loci(df):
 			df_addon.ix[marker,'snp_id'] = ";".join(df.ix[overlapping_loci,'snp_id'])
 			df_addon.ix[marker,'locus_start'] = start
 			df_addon.ix[marker,'locus_end'] = end
-			df_addon.ix[marker,'genes_in_locus'] = ";".join(set((";".join([ (str(x) if not isinstance(x, float) else '') for x in df.ix[overlapping_loci,'genes_in_locus']])).split(";")))
+			genes_in_locus_set = set((";".join([ (str(x) if not isinstance(x, float) else '') for x in df.ix[overlapping_loci,'genes_in_locus']])).split(";"))
+			genes_in_locus_set.discard('')
+			df_addon.ix[marker,'genes_in_locus'] = ";".join(genes_in_locus_set)
 			df_addon.ix[marker,'nearest_gene'] = ";".join(df.ix[overlapping_loci,'nearest_gene'])
 			df_addon.ix[marker,'chr'] = df.ix[overlapping_loci[0],'chr']
 			rows2drop.extend(overlapping_loci)
