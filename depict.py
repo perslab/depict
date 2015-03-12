@@ -31,7 +31,7 @@ sep = '\t'
 
 # PLEASE SPECIFY: PLINK and genotype files
 plink_binary = "/home/tools/plink/plink_v1-90_stable_beta_3f_2-Mar/plink"
-plink_extra_params = ""
+link_extra_params = ""
 genotype_data_plink_prefix = "%s/data/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010"%depict_path
 
 
@@ -49,7 +49,8 @@ depict_jar = "%s/dist/Depict.jar"%depict_path
 ncores = 2
 gene_annotation = "GPL570ProbeENSGInfo+HGNC_reformatted.txt"
 depict_genelist_file = "GPL570ProbeENSGInfo+HGNC_reformatted.ens"
-reconstituted_genesets_file = "%s/data/reconstituted_genesets_example.txt"%depict_path
+reconstituted_genesets_filename = "GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary"
+reconstituted_genesets_file = "%s/data/%s"%(depict_path,reconstituted_genesets_filename) 
 depict_gene_file = "%s/data/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_path
 depict_gene_information_file = "%s/data/ENSGToGeneNameHGNCBiotypeChromosomeStartStopStrandAndDescriptionV65.txt"%depict_path
 
