@@ -67,13 +67,13 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
     * `reconstituted_genesets_filename = "GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary`
 4. Tell DEPICT where to find tools/data for clumping our summary statistics
   * Specify in `depict.py` the path to the PLINK executable on our system
-    * `plink_binary = ...` # Eg. "/usr/bin/plink"
+    * `plink_binary = ...`  Eg. "/usr/bin/plink"
   * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 405M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to a directory on your system ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
   * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict_example.py` for an example.
     * `genotype_data_plink_prefix =  ...` 
 5. In `depict.py` specify the parameters related to your analysis
-  * `cutoff =  ...` # E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis.
-  * `label = ... ` # E.g. "ldl_teslovich_nature2010", the prefix used for all output files
+  * `cutoff =  ...`  E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis.
+  * `label = ... `  E.g. "ldl_teslovich_nature2010", the prefix used for all output files
   * `filename_extension = ...` # E.g. ".txt", the file extension of your input file
   * `pvalue_col = 3` # The p value column in your GWAS summary statistics file (counting starts from 0, ie. first columns is referred to as '0'`)
   * `marker_col = None` # The SNP identify column in your GWAS summary statistics file. Format: <chr:pos>, ie. '6:2321'.  Should be set to `None` if the below `chr_col` and `pos_col` are used
