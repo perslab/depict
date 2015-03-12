@@ -74,13 +74,16 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
 5. In `depict.py` specify the parameters related to your analysis
   * `cutoff =  ...`  E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis.
   * `label = ... `  E.g. "ldl_teslovich_nature2010", the prefix used for all output files
-  * `filename_extension = ...` # E.g. ".txt", the file extension of your input file
-  * `pvalue_col = 3` # The p value column in your GWAS summary statistics file (counting starts from 0, ie. first columns is referred to as '0'`)
-  * `marker_col = None` # The SNP identify column in your GWAS summary statistics file. Format: <chr:pos>, ie. '6:2321'.  Should be set to `None` if the below `chr_col` and `pos_col` are used
-  * `chr_col = 1` # The chromosome column in your GWAS summary statistics file. Does not need to be set if `marker_col` is set
-  * `pos_col = 2` # The position column in your GWAS summary statistics file. Does not need to be set if `marker_col` is set
-  * `sep = '\t'` # The separator used in your GWAS summary statistics file
+  * `filename_extension = ...` E.g. ".txt", the file extension of your input file
+  * `pvalue_col = 3` The p value column in your GWAS summary statistics file (counting starts from 0, ie. first columns is referred to as '0'`)
+  * `marker_col = None` The SNP identify column in your GWAS summary statistics file. Format: <chr:pos>, ie. '6:2321'.  Should be set to `None` if the below `chr_col` and `pos_col` are used
+  * `chr_col = 1` The chromosome column in your GWAS summary statistics file. Does not need to be set if `marker_col` is set
+  * `pos_col = 2` The position column in your GWAS summary statistics file. Does not need to be set if `marker_col` is set
+  * `sep = '\t'` The separator used in your GWAS summary statistics file
 6. Specify in `depict.py` that you would like to clump your summary statistics and construct the DEPICT locus file
   * `step_write_plink_output = True`
   * `step_run_plink = True`
   * `step_construct_depict_loci = True`
+  * `step_run_depict = True`
+7. Run DEPICT
+  * `python depict.py`
