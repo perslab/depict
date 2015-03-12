@@ -68,9 +68,8 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
 4. Tell DEPICT where to find tools/data for clumping our summary statistics
   * Specify in `depict.py` the path to the PLINK executable on our system
     * `plink_binary = ...` # Eg. "/usr/bin/plink"
-  * Download our [1000 Genomes Project PLINK binary-formatted genotypes (CEU super population), 405M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to a directory on your system ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
-  * Extract the zipped archive
-  * Specify in `depict.py` the path to genotypes. Specific the complete path and filename (except the extension, see `depict_example.py` for an example.
+  * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 405M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to a directory on your system ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
+  * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict_example.py` for an example.
     * `genotype_data_plink_prefix =  ...` 
 5. In depict.py modify the following parameters
   * `cutoff =  ...` # E.g. "5e-8"
