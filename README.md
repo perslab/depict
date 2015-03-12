@@ -62,9 +62,9 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
   * Extract the zipped archive (say 'yes' to overwrite any existing files in `DEPICT/data/backgrounds/`)
     * `tar xfz depict_backgrounds_10-400.tar.gz`
 3. Retrieve reconstituted gene sets
-  * Download [;M]() and extract the zipped archive to `DEPICT/data/`
-  * Specify in `depict.py` the path to the reconstituted gene sets
-    * `reconstituted_genesets_file = "%s/data/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary"%depict_path` 
+  * Download the [reconstituted gene sets;2.4GB](http://www.broadinstitute.org/mpg/depict/depict_download/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.tgz) and extract the zipped archive to `DEPICT/data/`
+  * Specify in `depict.py` the path to the reconstituted gene sets (set by default)
+    * `reconstituted_genesets_filename = "GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary`
 4. Tell DEPICT where to find tools/data for clumping our summary statistics
   * Specify in `depict.py` the path to the PLINK executable on our system
     * `plink_binary = ...` # Eg. "/usr/bin/plink"
