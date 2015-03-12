@@ -8,7 +8,7 @@
   * `sudo easy_install pip` 
 * Python-bx (on Mac OS X you may be prompted to install XCode)
   * `sudo pip install bx-python`   
-* Pandas
+* Pandas (version 0.15.2 or higher)
   * `sudo pip install pandas`
 * PLINK (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
   * [PLINK version 1](http://pngu.mgh.harvard.edu/~purcell/plink/) or [PLINK version 2](https://www.cog-genomics.org/plink2/) 
