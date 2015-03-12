@@ -51,7 +51,10 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
   * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_genesetenrichment.txt`
 
 # Getting started on your own GWAS summary statistics
-The following steps will show you how to run DEPICT on your own GWAS summary statistics.  If Example 2 worked, the following steps should be straightforward.
+The following steps will show you how to run DEPICT on your own GWAS summary statistics. We advice you to run example 2 to make sure that you have all the necessary parts to run a simple example.
+
+## Preparations
+The below steps are necessary to allow DEPICT to run on your system.  They only need only to be done once. 
 
 1. Retrieve the latest precomputed collection of nearest gene and gene to SNP mappings
   * Download [LD r2 0.5 locus collection (1KG Project Phase 1 data; 249M)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz) to `DEPICT/data/` (do not unzip it)
@@ -71,7 +74,10 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
   * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 405M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to a directory on your system ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
   * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict_example.py` for an example.
     * `genotype_data_plink_prefix =  ...` 
-5. In `depict.py` specify the parameters related to your analysis
+
+## Run DEPICT on your own summary statistics
+    
+1. In `depict.py` specify the parameters related to your analysis
   * `cutoff =  ...`  E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis.
   * `label = ... `  E.g. "ldl_teslovich_nature2010", the prefix used for all output files
   * `filename_extension = ...` E.g. ".txt", the file extension of your input file
@@ -80,10 +86,10 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
   * `chr_col = 1` The chromosome column in your GWAS summary statistics file. Does not need to be set if `marker_col` is set
   * `pos_col = 2` The position column in your GWAS summary statistics file. Does not need to be set if `marker_col` is set
   * `sep = '\t'` The separator used in your GWAS summary statistics file
-6. Specify in `depict.py` that you would like to clump your summary statistics and construct the DEPICT locus file
+2. Specify in `depict.py` that you would like to clump your summary statistics and construct the DEPICT locus file
   * `step_write_plink_output = True`
   * `step_run_plink = True`
   * `step_construct_depict_loci = True`
   * `step_run_depict = True`
-7. Run DEPICT
+3. Run DEPICT
   * `python depict.py`
