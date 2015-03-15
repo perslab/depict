@@ -76,7 +76,7 @@ The below steps are necessary to allow DEPICT to run on your system.  They only 
 5. Tell DEPICT where to find tools/data for clumping our summary statistics
   * Specify in `depict.py` the path to the PLINK executable on our system
     * `plink_binary = ...`  Eg. "/usr/bin/plink"
-  * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 349M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to `DEPICT/data/1kg/` ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
+  * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 349M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to `DEPICT/data/genotype_data_plink/` ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
   * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict_example.py` for an example.
     * `genotype_data_plink_prefix =  ...` 
 
