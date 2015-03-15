@@ -35,7 +35,7 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
 1. Clone the DEPICT repository
   * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
 2. Specify in `depict.py` the path to the PLINK executable on our system
-  * `plink_binary = ...` # Eg. "/usr/bin/plink"
+  * `plink_binary = ...` Eg. "/usr/bin/plink"
 3. Download the latest precomputed collection of nearest gene and gene to SNP mappings
   * [LD r2 0.5 locus collection (1KG Project Phase 1 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz)
 4. Copy the collection to (do not unzip it)
@@ -76,7 +76,7 @@ The below steps are necessary to allow DEPICT to run on your system.  They only 
 5. Tell DEPICT where to find tools/data for clumping our summary statistics
   * Specify in `depict.py` the path to the PLINK executable on our system
     * `plink_binary = ...`  Eg. "/usr/bin/plink"
-  * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 349M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to a directory on your system ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
+  * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 349M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to `DEPICT/data/1kg/` ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
   * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict_example.py` for an example.
     * `genotype_data_plink_prefix =  ...` 
 
