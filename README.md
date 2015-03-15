@@ -70,7 +70,7 @@ The below steps are necessary to allow DEPICT to run on your system.  They only 
   * Extract the zipped archive (say 'yes' to overwrite any existing files in `DEPICT/data/backgrounds/`)
     * `tar xfz depict_backgrounds_10-400.tar.gz`
 4. Retrieve reconstituted gene sets
-  * Download the [reconstituted gene sets; 2.4GB](http://www.broadinstitute.org/mpg/depict/depict_download/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.tgz) and extract the zipped archive to `DEPICT/data/`
+  * Download the [reconstituted gene sets; 2.4GB](http://www.broadinstitute.org/mpg/depict/depict_download/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.tgz) and extract the zipped archive to `DEPICT/data/reconstituted_genesets/`
   * Specify in `depict.py` the path to the reconstituted gene sets (set by default)
     * `reconstituted_genesets_filename = "GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary`
 5. Tell DEPICT where to find tools/data for clumping our summary statistics
