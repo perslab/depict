@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 
-import pdb,math,sys,gzip,os
+import pdb,math,sys,gzip,os,re
 import pandas as pd
 from glob import glob
 from bx.intervals.cluster import ClusterTree
@@ -128,7 +128,7 @@ def convert(x):
 
 
 # Read SNPsnap collection and input SNPs from user
-def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_file,depict_gene_information_file,outfile,hla_start,hla_stop):
+def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_file,depict_gene_information_file,outfile,hla_start,hla_stop,plink_index_snp_col):
 
 	print "\nWriting DEPICT input loci"
 
@@ -136,7 +136,7 @@ def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_
 	log_dict = {}
 
 	# Read users SNPs
-	user_snps = get_plink_index_snps(analysis_path,label,cutoff)
+	user_snps = get_plink_index_snps(analysis_path,label,cutoff,plink_index_snp_col)
 
 	# DEPICT gene universe
 	depict_genes = read_single_column_file(depict_gene_file)
@@ -220,19 +220,18 @@ def run_plink(path, label, genotypes_1kg, plink_binary, plink_extra_params, cuto
 
 
 # Helper function to retrieve PLINK Index SNPs
-def get_plink_index_snps(path,label,cutoff):
+def get_plink_index_snps(path,label,cutoff,index_snp_col):
 
 	# Read file with correct SNP indices
 	id_df = pd.read_csv("%s/%s.tab"%(path,label),index_col=0,header=0,sep="\t")
 
 	# Read PLINK results
-	index_snp_col = 7
 	index_snps = []
 	with open("%s/%s.clumped"%(path,label),'r') as infile:
 		lines = infile.readlines()[1:]
 		for line in lines:
-			words = line.strip().split(' ') 
-			if len(words) >= index_snp_col-1: 
+			if line.strip() != '':
+				words = re.sub(' +','\t',line.strip()).split('\t') 
 				index_snps.append(words[index_snp_col]) if words[index_snp_col] != '' else None
 
 	# Re-map to chr:pos

@@ -31,14 +31,16 @@ sep = '\t'
 
 # PLEASE SPECIFY: PLINK and genotype files
 plink_binary = "/home/tools/plink/plink_v1-90_stable_beta_3f_2-Mar/plink"
-link_extra_params = ""
-genotype_data_plink_prefix = "%s/data/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010"%depict_path
+plink_extra_params = "--exclude /home/data/1000G/data/phase1/bed_CEU_GBR_TSI_unrelated/duplicate_markers.rsID"
+plink_index_snp_col = 2
+#genotype_data_plink_prefix = "/home/data/1000G/data/phase1/bed_CEU_GBR_TSI_unrelated/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes"
+genotype_data_plink_prefix = "%s/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes"%depict_path # Point this to the PLINK formated genotype data (point to filename but leave out the filename extension)
 
 
 # Locus construction paramenters  (ADVICE: keep default settings)
 distance = 1000 
 r2 = 0.5 
-collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path
+collection_file = "%s/data/collections/ld0.5_collection_depict_150315.txt.gz"%depict_path
 locus_file = "%s/%s_loci.txt"%(analysis_path,label)
 hla_start = 25000000
 hla_stop = 35000000
@@ -50,9 +52,9 @@ ncores = 2
 gene_annotation = "GPL570ProbeENSGInfo+HGNC_reformatted.txt"
 depict_genelist_file = "GPL570ProbeENSGInfo+HGNC_reformatted.ens"
 reconstituted_genesets_filename = "GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary"
-reconstituted_genesets_file = "%s/data/%s"%(depict_path,reconstituted_genesets_filename) 
-depict_gene_file = "%s/data/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_path
-depict_gene_information_file = "%s/data/ENSGToGeneNameHGNCBiotypeChromosomeStartStopStrandAndDescriptionV65.txt"%depict_path
+reconstituted_genesets_file = "%s/data/reconstituted_genesets/%s"%(depict_path,reconstituted_genesets_filename) 
+depict_gene_file = "%s/data/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_path
+depict_gene_information_file = "%s/data/mapping_and_annotation_files/ENSGToGeneNameHGNCBiotypeChromosomeStartStopStrandAndDescriptionV65.txt"%depict_path
 
 
 # Logging (ADVICE: keep default settings)
@@ -73,12 +75,14 @@ if step_run_plink:
 
 # Read PLINK index SNPs and construct DEPICT locus file
 if step_construct_depict_loci:
-	loci_log = construct_depict_loci(analysis_path,label,cutoff,collection_file,depict_gene_file,depict_gene_information_file,locus_file,hla_start,hla_stop)
+	loci_log = construct_depict_loci(analysis_path,label,cutoff,collection_file,depict_gene_file,depict_gene_information_file,locus_file,hla_start,hla_stop,plink_index_snp_col)
+
 	logging.info(loci_log)
 
 
 # Gene prioritization and reconstituted gene set enrichment analysis
 if step_run_depict:
+	print("Running DEPICT")
 	# Arguments to Java binary
         #  0  String dataDirectory
         #  1  String filenameLociDefinedBySignificantSNPssAndLDInformation

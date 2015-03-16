@@ -53,11 +53,16 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
 # Analyse your own GWAS summary statistics
 The following steps will show you how to run DEPICT on your own GWAS summary statistics. We advice you to run example 2 to make sure that you have all the necessary parts to run a simple example.
 
-## Preparations
-The below steps are necessary to allow DEPICT to run on your system.  They only need only to be done once. 
+## Download DEPICT
+
+### Single-file download
+Download all DEPICT files and unzip the zipped archive. Be sure to that you meet all the dependencies described above.
+
+### Step-by-step download and setup (only for advanced users)
+Instead of downloadning all files at once you can use the below steps to setup DEPICT.
 
 1. Retrieve the latest precomputed collection of nearest gene and gene to SNP mappings
-  * Download [LD r2 0.5 locus collection (1KG Project Phase 1 data; 249M)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz) to `DEPICT/data/` (do not unzip it)
+  * Download [LD r2 0.5 locus collection (1KG Project Phase 3 data; 225)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150315.txt.gz) to `DEPICT/data/` (do not unzip it)
   * Make sure that in `depict.py` the path to the above collection file is correct
     * `collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path`
 2. Retrieve sets of precomputed background loci
@@ -75,7 +80,7 @@ The below steps are necessary to allow DEPICT to run on your system.  They only 
   * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict_example.py` for an example.
     * `genotype_data_plink_prefix =  ...` 
 
-## Run DEPICT on your own summary statistics
+## Run DEPICT
     
 1. In `depict.py` specify the parameters related to your analysis
   * `cutoff =  ...`  E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis.

@@ -30,15 +30,15 @@ sep = '\t'
 
 
 # PLEASE SPECIFY: PLINK and genotype files
-plink_binary = "/home/tools/plink/plink_v1-90_stable_beta_3f_2-Mar/plink"
+plink_binary = "/home/tools/plink/plink_v1-90_stable_beta_3f_2-Mar/plink" # Point to your plink executable 
 plink_extra_params = ""
-genotype_data_plink_prefix = "%s/data/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010"%depict_path
+genotype_data_plink_prefix = "%s/data/genotype_data_plink/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010"%depict_path
 
 
 # Locus construction paramenters  (ADVICE: keep default settings)
 distance = 1000 
 r2 = 0.5 
-collection_file = "%s/data/ld0.5_collection_depict_150302_ldl_teslovich_nature2010.txt.gz"%depict_path
+collection_file = "%s/data/collections/ld0.5_collection_depict_150302_ldl_teslovich_nature2010.txt.gz"%depict_path
 locus_file = "%s/%s_loci.txt"%(analysis_path,label)
 hla_start = 25000000
 hla_stop = 35000000
@@ -49,9 +49,9 @@ depict_jar = "%s/dist/Depict.jar"%depict_path
 ncores = 2
 gene_annotation = "GPL570ProbeENSGInfo+HGNC_reformatted.txt"
 depict_genelist_file = "GPL570ProbeENSGInfo+HGNC_reformatted.ens"
-reconstituted_genesets_file = "%s/data/reconstituted_genesets_example.txt"%depict_path
-depict_gene_file = "%s/data/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_path
-depict_gene_information_file = "%s/data/ENSGToGeneNameHGNCBiotypeChromosomeStartStopStrandAndDescriptionV65.txt"%depict_path
+reconstituted_genesets_file = "%s/data/reconstituted_genesets/reconstituted_genesets_example.txt"%depict_path
+depict_gene_file = "%s/data/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_path
+depict_gene_information_file = "%s/data/mapping_and_annotation_files/ENSGToGeneNameHGNCBiotypeChromosomeStartStopStrandAndDescriptionV65.txt"%depict_path
 
 
 # Logging (ADVICE: keep default settings)
