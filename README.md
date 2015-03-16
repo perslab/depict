@@ -55,7 +55,7 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
 # Analyse your own GWAS summary statistics
 The following steps will show you how to run DEPICT on your own GWAS summary statistics. We advice you to run example 2 to make sure that you have all the necessary parts to run a simple example.
 
-## Download DEPICT
+## Setup DEPICT
 
 Download all DEPICT files and unzip the zipped archive. Be sure to that you meet all the dependencies described above.  Instead of downloadning all files at once you can use the below steps to setup DEPICT.
 
