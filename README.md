@@ -37,10 +37,10 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
 2. Specify in `depict.py` the path to the PLINK executable on our system
   * `plink_binary = ...` Eg. "/usr/bin/plink"
 3. Retrieve the latest precomputed collection of nearest gene and gene to SNP mappings
-  * Download  [LD r2 0.5 locus collection (1KG Project Phase 1 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150302.txt.gz)
-  * Copy the collection to (do not unzip it) `ld0.5_collection_depict_150302.txt.gz DEPICT/data/collections`
+  * Download  [LD r2 0.5 locus collection (1KG Project Phase 3 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150315.txt.gz)
+  * Copy the collection to (do not unzip it) `ld0.5_collection_depict_150315.txt.gz DEPICT/data/collections`
 5. Specify in `depict_example.py` the path to the new collection file
-  * `collection_file = "%s/data/ld0.5_collection_depict_150302.txt.gz"%depict_path`
+  * `collection_file = "%s/data/ld0.5_collection_depict_150315.txt.gz"%depict_path`
 6. Specify in `depict_example.py` that you would like to clump the LDL cholesterol summary statistics and construct the DEPICT locus file
   * `step_write_plink_output = True`
   * `step_run_plink = True`
@@ -57,18 +57,14 @@ The following steps will show you how to run DEPICT on your own GWAS summary sta
 
 ## Download DEPICT
 
-### Single-file download
-Download all DEPICT files and unzip the zipped archive. Be sure to that you meet all the dependencies described above.
-
-### Step-by-step download and setup (only for advanced users)
-Instead of downloadning all files at once you can use the below steps to setup DEPICT.
+Download all DEPICT files and unzip the zipped archive. Be sure to that you meet all the dependencies described above.  Instead of downloadning all files at once you can use the below steps to setup DEPICT.
 
 1. Clone the DEPICT repository
   * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
 2. Retrieve the latest precomputed collection of nearest gene and gene to SNP mappings
   * Download [LD r2 0.5 locus collection (1KG Project Phase 3 data; 249M)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150315.txt.gz) to `DEPICT/data/collections` (do not unzip it)
   * Make sure that in `depict.py` the path to the above collection file is correct
-    * `collection_file = "%s/data/collections/ld0.5_collection_depict_150302.txt.gz"%depict_path`
+    * `collection_file = "%s/data/collections/ld0.5_collection_depict_150315.txt.gz"%depict_path`
 3. Retrieve sets of precomputed background loci
   * Download [depict_backgrounds_10-400.tar.gz; 571M](http://www.broadinstitute.org/mpg/depict/depict_download/backgrounds/depict_backgrounds_10-400.tar.gz) to `DEPICT/data/`
   * Extract the zipped archive (say 'yes' to overwrite any existing files in `DEPICT/data/backgrounds/`)
