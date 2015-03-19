@@ -186,7 +186,7 @@ def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,g
 		words = line.strip().split()
 		mapping["%s:%s"%(words[0],words[3])] = words[1] 
 
-	# Read users SNP file
+	# Write PLINK input file
 	with ( gzip.open("%s/%s"%(path,filename),'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s/%s.tab"%(path,label),'w') as outfile:
 		outfile.write("SNP_chr_pos\tSNP\tChr\tPos\tP\n")
 		for line in infile.readlines()[1:]:
@@ -196,7 +196,10 @@ def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,g
 				pos = int(words[marker_col].split(":")[1])
 				marker_id = words[marker_col] 
 			elif chr_col is not None and pos_col is not None:
-				chrom = int(words[chr_col])
+				if words[chr_col] == "X":
+					chrom = 23
+				else:
+					chrom = int(words[chr_col])
 				pos = int(words[pos_col])
 				marker_id = "%s:%s"%(chrom,pos)
 			else:
