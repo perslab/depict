@@ -21,6 +21,7 @@ LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids201
 
 ## Example 1 - Run DEPICT based on the LDL cholesterol example locus file
 The following steps outline how to run DEPICT based on a *precomputed LDL cholesterol DEPICT loci file*.  For a particular phenotype, the DEPICT loci file specifices which genes map to given set of associated GWAS SNPs.
+
 1. Clone the DEPICT repository
   * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
 2. Run DEPICT 
