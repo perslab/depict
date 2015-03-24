@@ -22,21 +22,28 @@ step_depict_tissueenrichment = False
 
 
 # PLEASE SPECIFY: GWAS summary statistics input file parameters (only autosomal SNPs are included)
-cutoff =  "5e-8"
-label = "ldl_teslovich_nature2010"
-filename = "%s.txt"%(label) 
-pvalue_col = 3 # NB: Counting starts from 0, ie. first columns is referred to as '0'
-marker_col = None # Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used and this column should be set to 'None'
-chr_col = 1 # Set ot 'None' if this column does not exist
-pos_col = 2 # Set ot 'None'if this column does not exist
+#cutoff =  "5e-8"
+cutoff =  "1e-5"
+#label = "ldl_teslovich_nature2010"
+label = "EA2_EduYears_pooled_single_gc.meta"
+#filename = "%s.txt"%(label) 
+filename = "%s.gz"%(label) 
+#pvalue_col = 3 # NB: Counting starts from 0, ie. first columns is referred to as '0'
+pvalue_col = 10 # NB: Counting starts from 0, ie. first columns is referred to as '0'
+#marker_col = None # Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used and this column should be set to 'None'
+marker_col = 1
+#chr_col = 1 # Set ot 'None' if this column does not exist
+#pos_col = 2 # Set ot 'None'if this column does not exist
+chr_col = None
+pos_col = None
 sep = '\t'
 
 
 # PLEASE SPECIFY: PLINK and genotype files
 plink_executable = "/home/tools/plink/plink_v1-90_stable_beta_3f_2-Mar/plink" # Change to your PLINK executable
 genotype_data_plink_prefix = "%s/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes"%depict_path # Point this to the PLINK formated genotype data (point to filename but leave out the filename extension)
-plink_extra_params = ""
-plink_clumping_distance = 500 # (ADVICE: keep default settings for the below entries)
+plink_extra_params = "" # (ADVICE: keep default settings for the below entries)
+plink_clumping_distance = 500 
 plink_clumping_r2 = 0.1
 plink_clumping_snp_column = "SNP" 
 plink_clumping_pvalue_column = "P"
@@ -49,7 +56,7 @@ hla_start = 25000000
 hla_end = 35000000
 
 
-# DEPICT parameterds
+# DEPICT parameters
 java_executable = "java"
 depict_jar = "%s/dist/Depict.jar"%depict_path
 ncores = 2
@@ -73,7 +80,7 @@ if step_write_plink_output:
 
 # Run PLINK to get index SNPs
 if step_run_plink:
-	plink_log = run_plink_clumping(plink_executable, genotype_data_plink_prefix,  plink_extra_params, cutoff, plink_clumping_distance, plink_clumping_r2, plink_clumping_snp_column, plink_clumping_pvalue_column, analysis_path, "%s.tab"%label, label)
+	plink_log = run_plink_clumping(plink_executable, genotype_data_plink_prefix,  plink_extra_params, cutoff, plink_clumping_distance, plink_clumping_r2, plink_clumping_snp_column, plink_clumping_pvalue_column, analysis_path, "%s_depict.tab"%label, label)
 	logging.info(plink_log)
 
 
@@ -85,6 +92,6 @@ if step_construct_depict_loci:
 
 # Gene prioritization and reconstituted gene set enrichment analysis
 if step_depict_geneprio or step_depict_gsea or step_depict_tissueenrichment:
-	loci_log = run_depict(java_executable, depict_jar, "%s/data/"%depict_path, locus_file, label, step_depict_geneprio, step_depict_gsea, step_depict_tissueenrichment, "%s"%ncores, analysis_path, reconstituted_genesets_file, gene_annotation, depict_genelist_file )
+	loci_log = run_depict(java_executable, depict_jar, "%s/data/"%depict_path, locus_file, label, step_depict_geneprio, step_depict_gsea, step_depict_tissueenrichment, ncores, analysis_path, reconstituted_genesets_file, gene_annotation, depict_genelist_file )
 	logging.info(loci_log)
 

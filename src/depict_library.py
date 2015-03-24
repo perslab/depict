@@ -188,7 +188,7 @@ def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,g
 		mapping["%s:%s"%(words[0],words[3])] = words[1] 
 
 	# Write PLINK input file
-	with ( gzip.open("%s/%s"%(path,filename),'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s/%s.tab"%(path,label),'w') as outfile:
+	with ( gzip.open("%s/%s"%(path,filename),'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s/%s_depict.tab"%(path,label),'w') as outfile:
 		outfile.write("SNP_chr_pos\tSNP\tChr\tPos\tP\n")
 		for line in infile.readlines()[1:]:
 			words = line.strip().split(sep)
@@ -217,7 +217,7 @@ def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,g
 def get_plink_index_snps(path,label,cutoff,index_snp_col):
 
 	# Read file with correct SNP indices
-	id_df = pd.read_csv("%s/%s.tab"%(path,label),index_col=0,header=0,sep="\t")
+	id_df = pd.read_csv("%s/%s_depict.tab"%(path,label),index_col=0,header=0,sep="\t")
 
 	# Read PLINK results
 	index_snps = []
@@ -237,8 +237,8 @@ def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_gen
 	# Gene prioritization and/or reconstituted gene set enrichment
 	if do_geneprio or do_gsea:
 		print("\nRunning DEPICT {} {} {}".format("gene prioritization" if do_geneprio else "", "and" if do_geneprio and do_gsea else "","gene set enrichment analysis" if do_gsea else ""))
-		geneprio_flag = str(int(do_geneprio == 'True'))
-		gsea_flag = str(int(do_geneprio == 'True'))
+		geneprio_flag = str(int(do_geneprio))
+		gsea_flag = str(int(do_geneprio))
 		tissue_flag = '0'
 	elif do_tissue:
 		print("\nRunning DEPICT tissue enrichment analysis".format())
@@ -252,8 +252,8 @@ def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_gen
 	        locus_file, 			# 1  String filenameLociDefinedBySignificantSNPssAndLDInformation
        	 	label, 				# 2  String outputFileLabel
        	 	geneprio_flag, 			# 3  boolean conductNetworkAnalysis
-       		str(int(do_gsea == 'True')), 	# 4  boolean conductPathwayAnalysis
-       		tissue_flag,			 	# 5  boolean conductTissueAnalysis
+       		gsea_flag,			# 4  boolean conductPathwayAnalysis
+       		tissue_flag,		 	# 5  boolean conductTissueAnalysis
        		str(ncores), 			# 6  int nrCores
         	analysis_path,  		# 7  String resultsDirectory
       	 	reconstituted_genesets_file, 	# 8  String cofuncMatrixPath
