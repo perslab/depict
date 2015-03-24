@@ -1,6 +1,6 @@
 #!/usr/bin/env python2.7
 
-import pdb,math,sys,gzip,os,re
+import pdb,math,sys,gzip,os,re,subprocess
 import pandas as pd
 from glob import glob
 from bx.intervals.cluster import ClusterTree
@@ -54,8 +54,8 @@ def record_missing_snps(df,log_dict):
 
 
 # Function to identify and record HLA SNPs
-def record_hla_snps(df,log_dict,hla_start,hla_stop):
-	hla_index = df.apply(lambda x : True if ( (x.chr == '6') and ( ( x.locus_stop > hla_start and x.locus_stop < hla_stop ) or ( x.locus_start > hla_start and x.locus_start < hla_stop ) ) ) else False, axis = 1)
+def record_hla_snps(df,log_dict,hla_start,hla_end):
+	hla_index = df.apply(lambda x : True if ( (x.chr == 6) and ( ( x.locus_end > hla_start and x.locus_end < hla_end ) or ( x.locus_start > hla_start and x.locus_start < hla_end ) ) ) else False, axis = 1)
 	if len(df.index[hla_index]) > 0:
 		log_dict['snps_hla'] = ';'.join(df.index[hla_index])
 	return hla_index, log_dict
@@ -128,7 +128,7 @@ def convert(x):
 
 
 # Read SNPsnap collection and input SNPs from user
-def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_file,depict_gene_information_file,outfile,hla_start,hla_stop,plink_index_snp_col):
+def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_file,depict_gene_information_file,outfile,hla_start,hla_end):
 
 	print "\nWriting DEPICT input loci"
 
@@ -136,7 +136,8 @@ def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_
 	log_dict = {}
 
 	# Read users SNPs
-	user_snps = get_plink_index_snps(analysis_path,label,cutoff,plink_index_snp_col)
+	clumps_df = pd.read_csv("{}/{}.clumped".format(analysis_path,label),delimiter=r"\s+")
+	user_snps = clumps_df.CHR.astype('str') + ":" + clumps_df.BP.astype('str') # Format chr:pos
 
 	# DEPICT gene universe
 	depict_genes = read_single_column_file(depict_gene_file)
@@ -150,7 +151,7 @@ def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_
 	# Identify and remove SNPs missing	
 	df_index_remove = pd.DataFrame()
 	index_snps_missing, log_dict = record_missing_snps(collection_usersnps,log_dict)
-	index_snps_hla, log_dict = record_hla_snps(collection_usersnps,log_dict,hla_start,hla_stop)
+	index_snps_hla, log_dict = record_hla_snps(collection_usersnps,log_dict,hla_start,hla_end)
 	index_snps_non_autosomal, log_dict = record_sex_chr_snps(collection_usersnps,log_dict)
 	collection_usersnps.drop(collection_usersnps.index[ ( index_snps_missing | index_snps_hla ) | index_snps_non_autosomal] , inplace=True)
 	
@@ -210,16 +211,6 @@ def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,g
 			else:
 				outfile.write("%s\t-\t%s\t%s\t%s\n"%(marker_id,chrom,pos,words[p_col]))
 	return 0
-	
-
-# Helper function to run PLINK
-def run_plink(path, label, genotypes_1kg, plink_binary, plink_extra_params, cutoff, distance, r2): 
-
-	print "\nRunning PLINK"
-
-	plink_prefix = "%s --bfile %s %s"%(plink_binary,genotypes_1kg,plink_extra_params)
-	cmd = "%s --clump-p1 %s --clump-kb %s --clump-r2 %s --clump %s/%s.tab --out %s/%s"%(plink_prefix,cutoff,distance,r2,path,label,path,label) 
-	return os.popen(cmd).readlines()
 
 
 # Helper function to retrieve PLINK Index SNPs
@@ -240,3 +231,37 @@ def get_plink_index_snps(path,label,cutoff,index_snp_col):
 	# Re-map to chr:pos
 	return id_df.index[id_df.SNP.isin(index_snps)]
 
+# Function to run DEPICT
+def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, gene_annotation, depict_genelist_file):
+
+	# Gene prioritization and/or reconstituted gene set enrichment
+	if do_geneprio or do_gsea:
+		print("\nRunning DEPICT {} {} {}".format("gene prioritization" if do_geneprio else "", "and" if do_geneprio and do_gsea else "","gene set enrichment analysis" if do_gsea else ""))
+		geneprio_flag = str(int(do_geneprio == 'True'))
+		gsea_flag = str(int(do_geneprio == 'True'))
+		tissue_flag = '0'
+	elif do_tissue:
+		print("\nRunning DEPICT tissue enrichment analysis".format())
+		geneprio_flag = '0'
+		gsea_flag = '0'
+		tissue_flag = '1'
+
+	cmd = [java_executable,	"-Xms512M", "-Xmx8000M","-XX:+UseParallelGC", '-XX:ParallelGCThreads=3', "-jar",
+		depict_jar,			# Below are the arguments to the DEPIT java file
+		data_path, 			# 0  String dataDirectory
+	        locus_file, 			# 1  String filenameLociDefinedBySignificantSNPssAndLDInformation
+       	 	label, 				# 2  String outputFileLabel
+       	 	geneprio_flag, 			# 3  boolean conductNetworkAnalysis
+       		str(int(do_gsea == 'True')), 	# 4  boolean conductPathwayAnalysis
+       		tissue_flag,			 	# 5  boolean conductTissueAnalysis
+       		str(ncores), 			# 6  int nrCores
+        	analysis_path,  		# 7  String resultsDirectory
+      	 	reconstituted_genesets_file, 	# 8  String cofuncMatrixPath
+	        gene_annotation, 		# 9  String filenameGeneAnnotation = dataDirectory + "/" + args[9]
+	        depict_genelist_file 		# 10 String confineAnalysisToSubsetOfEnsemblGenes = dataDirectory + "/" + args[10]
+	]
+	#print "making call {}".format( " ".join(cmd)  )
+	if do_geneprio or do_gsea or do_tissue:
+		return subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
+	
+	return 0
