@@ -36,16 +36,19 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
 1. Clone the DEPICT repository
   * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
 2. Specify in `depict.py` the path to the PLINK executable on our system
-  * `plink_binary = ...` Eg. "/usr/bin/plink"
+  * `plink_executable = ...` Eg. "/usr/bin/plink"
 3. Retrieve the latest precomputed collection of nearest gene and gene to SNP mappings
   * Download  [LD r2 0.5 locus collection (1KG Project Phase 3 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150315.txt.gz)
   * Copy the collection to (do not unzip it) `ld0.5_collection_depict_150315.txt.gz DEPICT/data/collections`
 5. Specify in `depict_example.py` the path to the new collection file
   * `collection_file = "%s/data/ld0.5_collection_depict_150315.txt.gz"%depict_path`
-6. Specify in `depict_example.py` that you would like to clump the LDL cholesterol summary statistics and construct the DEPICT locus file
+6. Specify in `depict_example.py` that you would like to clump the LDL cholesterol summary statistics, construct the DEPICT locus file and do the DEPICT analysis (except tissue enrichment analysis for which you need to download additional data as described below)
   * `step_write_plink_output = True`
   * `step_run_plink = True`
   * `step_construct_depict_loci = True`
+  * `step_depict_geneprio = True`
+  * `step_depict_gsea = True`
+  * `step_depict_tissueenrichment = False`
 7. Run DEPICT 
   * `python depict_example.py`
 8. Investigate the results which have been written to the following files
@@ -70,13 +73,17 @@ Download all DEPICT files and unzip the zipped archive. Be sure to that you meet
   * Download [depict_backgrounds_10-400.tar.gz; 571M](http://www.broadinstitute.org/mpg/depict/depict_download/backgrounds/depict_backgrounds_10-400.tar.gz) to `DEPICT/data/`
   * Extract the zipped archive (say 'yes' to overwrite any existing files in `DEPICT/data/backgrounds/`)
     * `tar xfz depict_backgrounds_10-400.tar.gz`
-4. Retrieve reconstituted gene sets
-  * Download the [reconstituted gene sets; 2.4GB](http://www.broadinstitute.org/mpg/depict/depict_download/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.tgz) and extract the zipped archive to `DEPICT/data/reconstituted_genesets/`
+4. Retrieve the reconstituted gene sets
+  * Download the [reconstituted gene sets; 2.4G](http://www.broadinstitute.org/mpg/depict/depict_download/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.tgz) and extract the zipped archive to `DEPICT/data/reconstituted_genesets/`
   * Specify in `depict.py` the path to the reconstituted gene sets (set by default)
-    * `reconstituted_genesets_filename = "GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary`
-5. Tell DEPICT where to find tools/data for clumping our summary statistics
+    * `reconstituted_genesets_filename = "GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary"`
+5. Retrieve the tissue-specific gene expression data
+  * Download the [tissue-specific gene expression data; 30M](http://www.broadinstitute.org/mpg/depict/depict_download/tissue_expression/GPL570EnsemblGeneExpressionPerTissue_DEPICT20130820_z.txt.gz) and extract the zipped archive to `DEPICT/data/tissue_expression/`
+  * Specify in `depict.py` the path to the reconstituted gene sets (set by default)
+    * `tissue_expression_file = "GPL570EnsemblGeneExpressionPerTissue_DEPICT20130820_z.txt"`
+6. Tell DEPICT where to find PLINK and genotype data used to clump your summary statistics
   * Specify in `depict.py` the path to the PLINK executable on our system
-    * `plink_binary = ...`  Eg. "/usr/bin/plink"
+    * `plink_executable = ...`  Eg. "/usr/bin/plink"
   * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 349M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to `DEPICT/data/genotype_data_plink/` ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
   * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict_example.py` for an example.
     * `genotype_data_plink_prefix =  ...` 
@@ -86,7 +93,7 @@ Download all DEPICT files and unzip the zipped archive. Be sure to that you meet
 1. In `depict.py` specify the parameters related to your analysis
   * `cutoff =  ...`  E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis.
   * `label = ... `  E.g. "ldl_teslovich_nature2010", the prefix used for all output files
-  * `filename_extension = ...` E.g. ".txt", the file extension of your input file
+  * `filename_extension = ...` E.g. ".txt", the file extension of your gwas summary statistics file (can be plain text or in gzip format)
   * `pvalue_col = 3` The p value column in your GWAS summary statistics file (counting starts from 0, ie. first columns is referred to as '0'`)
   * `marker_col = None` The SNP identify column in your GWAS summary statistics file. Format: <chr:pos>, ie. '6:2321'.  Should be set to `None` if the below `chr_col` and `pos_col` are used
   * `chr_col = 1` The chromosome column in your GWAS summary statistics file. Does not need to be set if `marker_col` is set
@@ -96,6 +103,8 @@ Download all DEPICT files and unzip the zipped archive. Be sure to that you meet
   * `step_write_plink_output = True`
   * `step_run_plink = True`
   * `step_construct_depict_loci = True`
-  * `step_run_depict = True`
+  * `step_depict_geneprio = True`
+  * `step_depict_gsea = True`
+  * `step_depict_tissueenrichment = True`
 3. Run DEPICT
   * `python depict.py`

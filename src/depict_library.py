@@ -232,36 +232,38 @@ def get_plink_index_snps(path,label,cutoff,index_snp_col):
 	return id_df.index[id_df.SNP.isin(index_snps)]
 
 # Function to run DEPICT
-def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, gene_annotation, depict_genelist_file):
+def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_genelist_file, tissue_expression_file):
 
-	# Gene prioritization and/or reconstituted gene set enrichment
-	if do_geneprio or do_gsea:
+	def get_cmd(geneprio_flag, gsea_flag, tissue_flag):
+		cmd = [java_executable,	"-Xms512M", "-Xmx16000M","-XX:+UseParallelGC", '-XX:ParallelGCThreads=3', "-jar",
+			depict_jar,			# Below are the arguments to the DEPIT java file
+			data_path, 			# 0  String dataDirectory
+	       		locus_file, 			# 1  String filenameLociDefinedBySignificantSNPssAndLDInformation
+	       	 	label, 				# 2  String outputFileLabel
+       		 	str(int(geneprio_flag)), 	# 3  boolean conductNetworkAnalysis
+       			str(int(gsea_flag)),		# 4  boolean conductPathwayAnalysis
+       			str(int(tissue_flag)),		# 5  boolean conductTissueAnalysis
+       			str(ncores), 			# 6  int nrCores
+       			analysis_path,  		# 7  String resultsDirectory
+      	 		reconstituted_genesets_file, 	# 8  String cofuncMatrixFile
+	       		depict_gene_annotation_file, 	# 9  String filenameGeneAnnotation 
+		        depict_genelist_file, 		# 10 String confineAnalysisToSubsetOfEnsemblGenes
+		        tissue_expression_file 		# 11 String tissueMatrixFile
+		]
+		#print "making call {}".format( " ".join(cmd)  )
+		return cmd
+
+	log_out = log_err = None
+	if do_gsea and do_tissue:
 		print("\nRunning DEPICT {} {} {}".format("gene prioritization" if do_geneprio else "", "and" if do_geneprio and do_gsea else "","gene set enrichment analysis" if do_gsea else ""))
-		geneprio_flag = str(int(do_geneprio))
-		gsea_flag = str(int(do_geneprio))
-		tissue_flag = '0'
-	elif do_tissue:
+		log_a_out,log_a_err = subprocess.Popen(get_cmd(do_geneprio, True, False), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 		print("\nRunning DEPICT tissue enrichment analysis".format())
-		geneprio_flag = '0'
-		gsea_flag = '0'
-		tissue_flag = '1'
+		log_b_out,log_b_err = subprocess.Popen(get_cmd(False, False, True), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+		log_out = log_a_out + log_b_out
+		log_err = log_a_err + log_b_err
+	else:
+		print("\nRunning DEPICT {} {} {}".format("gene prioritization" if do_geneprio else "", "and" if do_geneprio and do_gsea else "","gene set enrichment analysis" if do_gsea else "tissue enrichment analysis" if do_tissue else ""))
+		log_out,log_err = subprocess.Popen(get_cmd(do_geneprio, do_gsea, do_tissue), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 
-	cmd = [java_executable,	"-Xms512M", "-Xmx8000M","-XX:+UseParallelGC", '-XX:ParallelGCThreads=3', "-jar",
-		depict_jar,			# Below are the arguments to the DEPIT java file
-		data_path, 			# 0  String dataDirectory
-	        locus_file, 			# 1  String filenameLociDefinedBySignificantSNPssAndLDInformation
-       	 	label, 				# 2  String outputFileLabel
-       	 	geneprio_flag, 			# 3  boolean conductNetworkAnalysis
-       		gsea_flag,			# 4  boolean conductPathwayAnalysis
-       		tissue_flag,		 	# 5  boolean conductTissueAnalysis
-       		str(ncores), 			# 6  int nrCores
-        	analysis_path,  		# 7  String resultsDirectory
-      	 	reconstituted_genesets_file, 	# 8  String cofuncMatrixPath
-	        gene_annotation, 		# 9  String filenameGeneAnnotation = dataDirectory + "/" + args[9]
-	        depict_genelist_file 		# 10 String confineAnalysisToSubsetOfEnsemblGenes = dataDirectory + "/" + args[10]
-	]
-	#print "making call {}".format( " ".join(cmd)  )
-	if do_geneprio or do_gsea or do_tissue:
-		return subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
-	
-	return 0
+	return log_out, log_err
+
