@@ -25,7 +25,7 @@ The following steps outline how to run DEPICT based on a *precomputed LDL choles
 1. Clone the DEPICT repository
   * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
 2. Run DEPICT 
-  * `python depict_example.py`
+  * `python depict.py`
 3. Investigate the results which have been written to the following files
   * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
   * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_genesetenrichment.txt`
@@ -40,9 +40,9 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
 3. Retrieve the latest precomputed collection of nearest gene and gene to SNP mappings
   * Download  [LD r2 0.5 locus collection (1KG Project Phase 3 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150315.txt.gz)
   * Copy the collection to (do not unzip it) `ld0.5_collection_depict_150315.txt.gz DEPICT/data/collections`
-5. Specify in `depict_example.py` the path to the new collection file
+5. Specify in `depict.py` the path to the new collection file
   * `collection_file = "%s/data/ld0.5_collection_depict_150315.txt.gz"%depict_path`
-6. Specify in `depict_example.py` that you would like to clump the LDL cholesterol summary statistics, construct the DEPICT locus file and do the DEPICT analysis (except tissue enrichment analysis for which you need to download additional data as described below)
+6. Specify in `depict.py` that you would like to clump the LDL cholesterol summary statistics, construct the DEPICT locus file and do the DEPICT analysis (except tissue enrichment analysis for which you need to download additional data as described below)
   * `step_write_plink_output = True`
   * `step_run_plink = True`
   * `step_construct_depict_loci = True`
@@ -50,7 +50,7 @@ The following steps outline how to run DEPICT directly on the *LDL cholesterol s
   * `step_depict_gsea = True`
   * `step_depict_tissueenrichment = False`
 7. Run DEPICT 
-  * `python depict_example.py`
+  * `python depict.py`
 8. Investigate the results which have been written to the following files
   * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
   * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
@@ -85,7 +85,7 @@ Download all DEPICT files and unzip the zipped archive. Be sure to that you meet
   * Specify in `depict.py` the path to the PLINK executable on our system
     * `plink_executable = ...`  Eg. "/usr/bin/plink"
   * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 349M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to `DEPICT/data/genotype_data_plink/` ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
-  * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict_example.py` for an example.
+  * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict.py` for an example.
     * `genotype_data_plink_prefix =  ...` 
 
 ## Run DEPICT
