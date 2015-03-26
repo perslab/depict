@@ -43,8 +43,8 @@ plink_clumping_pvalue_column = "P"
 
 
 # Locus construction paramenters
-collection_file = "%s/data/collections/ld0.5_collection_depict_150302_ldl_teslovich_nature2010.txt.gz"%depict_path
 #collection_file = "%s/data/collections/ld0.5_collection_depict_150315.txt.gz"%depict_path
+collection_file = "%s/data/collections/ld0.5_collection_depict_150302_ldl_teslovich_nature2010.txt.gz"%depict_path
 locus_file = "%s/%s_loci.txt"%(analysis_path,label)
 hla_start = 25000000
 hla_end = 35000000
@@ -56,8 +56,8 @@ depict_jar = "%s/dist/Depict.jar"%depict_path
 ncores = 6
 depict_gene_annotation_file = "%s/data/mapping_and_annotation_files/GPL570ProbeENSGInfo+HGNC_reformatted.txt"%depict_path
 depict_genelist_file = "%s/data/mapping_and_annotation_files/GPL570ProbeENSGInfo+HGNC_reformatted.ens"%depict_path
-reconstituted_genesets_file = "%s/data/reconstituted_genesets/reconstituted_genesets_example.txt"%depict_path
 #reconstituted_genesets_file = "%s/data/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary"%depict_path
+reconstituted_genesets_file = "%s/data/reconstituted_genesets/reconstituted_genesets_example.txt"%depict_path
 depict_gene_file = "%s/data/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_path
 depict_gene_information_file = "%s/data/mapping_and_annotation_files/ENSGToGeneNameHGNCBiotypeChromosomeStartStopStrandAndDescriptionV65.txt"%depict_path
 tissue_expression_file = "%s/data/tissue_expression/GPL570EnsemblGeneExpressionPerTissue_DEPICT20130820_z.txt"%depict_path
