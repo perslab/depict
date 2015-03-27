@@ -94,10 +94,10 @@ Download all DEPICT files and unzip the zipped archive. Be sure to that you meet
   * `cutoff =  ...`  E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis.
   * `label = ... `  E.g. "ldl_teslovich_nature2010", the prefix used for all output files
   * `filename_extension = ...` E.g. ".txt", the file extension of your gwas summary statistics file (can be plain text or in gzip format)
-  * `pvalue_col = 3` The p value column in your GWAS summary statistics file (counting starts from 0, ie. first columns is referred to as '0'`)
-  * `marker_col = None` The SNP identify column in your GWAS summary statistics file. Format: <chr:pos>, ie. '6:2321'.  Should be set to `None` if the below `chr_col` and `pos_col` are used
-  * `chr_col = 1` The chromosome column in your GWAS summary statistics file. Does not need to be set if `marker_col` is set
-  * `pos_col = 2` The position column in your GWAS summary statistics file. Does not need to be set if `marker_col` is set
+  * `pvalue_col_name = 'P'` The p value column in your GWAS summary statistics file (counting starts from 0, ie. first columns is referred to as '0'`)
+  * `marker_col_name = None` The SNP identify column in your GWAS summary statistics file. Format: <chr:pos>, ie. '6:2321'.  Should be set to `None` if the below `chr_col_name` and `pos_col_name` are used
+  * `chr_col_name = 'Chr'` The chromosome column in your GWAS summary statistics file. Does not need to be set if `marker_col_name` is set
+  * `pos_col_name = 'Pos'` The position column in your GWAS summary statistics file. Does not need to be set if `marker_col_name` is set
   * `sep = '\t'` The separator used in your GWAS summary statistics file
 2. Specify in `depict.py` that you would like to clump your summary statistics and construct the DEPICT locus file
   * `step_write_plink_output = True`
