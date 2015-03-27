@@ -13,22 +13,22 @@ from plink_library import run_plink_clumping
 
 
 # PLEASE SPECIFY: Steps that shall be run
-step_write_plink_output = True
-step_run_plink = True
-step_construct_depict_loci = True # If you want to run this and the preceeding step please specificy path to PLINK (see below)
-step_depict_geneprio = True
-step_depict_gsea = True
-step_depict_tissueenrichment = False
+step_write_plink_output = 1
+step_run_plink = 1
+step_construct_depict_loci = 1 # If you want to run this and the preceeding step please specificy path to PLINK (see below)
+step_depict_geneprio = 1
+step_depict_gsea = 1
+step_depict_tissueenrichment = 1
 
 
 # PLEASE SPECIFY: GWAS summary statistics input file parameters (only autosomal SNPs are included)
 cutoff =  "5e-8"
 label = "ldl_teslovich_nature2010"
 filename = "%s.txt.gz"%(label) 
-pvalue_col = 3 # NB: Counting starts from 0, ie. first columns is referred to as '0'
-marker_col = None # Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used and this column should be set to 'None'
-chr_col = 1 # Set ot 'None' if this column does not exist
-pos_col = 2 # Set ot 'None'if this column does not exist
+pvalue_col_name = 'P'
+marker_col_name = None # Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used and this column should be set to 'None'
+chr_col_name = 'Chr' # Set ot 'None' if this column does not exist
+pos_col_name = 'Pos' # Set ot 'None'if this column does not exist
 sep = '\t'
 
 
@@ -38,8 +38,6 @@ genotype_data_plink_prefix = "%s/data/genotype_data_plink/ALL.chr_merged.phase3_
 plink_extra_params = "" # (ADVICE: keep default settings for the below entries)
 plink_clumping_distance = 500 
 plink_clumping_r2 = 0.1
-plink_clumping_snp_column = "SNP" 
-plink_clumping_pvalue_column = "P"
 
 
 # Locus construction paramenters
@@ -70,12 +68,12 @@ logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO)
 
 # Parse and discards SNPs not in my 1KG data
 if step_write_plink_output:
-	write_plink_input(analysis_path,filename,label,marker_col,pvalue_col,chr_col,pos_col,sep,genotype_data_plink_prefix)
+	write_plink_input(analysis_path, filename, label, marker_col_name, pvalue_col_name, chr_col_name, pos_col_name, sep, genotype_data_plink_prefix)
 
 
 # Run PLINK to get index SNPs
 if step_run_plink:
-	plink_log = run_plink_clumping(plink_executable, genotype_data_plink_prefix,  plink_extra_params, cutoff, plink_clumping_distance, plink_clumping_r2, plink_clumping_snp_column, plink_clumping_pvalue_column, analysis_path, "%s_depict.tab"%label, label)
+	plink_log = run_plink_clumping(plink_executable, genotype_data_plink_prefix,  plink_extra_params, cutoff, plink_clumping_distance, plink_clumping_r2, analysis_path, "%s_depict.tab"%label, label)
 	logging.info(plink_log)
 
 

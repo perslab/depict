@@ -174,7 +174,7 @@ def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_
 
 
 # Helper function to save SNPs that are in my data
-def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,genotype_data_plink_prefix):
+def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_col_name, pos_col_name, sep, genotype_data_plink_prefix):
 
 	print "\nReading user input and writing PLINK output"
 
@@ -188,15 +188,25 @@ def write_plink_input(path,filename,label,marker_col,p_col,chr_col,pos_col,sep,g
 		mapping["%s:%s"%(words[0],words[3])] = words[1] 
 
 	# Write PLINK input file
+	# Rewrite using Pandas dataframe
 	with ( gzip.open("%s/%s"%(path,filename),'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s/%s_depict.tab"%(path,label),'w') as outfile:
 		outfile.write("SNP_chr_pos\tSNP\tChr\tPos\tP\n")
-		for line in infile.readlines()[1:]:
+
+		header = 1
+		for line in infile.readlines():
 			words = line.strip().split(sep)
-			if marker_col is not None:
+			if header:
+				p_col = words.index(p_col_name) if p_col_name is not None else None
+				marker_col = words.index(marker_col_name) if marker_col_name is not None else None
+				chr_col = words.index(chr_col_name) if chr_col_name is not None else None
+				pos_col = words.index(pos_col_name) if pos_col_name is not None else None
+				header = 0
+				continue
+			if marker_col_name is not None:
 				chrom = int(words[marker_col].split(":")[0])
 				pos = int(words[marker_col].split(":")[1])
 				marker_id = words[marker_col] 
-			elif chr_col is not None and pos_col is not None:
+			elif chr_col_name is not None and pos_col_name is not None:
 				if words[chr_col] == "X":
 					chrom = 23
 				else:

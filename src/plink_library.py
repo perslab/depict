@@ -3,7 +3,9 @@
 import subprocess
 import pandas as pd
 
-def run_plink_clumping(plink_binary, plink_genotype_data_plink_prefix, plink_extra_params, plink_clumping_pvalue, plink_clumping_distance, plink_clumping_r2, plink_clumping_snp_column, plink_clumping_pvalue_column, path, gwas_filename, output_filename):
+def run_plink_clumping(plink_binary, plink_genotype_data_plink_prefix, plink_extra_params, plink_clumping_pvalue, plink_clumping_distance, plink_clumping_r2, path, gwas_filename, output_filename):
+	plink_clumping_snp_column = "SNP" 
+	plink_clumping_pvalue_column = "P"
 	"""
 	Function to run PLINK
 	"""
