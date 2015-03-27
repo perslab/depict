@@ -13,12 +13,12 @@ from plink_library import run_plink_clumping
 
 
 # PLEASE SPECIFY: Steps that shall be run
-step_write_plink_output = 1
-step_run_plink = 1
-step_construct_depict_loci = 1 # If you want to run this and the preceeding step please specificy path to PLINK (see below)
-step_depict_geneprio = 1
-step_depict_gsea = 1
-step_depict_tissueenrichment = 1
+step_write_plink_output = True
+step_run_plink = True
+step_construct_depict_loci = True # If you want to run this and the preceeding step please specificy path to PLINK (see below)
+step_depict_geneprio = True
+step_depict_gsea = True
+step_depict_tissueenrichment = False
 
 
 # PLEASE SPECIFY: GWAS summary statistics input file parameters (only autosomal SNPs are included)
