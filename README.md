@@ -10,8 +10,8 @@
   * `sudo pip install bx-python`   
 * Pandas (version 0.15.2 or higher)
   * `sudo pip install pandas`
-* PLINK (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
-  * [PLINK version 1](http://pngu.mgh.harvard.edu/~purcell/plink/) or [PLINK version 2](https://www.cog-genomics.org/plink2/) 
+* PLINK version 1.9 or higher (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
+  * [PLINK version 1.9](https://www.cog-genomics.org/plink2/) 
 
 # Examples
 
