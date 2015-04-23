@@ -23,7 +23,7 @@ Download the compressed [DEPICT version release 114](http://www.broadinstitute.o
 
 
 ## Test run DEPICT on LDL cholesterol GWAS
-The following steps outline how to run DEPICT on the LDL cholesterol summary statistics file.
+The following steps outline how to test run DEPICT on LDL cholesterol GWAS summary statistics from [Teslovich Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html). 
 
 1. Edit `DEPICT/example/ldl_teslovich_nature2010.cfg`
   * Point `analysis_path` to the where `DEPICT/example` lives on your system (e.g. `/home/projects/depict/git/DEPICT/example/`).  All DEPICT output files will be written to this directory
@@ -32,10 +32,11 @@ The following steps outline how to run DEPICT on the LDL cholesterol summary sta
   * Point `genotype_data_plink_prefix` to where PLINK binary format 1000 Genomes Project genotype files are on our system. They are part of the downloaded DEPICT files.  You simply need to change to path to where the `DEPICT` folder lives on your system.  Specify the entire path of the filenames except the extension (e.g. `/home/projects/depict/git/DEPICT/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes`)
 2. Run DEPICT on the LDL summary statistics
   * E.g. `./src/depict.py example/ldl_teslovich_nature2010.cfg`
-3. Investigate the results
+3. Investigate the results (see the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki) for a description of the output format).
   * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
-  * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
-  * DEPICT gene set enrichment results `ldl_teslovich_nature2010_genesetenrichment.txt`
+  * Gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
+  * Gene set enrichment results `ldl_teslovich_nature2010_genesetenrichment.txt`
+  * Tissue enrichment results `ldl_teslovich_nature2010_tissueenrichment.txt`
 
 
 ## Run DEPICT based your GWAS
@@ -61,7 +62,7 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
   * Point `genotype_data_plink_prefix` to where PLINK binary format 1000 Genomes Project genotype files are on our system. They are part of the DEPICT download. You simply need to change to path to where the DEPICT folder lives on your system.  Specify the entire path of the filenames except the extension (e.g. `/home/projects/depict/git/DEPICT/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes`)
 4. Run DEPICT
   * `<path to DEPICT>/src/depict.py <path to your config file>`
-5. Investigate the results which have been written to your analysis folder
+5. Investigate the results which have been written to your analysis folder (see the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki)
   * Associated loci in file ending with `_loci.txt`
   * Gene prioritization results  in file ending with `_geneprioritization.txt`
   * Gene set enrichment results  in file ending with `_genesetenrichment.txt`
@@ -77,9 +78,13 @@ The following steps outline how to run a lightweight, reduced version of DEPICT 
   * Point `analysis_path` to the where DEPICT/example lives on your system
 3. Run DEPICT 
   * `./src/depict.py example/ldl_teslovich_nature2010_reduced_example.cfg`
-4. Investigate the results which have been written to the following files
-  * DEPICT gene prioritization results `ldl_teslovich_nature2010_reduced_example_geneprioritization.txt`
-  * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_reduced_example_genesetenrichment.txt`
+4. Investigate the results which have been written to the following files (see the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki)
+  * Gene prioritization results `ldl_teslovich_nature2010_reduced_example_geneprioritization.txt`
+  * Gene set enrichemtn results `ldl_teslovich_nature2010_reduced_example_genesetenrichment.txt`
+
+
+# Troubleshooting
+Please send the log file (ending with `_log.txt`) with a brief description of the problem to Tune H Pers (tunepers@broadinstitute.org).
 
 
 # Data used in these examples
