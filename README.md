@@ -10,8 +10,8 @@
   * `sudo pip install bx-python`   
 * Pandas (version 0.15.2 or higher)
   * `sudo pip install pandas`
-* PLINK (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
-  * [PLINK version 1](http://pngu.mgh.harvard.edu/~purcell/plink/) or [PLINK version 2](https://www.cog-genomics.org/plink2/) 
+* PLINK version 1.9 or higher (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
+  * [PLINK version 1.9](https://www.cog-genomics.org/plink2/) 
 
 # Examples
 
@@ -91,9 +91,9 @@ Download all DEPICT files and unzip the zipped archive. Be sure to that you meet
 ## Run DEPICT
     
 1. In `depict.py` specify the parameters related to your analysis
-  * `cutoff =  ...`  E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis.
+  * `cutoff =  ...`  E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis
   * `label = ... `  E.g. "ldl_teslovich_nature2010", the prefix used for all output files
-  * `filename_extension = ...` E.g. ".txt", the file extension of your gwas summary statistics file (can be plain text or in gzip format)
+  * `filename = ...` Filename of your GWAS summary statistics file (can be plain text or in gzip format)
   * `pvalue_col_name = 'P'` The p value column in your GWAS summary statistics file (counting starts from 0, ie. first columns is referred to as '0'`)
   * `marker_col_name = None` The SNP identify column in your GWAS summary statistics file. Format: <chr:pos>, ie. '6:2321'.  Should be set to `None` if the below `chr_col_name` and `pos_col_name` are used
   * `chr_col_name = 'Chr'` The chromosome column in your GWAS summary statistics file. Does not need to be set if `marker_col_name` is set
