@@ -13,98 +13,79 @@
 * PLINK version 1.9 or higher (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
   * [PLINK version 1.9](https://www.cog-genomics.org/plink2/) 
 
-# Examples
 
-## Data used in these examples
+# Run DEPICT
+The following description explains how to download DEPICT, test run it on example files and how to run it on your GWAS summary statistics.
+
+
+## Download DEPICT
+Download the compressed DEPICT files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.
+* [DEPICT version release 114](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_rel114.tar.gz) 
+
+
+## Test run DEPICT based LDL cholesterol summary statistics
+The following steps outline how to run DEPICT on the LDL cholesterol summary statistics file.
+
+1. Edit `example/ldl_teslovich_nature2010.cfg`.
+  * Point `analysis_path` to the where DEPICT/example lives on your system (e.g. `/home/projects/depict/git/DEPICT/example/`).  This is the directory to which output files will be written.  
+  * Point `gwas_summary_statistics_file` to the where DEPICT/example/ldl_teslovich_nature2010.txt.gz lives on your system (e.g. `/tmp/DEPICT/example/ldl_teslovich_nature2010.txt.gz`.  This is the LDL GWAS summary statistics file used as input to DEPICT.
+  * Point `plink_executable` to where PLINK 1.9 executable is on our system (e.g. `/usr/bin/plink`).
+  * Point `genotype_data_plink_prefix` to where PLINK binary format 1000 Genomes Project genotypes are on our system. They are part of the DEPICT download and you simple need to change to path to where the DEPICT folder lives on your system.  Specify the entire path of the filenames except the extension (e.g. `/home/projects/depict/git/DEPICT/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes`).
+2. Run DEPICT on the LDL summary statistics
+  * `./src/depict.py example/ldl_teslovich_nature2010.cfg`
+3. Investigate the results which have been written to the following files
+  * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
+  * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
+  * DEPICT gene set enrichment results `ldl_teslovich_nature2010_genesetenrichment.txt`
+
+
+## Run DEPICT based your own GWAS summary statistics
+The following steps will show you how to run DEPICT on your own GWAS summary statistics. We advice you to run the above LDL example to make sure that you meet all the necessary dependencies to run DEPICT.
+
+1. Make an 'analysis folder' in which your trait-specific DEPICT analysis will be stored.
+2. Copy the template config file from `src/template.cfg` to your analysis folder and give the config file a more meaningful name.
+3. Edit your config file
+  * Point `analysis_path` to your analysis folder.  This is the directory to which output files will be written.  
+  * Point `gwas_summary_statistics_file` to your GWAS summary statistics file.  This file can be either in plain text or gzip format (i.e. having the .gz extension).
+  * Specify the GWAS association p value cutoff (`association_pvalue_cutoff:`) . We recommend using `5e-8` or `1e-5`.
+  * Specify the label, which DEPICT uses to name all output files (`label_for_output_files:`).
+  * Specify the name of the association p value column in your GWAS summary statistics file (`pvalue_col_name:`).
+  * Specify the name of the marker column (`marker_col_name:`). Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used, then leave if empty.
+  * Specify the name of the chromosome column (`chr_col_name:`).  Leave empty if the above `marker_col_name` is set.
+  * Specify the name of the position column (`pos_col_name:`).  Leave empty if the above `marker_col_name` is set.
+  * Specify the name of the position column (`pos_col_name:`).  Leave empty if the above `marker_col_name` is set.
+  * Specify the separator used in the GWAS summary statistics file (`separator`). Options are
+    * `tab`
+    * `comma`
+    * `semicolon`
+    * `space`
+  * Point `plink_executable` to where PLINK 1.9 executable is on our system (e.g. `/usr/bin/plink`).
+  * Point `genotype_data_plink_prefix` to where PLINK binary format 1000 Genomes Project genotypes are on our system. They are part of the DEPICT download and you simple need to change to path to where the DEPICT folder lives on your system.  Specify the entire path of the filenames except the extension (e.g. `/home/projects/depict/git/DEPICT/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes`).
+4. Run DEPICT
+  * `./src/depict.py <path to your config file>`
+5. Investigate the results which have been written to your analysis folder
+  * Associated loci in file ending with `_loci.txt`
+  * Gene prioritization results  in file ending with `_geneprioritization.txt`
+  * Gene set enrichment results  in file ending with `_genesetenrichment.txt`
+  * Tissue enrichment results in file ending with `_genesetenrichment.txt`
+
+
+# Run lightweight, reduced version of DEPICT
+The following steps outline how to run DEPICT based on a precomputed LDL cholesterol DEPICT loci file.  For a particular phenotype, the DEPICT loci file specifices which genes map to given set of associated GWAS SNPs.  Note that this example does not support construction of loci or tissue enrichment analysis.  It is meant to give computational biologists lightweight framework to play around with.
+
+1. Clone DEPICT from Github (use this option if you want to use play around with a reduced, lightweight version of DEPICT)
+  * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
+2. Edit `example/ldl_teslovich_nature2010_reduced_example.cfg` 
+  * Point `analysis_path:` to the where DEPICT/example lives on your system
+3. Run DEPICT 
+  * `./src/depict.py example/ldl_teslovich_nature2010_reduced_example.cfg`
+4. Investigate the results which have been written to the following files
+  * DEPICT gene prioritization results `ldl_teslovich_nature2010_reduced_example_geneprioritization.txt`
+  * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_reduced_example_genesetenrichment.txt`
+
+
+# Data used in these examples
 
 LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids2010/) from [Teslovich Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html) are used as input in this example. We included all SNPs with P < 5e-8 and manually added chromosome and position columns (hg19/GRCh37).
 
-## Example 1 - Run DEPICT based on the LDL cholesterol example locus file
-The following steps outline how to run DEPICT based on a *precomputed LDL cholesterol DEPICT loci file*.  For a particular phenotype, the DEPICT loci file specifices which genes map to given set of associated GWAS SNPs.
 
-1. Clone the DEPICT repository
-  * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
-2. Run DEPICT 
-  * `python depict.py`
-3. Investigate the results which have been written to the following files
-  * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
-  * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_genesetenrichment.txt`
-
-## Example 2 - Run DEPICT based LDL cholesterol summary statistics
-The following steps outline how to run DEPICT directly on the *LDL cholesterol summary statistics file*. (This file has been precomputed and was used directly in the above example.)
-
-1. Clone the DEPICT repository
-  * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
-2. Specify in `depict.py` the path to the PLINK executable on our system
-  * `plink_executable = ...` Eg. "/usr/bin/plink"
-3. Retrieve the latest precomputed collection of nearest gene and gene to SNP mappings
-  * Download  [LD r2 0.5 locus collection (1KG Project Phase 3 data)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150315.txt.gz)
-  * Copy the collection to (do not unzip it) `ld0.5_collection_depict_150315.txt.gz DEPICT/data/collections`
-5. Specify in `depict.py` the path to the new collection file
-  * `collection_file = "%s/data/ld0.5_collection_depict_150315.txt.gz"%depict_path`
-6. Specify in `depict.py` that you would like to clump the LDL cholesterol summary statistics, construct the DEPICT locus file and do the DEPICT analysis (except tissue enrichment analysis for which you need to download additional data as described below)
-  * `step_write_plink_output = True`
-  * `step_run_plink = True`
-  * `step_construct_depict_loci = True`
-  * `step_depict_geneprio = True`
-  * `step_depict_gsea = True`
-  * `step_depict_tissueenrichment = False`
-7. Run DEPICT 
-  * `python depict.py`
-8. Investigate the results which have been written to the following files
-  * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
-  * DEPICT gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
-  * DEPICT gene set enrichemtn results `ldl_teslovich_nature2010_genesetenrichment.txt`
-
-# Analyse your own GWAS summary statistics
-The following steps will show you how to run DEPICT on your own GWAS summary statistics. We advice you to run example 2 to make sure that you have all the necessary parts to run a simple example.
-
-## Setup DEPICT
-
-Download all DEPICT files and unzip the zipped archive. Be sure to that you meet all the dependencies described above.  Instead of downloadning all files at once you can use the below steps to setup DEPICT.
-
-1. Clone the DEPICT repository
-  * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
-2. Retrieve the latest precomputed collection of nearest gene and gene to SNP mappings
-  * Download [LD r2 0.5 locus collection (1KG Project Phase 3 data; 249M)](http://www.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_depict_150315.txt.gz) to `DEPICT/data/collections` (do not unzip it)
-  * Make sure that in `depict.py` the path to the above collection file is correct
-    * `collection_file = "%s/data/collections/ld0.5_collection_depict_150315.txt.gz"%depict_path`
-3. Retrieve sets of precomputed background loci
-  * Download [depict_backgrounds_10-400.tar.gz; 571M](http://www.broadinstitute.org/mpg/depict/depict_download/backgrounds/depict_backgrounds_10-400.tar.gz) to `DEPICT/data/`
-  * Extract the zipped archive (say 'yes' to overwrite any existing files in `DEPICT/data/backgrounds/`)
-    * `tar xfz depict_backgrounds_10-400.tar.gz`
-4. Retrieve the reconstituted gene sets
-  * Download the [reconstituted gene sets; 2.4G](http://www.broadinstitute.org/mpg/depict/depict_download/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.tgz) and extract the zipped archive to `DEPICT/data/reconstituted_genesets/`
-  * Specify in `depict.py` the path to the reconstituted gene sets (set by default)
-    * `reconstituted_genesets_filename = "GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary"`
-5. Retrieve the tissue-specific gene expression data
-  * Download the [tissue-specific gene expression data; 30M](http://www.broadinstitute.org/mpg/depict/depict_download/tissue_expression/GPL570EnsemblGeneExpressionPerTissue_DEPICT20130820_z.txt.gz) and extract the zipped archive to `DEPICT/data/tissue_expression/`
-  * Specify in `depict.py` the path to the reconstituted gene sets (set by default)
-    * `tissue_expression_file = "GPL570EnsemblGeneExpressionPerTissue_DEPICT20130820_z.txt"`
-6. Tell DEPICT where to find PLINK and genotype data used to clump your summary statistics
-  * Specify in `depict.py` the path to the PLINK executable on our system
-    * `plink_executable = ...`  Eg. "/usr/bin/plink"
-  * Use your own 1000 Genomes Project CEU genotype data (in binary PLINK format) or download and extract our [1000 Genomes phase 3 CEU genotypes files, 349M](http://www.broadinstitute.org/mpg/depict/depict_download/1kg/1000_genomes_project_phase3_CEU.tar.gz) to `DEPICT/data/genotype_data_plink/` ([information on data preprocessing](http://www.broadinstitute.org/mpg/snpsnap/documentation.html))
-  * Specify in `depict.py` the path to genotypes. Specify the complete path and filename except the extension). See `depict.py` for an example.
-    * `genotype_data_plink_prefix =  ...` 
-
-## Run DEPICT
-    
-1. In `depict.py` specify the parameters related to your analysis
-  * `cutoff =  ...`  E.g. "5e-8" or "1e-5", the GWAS association p value cutoff used in the DEPICT analysis
-  * `label = ... `  E.g. "ldl_teslovich_nature2010", the prefix used for all output files
-  * `filename = ...` Filename of your GWAS summary statistics file (can be plain text or in gzip format)
-  * `pvalue_col_name = 'P'` The p value column in your GWAS summary statistics file (counting starts from 0, ie. first columns is referred to as '0'`)
-  * `marker_col_name = None` The SNP identify column in your GWAS summary statistics file. Format: <chr:pos>, ie. '6:2321'.  Should be set to `None` if the below `chr_col_name` and `pos_col_name` are used
-  * `chr_col_name = 'Chr'` The chromosome column in your GWAS summary statistics file. Does not need to be set if `marker_col_name` is set
-  * `pos_col_name = 'Pos'` The position column in your GWAS summary statistics file. Does not need to be set if `marker_col_name` is set
-  * `sep = '\t'` The separator used in your GWAS summary statistics file
-2. Specify in `depict.py` that you would like to clump your summary statistics and construct the DEPICT locus file
-  * `step_write_plink_output = True`
-  * `step_run_plink = True`
-  * `step_construct_depict_loci = True`
-  * `step_depict_geneprio = True`
-  * `step_depict_gsea = True`
-  * `step_depict_tissueenrichment = True`
-3. Run DEPICT
-  * `python depict.py`
