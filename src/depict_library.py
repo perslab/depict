@@ -13,6 +13,23 @@ def read_single_column_file(infilename):
 	with open (infilename,'r') as infile:
 		return [line.strip() for line in infile.readlines()]
 
+# Function to translate separator
+def get_separator(sep_symbol):
+	sep = None
+	if sep_symbol == 'tab':
+		sep = '\t'
+	elif sep_symbol == 'space':
+		sep = ' '
+	elif sep_symbol == 'comma':
+		sep = ','
+	elif sep_symbol == 'semicolon':
+		sep = ';'
+	else:
+		raise Exception("Please make sure your GWAS summary statistics file separator is specified correctly")
+	return sep
+	
+
+
 
 # Function to merge loci and return updated dataframe
 def merge_loci(df):
@@ -189,12 +206,12 @@ def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_co
 
 	# Write PLINK input file
 	# Rewrite using Pandas dataframe
-	with ( gzip.open("%s/%s"%(path,filename),'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s/%s_depict.tab"%(path,label),'w') as outfile:
+	with ( gzip.open(filename,'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s/%s_depict.tab"%(path,label),'w') as outfile:
 		outfile.write("SNP_chr_pos\tSNP\tChr\tPos\tP\n")
 
 		header = 1
 		for line in infile.readlines():
-			words = line.strip().split(sep)
+			words = line.strip().split(get_separator(sep))
 			if header:
 				p_col = words.index(p_col_name) if p_col_name is not None else None
 				marker_col = words.index(marker_col_name) if marker_col_name is not None else None
@@ -242,7 +259,7 @@ def get_plink_index_snps(path,label,cutoff,index_snp_col):
 	return id_df.index[id_df.SNP.isin(index_snps)]
 
 # Function to run DEPICT
-def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_genelist_file, tissue_expression_file):
+def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_genelist_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, hla_start_bp, hla_end_bp):
 
 	def get_cmd(geneprio_flag, gsea_flag, tissue_flag):
 		cmd = [java_executable,	"-Xms512M", "-Xmx16000M","-XX:+UseParallelGC", '-XX:ParallelGCThreads=3', "-jar",
@@ -258,22 +275,25 @@ def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_gen
       	 		reconstituted_genesets_file, 	# 8  String cofuncMatrixFile
 	       		depict_gene_annotation_file, 	# 9  String filenameGeneAnnotation 
 		        depict_genelist_file, 		# 10 String confineAnalysisToSubsetOfEnsemblGenes
-		        tissue_expression_file 		# 11 String tissueMatrixFile
+		        tissue_expression_file, 	# 11 String tissueMatrixFile
+			str(max_top_genes_for_gene_set),# 12 int maxTopGenesPerGeneSet
+			str(nr_repititions),	        # 13 int nrReps
+        		str(nr_permutations),		# 14 int nrPerms
+        		str(hla_start_bp),		# 15 int HLAstart
+			str(hla_end_bp) 		# 16 int HLAend
 		]
-		#print "making call {}".format( " ".join(cmd)  )
 		return cmd
 
 	log_out = log_err = None
 	if do_gsea and do_tissue:
-		print("\nRunning DEPICT {} {} {}".format("gene prioritization" if do_geneprio else "", "and" if do_geneprio and do_gsea else "","gene set enrichment analysis" if do_gsea else ""))
+		print("\nRunning DEPICT{}{}{}".format(" gene prioritization" if do_geneprio else "", " and" if do_geneprio and do_gsea else ""," gene set enrichment analysis" if do_gsea else ""))
 		log_a_out,log_a_err = subprocess.Popen(get_cmd(do_geneprio, True, False), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 		print("\nRunning DEPICT tissue enrichment analysis".format())
 		log_b_out,log_b_err = subprocess.Popen(get_cmd(False, False, True), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 		log_out = log_a_out + log_b_out
 		log_err = log_a_err + log_b_err
 	else:
-		print("\nRunning DEPICT {} {} {}".format("gene prioritization" if do_geneprio else "", "and" if do_geneprio and do_gsea else "","gene set enrichment analysis" if do_gsea else "tissue enrichment analysis" if do_tissue else ""))
+		print("\nRunning DEPICT{}{}{}".format(" gene prioritization" if do_geneprio else "", " and" if do_geneprio and do_gsea else ""," gene set enrichment analysis" if do_gsea else " tissue enrichment analysis" if do_tissue else ""))
 		log_out,log_err = subprocess.Popen(get_cmd(do_geneprio, do_gsea, do_tissue), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 
 	return log_out, log_err
-
