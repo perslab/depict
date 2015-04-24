@@ -206,7 +206,7 @@ def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_co
 
 	# Write PLINK input file
 	# Rewrite using Pandas dataframe
-	with ( gzip.open(filename,'r') if '.gz' in filename else open("%s/%s"%(path,filename),'r') ) as infile, open("%s/%s_depict.tab"%(path,label),'w') as outfile:
+	with ( gzip.open(filename,'r') if '.gz' in filename else open(filename,'r') ) as infile, open("%s/%s_depict.tab"%(path,label),'w') as outfile:
 		outfile.write("SNP_chr_pos\tSNP\tChr\tPos\tP\n")
 
 		header = 1
