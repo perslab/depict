@@ -1,0 +1,15 @@
+data/backgrounds/
+data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes*
+data/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.*
+data/collections/ld0.5_collection_depict_150315.txt.gz
+data/reconstituted_genesets/reconstituted_genesets_example.txt.Coexpression.dat
+src/.*swp
+src/*.pyc
+example/ldl_teslovich_nature2010.clumped
+example/ldl_teslovich_nature2010.log
+example/ldl_teslovich_nature2010.nosex
+example/ldl_teslovich_nature2010_depict.tab
+example/ldl_teslovich_nature2010_log.txt
+example/.ldl_teslovich_nature2010.cfg.swp
+data/tissue_expression/
+*.swp
