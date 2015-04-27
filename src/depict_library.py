@@ -205,11 +205,11 @@ def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_co
 		mapping["%s:%s"%(words[0],words[3])] = words[1] 
 
 	# Write PLINK input file
-	# Rewrite using Pandas dataframe
 	with ( gzip.open(filename,'r') if '.gz' in filename else open(filename,'r') ) as infile, open("%s/%s_depict.tab"%(path,label),'w') as outfile:
 		outfile.write("SNP_chr_pos\tSNP\tChr\tPos\tP\n")
 
 		header = 1
+		missing_snps = []
 		for line in infile.readlines():
 			words = line.strip().split(get_separator(sep))
 			if header:
@@ -236,8 +236,10 @@ def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_co
 			if marker_id in mapping:
 				outfile.write("%s\t%s\t%s\t%s\t%s\n"%(marker_id,mapping[marker_id],chrom,pos,words[p_col]))
 			else:
-				outfile.write("%s\t-\t%s\t%s\t%s\n"%(marker_id,chrom,pos,words[p_col]))
-	return 0
+				outfile.write("%s\tNA\t%s\t%s\t%s\n"%(marker_id,chrom,pos,words[p_col]))
+				missing_snps.append(marker_id)
+
+	return {"The following SNPs were not found in the 1000 Genomes Phase 3 data:": "{}".format(";".join(missing_snps))} if len(missing_snps)>0 else {}
 
 
 # Helper function to retrieve PLINK Index SNPs

@@ -21,7 +21,7 @@ from plink_library import run_plink_clumping
 cfg = ConfigParser.ConfigParser()
 cfg_file_found = cfg.read(args.cfg_file)
 analysis_path = cfg.get("PATHS",'analysis_path')
-step_write_plink_output = cfg.getboolean("DEPICT SETTINGS", "step_write_plink_output")
+step_write_plink_input = cfg.getboolean("DEPICT SETTINGS", "step_write_plink_input")
 step_run_plink = cfg.getboolean("DEPICT SETTINGS", "step_run_plink")
 step_construct_depict_loci = cfg.getboolean("DEPICT SETTINGS", "step_construct_depict_loci")
 step_depict_geneprio = cfg.getboolean("DEPICT SETTINGS", "step_depict_geneprio")
@@ -78,8 +78,9 @@ logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO)
 
 
 # Parse and discards SNPs not in my 1KG data
-if step_write_plink_output:
-	write_plink_input(analysis_path, filename, label, marker_col_name, pvalue_col_name, chr_col_name, pos_col_name, sep, genotype_data_plink_prefix)
+if step_write_plink_input:
+	map_log = write_plink_input(analysis_path, filename, label, marker_col_name, pvalue_col_name, chr_col_name, pos_col_name, sep, genotype_data_plink_prefix)
+	logging.info(map_log)
 
 
 # Run PLINK to get index SNPs
