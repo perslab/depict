@@ -9,11 +9,15 @@ from datetime import date
 
 
 depict_data_path = "/home/projects/depict/git/DEPICT/data/"
-collection_path = "/home/data/snpsnap/data/"
 depictgenefile = "%s/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_data_path
 depict_gene_information_file = "%s/mapping_and_annotation_files/ENSGToGeneNameHGNCBiotypeChromosomeStartStopStrandAndDescriptionV65.txt"%depict_data_path
+
+
+# SNPsnap collections for 1000 Genomes Project phase 3 can be downloaded from http://www.broadinstitute.org/mpg/snpsnap/database_download.html
+geno_flag =  "1000genomespilot"
+#geno_flag = "1000genomesphase3" 
 collection_id = "ld0.5_collection"
-collection_file = "%s/%s.tab.gz"%(collection_path,collection_id)
+collection_file = "/home/data/snpsnap/data/{}/{}.tab.gz".format(geno_flag,collection_id)
 
 
 # Function construct tree with gene intervals
@@ -89,4 +93,4 @@ collection['genes_in_locus'] = collection.apply(limit_to_depict_genes,axis=1) # 
 # Rename columns and save selected columns
 collection.rename(columns={'rsID': 'snp_id', 'loci_upstream': 'locus_start','loci_downstream': 'locus_end'}, inplace=True)
 collection.rename(columns={'nearest_genes': 'nearest_gene'}, inplace=True)
-collection.to_csv("%s/collections/%s_depict_%s.txt"%(depict_data_path,collection_id,date.today().strftime("%y%m%d")), index=True, quoting=0, doublequote = False, sep='\t',columns=["snp_id","chr","pos","locus_start","locus_end","nearest_gene","genes_in_locus"])
+collection.to_csv("%s/collections/%s_%s_depict_%s.txt"%(depict_data_path,collection_id,geno_flag,date.today().strftime("%y%m%d")), index=True, quoting=0, doublequote = False, sep='\t',columns=["snp_id","chr","pos","locus_start","locus_end","nearest_gene","genes_in_locus"])

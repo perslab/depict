@@ -145,7 +145,7 @@ def convert(x):
 
 
 # Read SNPsnap collection and input SNPs from user
-def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_file,depict_gene_information_file,outfile,hla_start,hla_end):
+def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_information_file,outfile,hla_start,hla_end):
 
 	print "\nWriting DEPICT input loci"
 
@@ -156,9 +156,6 @@ def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_
 	clumps_df = pd.read_csv("{}/{}.clumped".format(analysis_path,label),delimiter=r"\s+")
 	user_snps = clumps_df.CHR.astype('str') + ":" + clumps_df.BP.astype('str') # Format chr:pos
 
-	# DEPICT gene universe
-	depict_genes = read_single_column_file(depict_gene_file)
-	
 	# Read SNPsnap collection
 	collection = pd.read_csv(collectionfile, index_col=0, header=0, delimiter="\t", compression = 'gzip')
 
@@ -191,11 +188,11 @@ def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_
 
 
 # Helper function to save SNPs that are in my data
-def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_col_name, pos_col_name, sep, genotype_data_plink_prefix):
+def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_col_name, pos_col_name, sep, genotype_data_plink_prefix, association_pvalue_cutoff):
 
 	print "\nReading user input and writing PLINK output"
 
-	# Read mapping (Faster than usgin pandas dataframe, because constructing a chr:pos index takes a hell of time
+	# Read mapping (Faster than using pandas dataframe, because constructing a chr:pos index takes a hell of time
 	infile = open("%s.bim"%genotype_data_plink_prefix,'r')
 	lines = infile.readlines()
 	infile.close()
@@ -237,9 +234,12 @@ def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_co
 				outfile.write("%s\t%s\t%s\t%s\t%s\n"%(marker_id,mapping[marker_id],chrom,pos,words[p_col]))
 			else:
 				outfile.write("%s\tNA\t%s\t%s\t%s\n"%(marker_id,chrom,pos,words[p_col]))
-				missing_snps.append(marker_id)
 
-	return {"The following SNPs were not found in the 1000 Genomes Phase 3 data:": "{}".format(";".join(missing_snps))} if len(missing_snps)>0 else {}
+				# Only report missing SNPs if below cutoff
+				if float(words[p_col]) < association_pvalue_cutoff:
+					missing_snps.append(marker_id)
+
+	return {"{} SNPs meet you association p value cutoff, but were not found in the 1000 Genomes Phase 3 data:".format(len(missing_snps)): "{}".format(";".join(missing_snps))} if len(missing_snps)>0 else {}
 
 
 # Helper function to retrieve PLINK Index SNPs
@@ -261,12 +261,12 @@ def get_plink_index_snps(path,label,cutoff,index_snp_col):
 	return id_df.index[id_df.SNP.isin(index_snps)]
 
 # Function to run DEPICT
-def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_genelist_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, hla_start_bp, hla_end_bp):
+def run_depict(java_executable, depict_jar, background_data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_genelist_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, hla_start_bp, hla_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb):
 
 	def get_cmd(geneprio_flag, gsea_flag, tissue_flag):
-		cmd = [java_executable,	"-Xms512M", "-Xmx16000M","-XX:+UseParallelGC", '-XX:ParallelGCThreads=3', "-jar",
+		cmd = [java_executable,	"-Xms512M", "-Xmx{}M".format(heap_size_in_mb),"-XX:+UseParallelGC", '-XX:ParallelGCThreads=3', "-jar",
 			depict_jar,			# Below are the arguments to the DEPIT java file
-			data_path, 			# 0  String dataDirectory
+			background_data_path,		# 0  String dataDirectory
 	       		locus_file, 			# 1  String filenameLociDefinedBySignificantSNPssAndLDInformation
 	       	 	label, 				# 2  String outputFileLabel
        		 	str(int(geneprio_flag)), 	# 3  boolean conductNetworkAnalysis
@@ -282,7 +282,13 @@ def run_depict(java_executable, depict_jar, data_path, locus_file, label, do_gen
 			str(nr_repititions),	        # 13 int nrReps
         		str(nr_permutations),		# 14 int nrPerms
         		str(hla_start_bp),		# 15 int HLAstart
-			str(hla_end_bp) 		# 16 int HLAend
+			str(hla_end_bp), 		# 16 int HLAend
+		        go_mapping_file,		# 17 String goMappingFile
+		        mgi_mapping_file,		# 18 String mgiMappingFile
+		        inweb_mapping_file,		# 19 String inwebMappingFile
+		        tissue_mapping_file,		# String tissueMappingFile
+			eqtl_mapping_file,		# String filenameGenericIlluminaProbeIDToEnsembl
+			eqtl_file			# String filenameGenericIlluminaProbeIDEQTLs
 		]
 		return cmd
 

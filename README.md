@@ -14,7 +14,7 @@
   * [PLINK version 1.9](https://www.cog-genomics.org/plink2/) 
 
 
-# Run DEPICT
+# DEPICT
 The following description explains how to download DEPICT, test run it on example files and how to run it on your GWAS summary statistics.
 
 
@@ -22,14 +22,11 @@ The following description explains how to download DEPICT, test run it on exampl
 Download the compressed [DEPICT version 1 rel128](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_rel128.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.
 
 
-## Test run DEPICT on LDL cholesterol GWAS
-The following steps outline how to test run DEPICT on LDL cholesterol GWAS summary statistics from [Teslovich Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html). 
+## Test run DEPICT
+The following steps outline how to test run DEPICT on LDL cholesterol GWAS summary statistics from [Teslovich Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html). This example is available in both the 1000 Genomes Project pilot phase DEPICT version and the 1000 Genomes Project phase 3 DEPICT version.
 
 1. Edit `DEPICT/example/ldl_teslovich_nature2010.cfg`
-  * Point `analysis_path` to the where `DEPICT/example` lives on your system (e.g. `/home/projects/depict/git/DEPICT/example/`).  All DEPICT output files will be written to this directory
-  * Point `gwas_summary_statistics_file` to the where `DEPICT/example/ldl_teslovich_nature2010.txt.gz` lives on your system.  This is the LDL GWAS summary statistics file used as example input to DEPICT
-  * Point `plink_executable` to where PLINK 1.9 executable is on our system (e.g. `/usr/bin/plink`)
-  * Point `genotype_data_plink_prefix` to where PLINK binary format 1000 Genomes Project genotype files are on our system. They are part of the downloaded DEPICT files.  You simply need to change to path to where the `DEPICT` folder lives on your system.  Specify the entire path of the filenames except the extension (e.g. `/home/projects/depict/git/DEPICT/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes`)
+  * Point `plink_executable` to where PLINK executable (version 1.9 or higher) is on our system (e.g. `/usr/bin/plink`)
 2. Run DEPICT on the LDL summary statistics
   * E.g. `./src/depict.py example/ldl_teslovich_nature2010.cfg`
 3. Investigate the results (see the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki) for a description of the output format).
@@ -39,7 +36,7 @@ The following steps outline how to test run DEPICT on LDL cholesterol GWAS summa
   * Tissue enrichment results `ldl_teslovich_nature2010_tissueenrichment.txt`
 
 
-## Run DEPICT based your GWAS
+## Run DEPICT based on your GWAS
 The following steps allow you to run DEPICT on your GWAS summary statistics. We advice you to run the above LDL cholesterol example before this point to make sure that you meet all the necessary dependencies to run DEPICT.
 
 1. Make an 'analysis folder' in which your trait-specific DEPICT analysis will be stored
@@ -52,14 +49,14 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
   * Specify the name of the association p value column in your GWAS summary statistics file (`pvalue_col_name`)
   * Specify the name of the marker column (`marker_col_name`). Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used, then leave if empty
   * Specify the name of the chromosome column (`chr_col_name`).  Leave empty if the above `marker_col_name` is set
-  * Specify the name of the position column (`pos_col_name`).  Leave empty if the above `marker_col_name` is set
+  * Specify the name of the position column (`pos_col_name`).  Leave empty if the above `marker_col_name` is set. Please make sure that your SNP positions used human genome build GRCh37
   * Specify the separator used in the GWAS summary statistics file (`separator`). Options are
     * `tab`
     * `comma`
     * `semicolon`
     * `space`
-  * Point `plink_executable` to where PLINK 1.9 executable is on our system (e.g. `/usr/bin/plink`)
-  * Point `genotype_data_plink_prefix` to where PLINK binary format 1000 Genomes Project genotype files are on our system. They are part of the DEPICT download. You simply need to change to path to where the DEPICT folder lives on your system.  Specify the entire path of the filenames except the extension (e.g. `/home/projects/depict/git/DEPICT/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes`)
+  * Point `plink_executable` to where PLINK 1.9 executable is on yur system (e.g. `/usr/bin/plink`)
+  * Point `genotype_data_plink_prefix` to where PLINK binary format 1000 Genomes Project genotype files are on yur system. They are part of the DEPICT download. You simply need to change to path to where the DEPICT folder lives on your system.  Specify the entire path of the filenames except the extension (e.g. `/home/projects/depict/git/DEPICT/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes`)
 4. Run DEPICT
   * `<path to DEPICT>/src/depict.py <path to your config file>`
 5. Investigate the results which have been written to your analysis folder (see the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki)
@@ -69,7 +66,26 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
   * Tissue enrichment results in file ending with `_genesetenrichment.txt`
 
 
-# Run a testing version of DEPICT
+# Troubleshooting
+Please send the log file (ending with `_log.txt`) with a brief description of the problem to Tune H Pers (tunepers@broadinstitute.org).
+
+The overall version of DEPICT follows the DEPICT publications. The current version is `v1` from [Pers, Nature Communications, 2015](http://www.nature.com/ncomms/2015/150119/ncomms6890/full/ncomms6890.html) and the release follows the number of commits of the DEPICT git repository (`git log --pretty=format:'' | wc -l`).
+
+# Data used in these examples
+
+LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids2010/) from [Teslovich, Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html) are used as input in this example. We included all SNPs with P < 5e-8 and manually added chromosome and position columns (hg19/GRCh37). 
+
+1000 Genomes Consortium pilot release and phase 3 release data are used in DEPICT.  Please remember to cite [their paper](http://www.nature.com/nature/journal/v467/n7319/full/nature09534.html) in case you use our tool.
+
+
+# How to cite
+
+Please cite 
+  *[Pers, Nature Communications 2015](http://www.ncbi.nlm.nih.gov/pubmed/25597830)
+  *[DEPICT uses data from the 1000 Genomes Project paper](http://www.ncbi.nlm.nih.gov/pubmed/20981092)
+
+
+# For developers: DEPICT testing version 
 The following steps outline how to run a lightweight, reduced version of DEPICT based on a precomputed LDL cholesterol DEPICT loci file.  For a particular phenotype, the DEPICT loci file specifices which genes map to given set of associated GWAS SNPs.  Note that this example does not support construction of loci or tissue enrichment analysis.  It is meant to give computational biologists lightweight framework to play around with.
 
 1. Clone DEPICT from Github (use this option if you want to use play around with a reduced, lightweight version of DEPICT)
@@ -82,13 +98,5 @@ The following steps outline how to run a lightweight, reduced version of DEPICT 
   * Gene prioritization results `ldl_teslovich_nature2010_reduced_example_geneprioritization.txt`
   * Gene set enrichemtn results `ldl_teslovich_nature2010_reduced_example_genesetenrichment.txt`
 
-
-# Troubleshooting
-Please send the log file (ending with `_log.txt`) with a brief description of the problem to Tune H Pers (tunepers@broadinstitute.org).
-
-
-# Data used in these examples
-
-LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids2010/) from [Teslovich Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html) are used as input in this example. We included all SNPs with P < 5e-8 and manually added chromosome and position columns (hg19/GRCh37).
 
 
