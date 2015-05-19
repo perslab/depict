@@ -23,7 +23,7 @@ Download the compressed [DEPICT version 1 rel128](http://www.broadinstitute.org/
 
 
 ## Test run DEPICT
-The following steps outline how to test run DEPICT on LDL cholesterol GWAS summary statistics from [Teslovich Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html). This example is available in both the 1000 Genomes Project pilot phase DEPICT version and the 1000 Genomes Project phase 3 DEPICT version.
+The following steps outline how to test run DEPICT on LDL cholesterol GWAS summary statistics from [Teslovich, Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html). This example is available in both the 1000 Genomes Project pilot phase DEPICT version and the 1000 Genomes Project phase 3 DEPICT version.
 
 1. Edit `DEPICT/example/ldl_teslovich_nature2010.cfg`
   * Point `plink_executable` to where PLINK executable (version 1.9 or higher) is on our system (e.g. `/usr/bin/plink`)
@@ -56,14 +56,14 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
     * `semicolon`
     * `space`
   * Point `plink_executable` to where PLINK 1.9 executable is on yur system (e.g. `/usr/bin/plink`)
-  * Point `genotype_data_plink_prefix` to where PLINK binary format 1000 Genomes Project genotype files are on yur system. They are part of the DEPICT download. You simply need to change to path to where the DEPICT folder lives on your system.  Specify the entire path of the filenames except the extension (e.g. `/home/projects/depict/git/DEPICT/data/genotype_data_plink/ALL.chr_merged.phase3_shapeit2_mvncall_integrated_v5.20130502.genotypes`)
+  * If you are using other genotype data than the data part of DEPICT then point `genotype_data_plink_prefix` to where your PLINK binary format 1000 Genomes Project genotype files are on your system. Specify the entire path of the filenames except the extension
 4. Run DEPICT
   * `<path to DEPICT>/src/depict.py <path to your config file>`
-5. Investigate the results which have been written to your analysis folder (see the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki)
+5. Investigate the results which have been written to your analysis folder. See the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki) for details on the output format
   * Associated loci in file ending with `_loci.txt`
   * Gene prioritization results  in file ending with `_geneprioritization.txt`
   * Gene set enrichment results  in file ending with `_genesetenrichment.txt`
-  * Tissue enrichment results in file ending with `_genesetenrichment.txt`
+  * Tissue enrichment results in file ending with `_tissueenrichment.txt`
 
 
 # Troubleshooting
@@ -71,18 +71,18 @@ Please send the log file (ending with `_log.txt`) with a brief description of th
 
 The overall version of DEPICT follows the DEPICT publications. The current version is `v1` from [Pers, Nature Communications, 2015](http://www.nature.com/ncomms/2015/150119/ncomms6890/full/ncomms6890.html) and the release follows the number of commits of the DEPICT git repository (`git log --pretty=format:'' | wc -l`).
 
+# How to cite
+
+[Pers, Nature Communications 2015](http://www.ncbi.nlm.nih.gov/pubmed/25597830)
+
+[1000 Genomes Project](http://www.ncbi.nlm.nih.gov/pubmed/20981092), because DEPICT makes extensively use of their data.
+
+
 # Data used in these examples
 
 LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids2010/) from [Teslovich, Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html) are used as input in this example. We included all SNPs with P < 5e-8 and manually added chromosome and position columns (hg19/GRCh37). 
 
 1000 Genomes Consortium pilot release and phase 3 release data are used in DEPICT.  Please remember to cite [their paper](http://www.nature.com/nature/journal/v467/n7319/full/nature09534.html) in case you use our tool.
-
-
-# How to cite
-
-Please cite 
-  *[Pers, Nature Communications 2015](http://www.ncbi.nlm.nih.gov/pubmed/25597830)
-  *[DEPICT uses data from the 1000 Genomes Project paper](http://www.ncbi.nlm.nih.gov/pubmed/20981092)
 
 
 # For developers: DEPICT testing version 
@@ -94,9 +94,7 @@ The following steps outline how to run a lightweight, reduced version of DEPICT 
   * Point `analysis_path` to the where DEPICT/example lives on your system
 3. Run DEPICT 
   * `./src/depict.py example/ldl_teslovich_nature2010_reduced_example.cfg`
-4. Investigate the results which have been written to the following files (see the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki)
+4. Investigate the results which have been written to the following files (See [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki) for details on the output format)
   * Gene prioritization results `ldl_teslovich_nature2010_reduced_example_geneprioritization.txt`
   * Gene set enrichemtn results `ldl_teslovich_nature2010_reduced_example_genesetenrichment.txt`
-
-
 
