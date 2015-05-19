@@ -69,7 +69,7 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
 # Troubleshooting
 Please send the log file (ending with `_log.txt`) with a brief description of the problem to Tune H Pers (tunepers@broadinstitute.org).
 
-The overall version of DEPICT follows the DEPICT publications. The current version is `v1` from [Pers, Nature Communications, 2015](http://www.nature.com/ncomms/2015/150119/ncomms6890/full/ncomms6890.html) and the release follows the number of commits of the DEPICT git repository (`git log --pretty=format:'' | wc -l`).
+The overall version of DEPICT follows the DEPICT publications. The current version is `v1` from [Pers, Nature Communications, 2015](http://www.nature.com/ncomms/2015/150119/ncomms6890/full/ncomms6890.html) and the release follows the number of commits of the DEPICT git repository (`git log --pretty=format:'' | wc -l`).  The latest 1000 Genomes Project pilot phase DEPICT version is `rel138`, the latest 1000 Genomes Project phase 3 version is `rel137`.
 
 # How to cite
 
