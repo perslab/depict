@@ -2,7 +2,7 @@
 * Mac OS X, or UNIX operating system (Microsoft Windows is not supported)
 * Java SE 6 (or higher)
   * [Java.com](https://www.java.com/en/download/)
-* Python version 2.7 (or higher)
+* Python version 2.7 (Python version 3 or higher is not supported)
   * [Python.org](https://www.python.org/downloads/)
 * PIP (used for install Python libraries)
   * `sudo easy_install pip` 
