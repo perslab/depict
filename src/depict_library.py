@@ -261,7 +261,7 @@ def get_plink_index_snps(path,label,cutoff,index_snp_col):
 	return id_df.index[id_df.SNP.isin(index_snps)]
 
 # Function to run DEPICT
-def run_depict(java_executable, depict_jar, background_data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_genelist_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, hla_start_bp, hla_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_entire_genome, leave_out_chr):
+def run_depict(java_executable, depict_jar, background_data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_genelist_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, hla_start_bp, hla_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr):
 
 	def get_cmd(geneprio_flag, gsea_flag, tissue_flag):
 		cmd = [java_executable,	"-Xms512M", "-Xmx{}M".format(heap_size_in_mb),"-XX:+UseParallelGC", '-XX:ParallelGCThreads=3', "-jar",
@@ -289,7 +289,7 @@ def run_depict(java_executable, depict_jar, background_data_path, locus_file, la
 		        tissue_mapping_file,		# String tissueMappingFile
 			eqtl_mapping_file,		# String filenameGenericIlluminaProbeIDToEnsembl
 			eqtl_file,			# String filenameGenericIlluminaProbeIDEQTLs
-			str(int(prioritize_entire_genome)), 	# boolean calculateGenePrioritizationPValueForGenesOutsideLoci
+			str(int(prioritize_genes_outside_input_loci)), 	# boolean calculateGenePrioritizationPValueForGenesOutsideLoci
 			leave_out_chr			# String chrToBeLeftOut
 		]
 		return cmd

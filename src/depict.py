@@ -77,7 +77,7 @@ tissue_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","tissue
 eqtl_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","eqtl_mapping_file"))
 eqtl_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","eqtl_file"))
 background_data_path = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","background_data_path"))
-prioritize_entire_genome = cfg.getboolean("MISC SETTINGS",'prioritize_entire_genome')
+prioritize_genes_outside_input_loci= cfg.getboolean("MISC SETTINGS",'prioritize_genes_outside_input_loci')
 leave_out_chr = cfg.get("MISC SETTINGS",'leave_out_chr')
 
 # Logging
@@ -105,6 +105,6 @@ if step_construct_depict_loci:
 
 # Run DEPICT
 if step_depict_geneprio or step_depict_gsea or step_depict_tissueenrichment:
-	loci_log = run_depict(java_executable, depict_jar, background_data_path, locus_file, label, step_depict_geneprio, step_depict_gsea, step_depict_tissueenrichment, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_gene_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, hla_start_bp, hla_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_entire_genome, leave_out_chr)
+	loci_log = run_depict(java_executable, depict_jar, background_data_path, locus_file, label, step_depict_geneprio, step_depict_gsea, step_depict_tissueenrichment, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_gene_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, hla_start_bp, hla_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr)
 	logging.info(loci_log)
 
