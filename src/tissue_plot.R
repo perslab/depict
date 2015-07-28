@@ -364,7 +364,7 @@ if ( all(colnames(df.input.raw[,1:6]) == colnames.genenetwork) ) { # or use read
   
   # Plot and export
   p.system <- function.plot.barplot(df.system, xlabel="Physiological system")
-  function.plot.save(p.system, filename.suffix="genenetwork")
+  function.plot.save(p.system, filename.suffix="genenetwork_system")
   
 } else if ( all(colnames(df.input.raw[,1:3]) ==colnames.gtex) ) {
   ### Set flag
@@ -402,7 +402,7 @@ if ( as.logical(flag.genenetwork.plot_extended_mesh_categories) & (flag.input_ty
   
   # MULTIPLOT | System, Cells, Tissues
   m.plot.layout <- matrix(c(1,1,2,3), nrow=2, byrow=TRUE)
-  m.plot.filename <- "tissue_plot_multiplot.pdf"
+  m.plot.filename <- "tissue_plot_genenetwork_multiplot.pdf"
   pdf(file=m.plot.filename, width=12, height=5)
     suppressWarnings(multiplot(p.system, p.cells, p.tissues, layout=m.plot.layout))
   print(sprintf("Saved multiplot %s", m.plot.filename))
