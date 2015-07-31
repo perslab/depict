@@ -13,3 +13,7 @@ example/ldl_teslovich_nature2010_log.txt
 example/.ldl_teslovich_nature2010.cfg.swp
 data/tissue_expression/
 *.swp
+
+
+### OSX ###
+.DS_Store
