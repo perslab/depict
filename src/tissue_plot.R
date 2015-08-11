@@ -9,7 +9,8 @@
 ### === USAGE === ###
 ### Recommended invocation of script (prints to STDOUT)
 # Rscript tissue_plot.R <file_tissue_enrichment>
- # e.g. Rscript tissue_plot.R data/T2D_tissueenrichment_genenetwork.txt
+ # Example call #1: Rscript tissue_plot.R ../example/ldl_teslovich_nature2010_tissueenrichment.txt
+ # Example call #2: Rscript tissue_plot.R ../example/ldl_teslovich_nature2010_tissueenrichment_gtex.txt
 
 ### Alternative invocation of script (writes STDOUT output to file). (Remember to quote the arguments):
 # R CMD BATCH --no-save --no-restore '--args <file_tissue_enrichment>' tissue_plot.R <OUTPUT_FILENAME>.out
