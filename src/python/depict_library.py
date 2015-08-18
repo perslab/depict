@@ -126,6 +126,14 @@ def run_plink_clumping(plink_binary, plink_genotype_data_plink_prefix, plink_clu
 	"""
 	Function to run PLINK
 	"""
+
+	# Make sure the version is correct
+	version = subprocess.Popen([plink_binary,"--version"],stdout=subprocess.PIPE).communicate()[0].split()
+	month = version[len(version)-2]
+	year = int(version[-1].replace(")",""))
+	if year < 2015 or ( year == 2015 and month in ["Jan","Feb","Mar","Apr","Jun","Jul"]):
+		sys.exit("\nExiting.. Please install a PLINK version 1.9 August relase (or higher)\n")
+
 	#"--exclude", "/tmp/mylist.txt",
 	cmd = [plink_binary, 
 		"--bfile", plink_genotype_data_plink_prefix,
