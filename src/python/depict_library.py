@@ -1,12 +1,12 @@
-#!/usr/bin/env python2.7
+#/usr/bin/env python2.7
 
+import warnings
+warnings.filterwarnings("ignore")
 import pdb,math,sys,gzip,os,re,subprocess
 import pandas as pd
-from glob import glob
-from bx.intervals.cluster import ClusterTree
-from bx.intervals.intersection import Interval
-from bx.intervals.intersection import IntervalTree
-
+import glob
+from time import time
+from intervaltree import Interval, IntervalTree
 
 # Read a file with a single column
 def read_single_column_file(infilename):
@@ -29,25 +29,43 @@ def get_separator(sep_symbol):
 	return sep
 	
 
+# Function to build a nonoverlapping interval tree
+def insert_interval(tree, begin, end, value):
+	overlap = tree[begin:end]
+	if len(overlap): # If overlap, remove overlapping region(s) and add merged locus
+		merged_intervall_begin = min(begin, min([a for (a,b,v) in overlap]))
+		merged_intervall_end = max(end, max([b for (a,b,v) in overlap]))
+		merged_intervall_tupple = [item for sublist in [ v for (a,b,v) in overlap] for item in sublist]
+		merged_intervall_tupple.append(value) 
+		tree.remove_overlap(begin, end)
+		tree[merged_intervall_begin:merged_intervall_end] = merged_intervall_tupple
+	else:	# Add interval
+		tree[begin:end] = [value]
+	return 1
 
 
 # Function to merge loci and return updated dataframe
 def merge_loci(df):
 
 	# Cluster the loci
-	tree = ClusterTree(0,0)
+	tree = IntervalTree()
 	for i,marker in enumerate(df.index):
-		tree.insert(df.ix[marker,'locus_gene_boundaries'][0], df.ix[marker,'locus_gene_boundaries'][1],i)
+		#if marker == "1:109727284":
+		#if df.ix[marker,'locus_gene_boundaries'][0] > 109656301-1 and df.ix[marker,'locus_gene_boundaries'][1] < 110060710+1:
+		#	print "{}\t{}\t{}\t{}".format(i,df.ix[marker,'locus_gene_boundaries'][0],df.ix[marker,'locus_gene_boundaries'][1],df.ix[marker,'snp_id'])
+		#if i ==22:
+		insert_interval(tree, df.ix[marker,'locus_gene_boundaries'][0]-1, df.ix[marker,'locus_gene_boundaries'][1]+1,i)
 
 	# Create new dataframe with overlapping loci
 	df_addon = pd.DataFrame()
 	rows2drop = []
-	for i, (start, end, overlapping_loci) in enumerate(tree.getregions()):
+	for i, (start, end, overlapping_loci) in enumerate(tree):
 		if len(overlapping_loci) > 1:
 			marker = ";".join(df.index[overlapping_loci])
 			df_addon.ix[marker,'snp_id'] = ";".join(df.ix[overlapping_loci,'snp_id'])
 			df_addon.ix[marker,'locus_start'] = start
 			df_addon.ix[marker,'locus_end'] = end
+			df_addon.ix[marker,'gwas_pvalue'] = min(df.ix[overlapping_loci,'gwas_pvalue'])
 			genes_in_locus_set = set((";".join([ (str(x) if not isinstance(x, float) else '') for x in df.ix[overlapping_loci,'genes_in_locus']])).split(";"))
 			genes_in_locus_set.discard('')
 			df_addon.ix[marker,'genes_in_locus'] = ";".join(genes_in_locus_set)
@@ -62,20 +80,12 @@ def merge_loci(df):
     	return df
 
 
-# Function to identify and record missing SNPs
-def record_missing_snps(df,log_dict):
-	missing_index = df.locus_start.isnull()
-	if len(df.index[missing_index]) > 0:
-		log_dict['snps_not_found'] = ';'.join(df.index[missing_index])
-	return missing_index,log_dict
-
-
 # Function to identify and record HLA SNPs
-def record_hla_snps(df,log_dict,hla_start,hla_end):
-	hla_index = df.apply(lambda x : True if ( (x.chr == 6) and ( ( x.locus_end > hla_start and x.locus_end < hla_end ) or ( x.locus_start > hla_start and x.locus_start < hla_end ) ) ) else False, axis = 1)
-	if len(df.index[hla_index]) > 0:
-		log_dict['snps_hla'] = ';'.join(df.index[hla_index])
-	return hla_index, log_dict
+def record_mhc_snps(df,log_dict,mhc_start,mhc_end):
+	mhc_index = df.apply(lambda x : True if ( (x.chr == 6) and ( ( x.locus_end > mhc_start and x.locus_end < mhc_end ) or ( x.locus_start > mhc_start and x.locus_start < mhc_end ) ) ) else False, axis = 1)
+	if len(df.index[mhc_index]) > 0:
+		log_dict['snps_mhc'] = ';'.join(df.index[mhc_index])
+	return mhc_index, log_dict
 
 
 # Function to identify and record non-autosomal SNPs
@@ -86,20 +96,6 @@ def record_sex_chr_snps(df,log_dict):
 	return non_autosomal_index, log_dict
 
 
-# Function to construct gene interval tree
-def get_nearest_gene_intervall_tree(depict_gene_information_file, depict_genes):
-	trees = {}
-	for i in range(1, 23, 1):
-		trees[str(i)] = IntervalTree()
-	with open (depict_gene_information_file,'r') as infile:
-		for line in infile.readlines()[1:]:
-			words = line.strip().split('\t')
-			if words[0] in depict_genes and words[4] in [str(x) for x in range(1,23,1)]:
-				tss = int(words[5]) if words[7] == '1' else int(words[6])
-				trees[words[4]].insert_interval(Interval(tss, tss, value=words[0])) if words[0] in depict_genes and words[4] in [str(x) for x in range(1,23,1)] else None
-	return trees
-
-
 # Function to extend boundaries in case of partly overlapping genes
 def get_locus_gene_boundaries(row,df_gene_boundaries):
 	locus_min = row.locus_start 
@@ -108,32 +104,13 @@ def get_locus_gene_boundaries(row,df_gene_boundaries):
 	locus_genes.extend(row.genes_in_locus.split(';')) if not isinstance(row.genes_in_locus, float)  else None # If it empty then then it is NaN which is a float
 	for gene in set(locus_genes):
 		if gene in df_gene_boundaries.index:
-			gene_start = df_gene_boundaries.ix[gene,'Gene Start (bp)']
-			gene_end = df_gene_boundaries.ix[gene,'Gene End (bp)']
+			gene_start = df_gene_boundaries.ix[gene,'ensembl_bp_start']
+			gene_end = df_gene_boundaries.ix[gene,'ensembl_bp_end']
 			locus_min = gene_start if gene_start < locus_min else locus_min
 			locus_max = gene_end if gene_end > locus_max else locus_max
 		else:
-			sys.exit("%s not found in gene information file used for gene boundary computations") 
+			sys.exit("Exiting: {} not found in gene information file used for gene boundary computations".format(gene)) 
 	return locus_min, locus_max
-
-
-# Function to populate with DEPICT genes' TSSs (See http://pydoc.net/Python/bx-python/0.6.0/bx.intervals.intersection_tests/)
-def get_nearest(chrom, pos, trees):
-	chr_1_bps = 248956422
-	my_max_dist = chr_1_bps / 10
-	gene_up = trees[chrom].before(pos,num_intervals=1,max_dist=my_max_dist)
-	gene_down = trees[chrom].after(pos,num_intervals=1,max_dist=my_max_dist)
-
-	# Assuming there will always be a gene_down if there is no gene_up (i.e. we are at the start of the chr)
-	if not gene_up:
-		return gene_down[0].value #, abs(gene_down[0].start - pos)
-    
-	# Assuming there will always be a gene_up if there is no gene_down (i.e. we are at the end of the chr)
-	elif not gene_down:
-		return gene_up[0].value #, abs(gene_up[0].start - pos)
-
-	# Test whether upstream or downstream gene
-	return gene_up[0].value if abs(gene_up[0].start - pos) < abs(gene_down[0].start - pos) else gene_down[0].value #, abs(gene_up[0].start - pos) if abs(gene_up[0].start - pos) < abs(gene_down[0].start - pos) else abs(gene_down[0].start - pos)
 
 
 # Helper function to convert column to int
@@ -144,62 +121,204 @@ def convert(x):
 		return x
 
 
-# Read SNPsnap collection and input SNPs from user
-def construct_depict_loci(analysis_path,label,cutoff,collectionfile,depict_gene_information_file,outfile,hla_start,hla_end):
+# Helper function to run PLINK clumping
+def run_plink_clumping(plink_binary, plink_genotype_data_plink_prefix, plink_clumping_pvalue, plink_clumping_distance, plink_clumping_r2, input_filename, output_filename, plink_clumping_snp_column_header, plink_clumping_pvalue_column_header):
+	"""
+	Function to run PLINK
+	"""
+	#"--exclude", "/tmp/mylist.txt",
+	cmd = [plink_binary, 
+		"--bfile", plink_genotype_data_plink_prefix,
+		"--clump-p1", str(plink_clumping_pvalue),
+		"--clump-kb", str(plink_clumping_distance),
+		"--clump-r2", str(plink_clumping_r2),
+		"--clump-snp-field", plink_clumping_snp_column_header,
+		"--clump-field", plink_clumping_pvalue_column_header,
+		"--clump", input_filename,
+		"--out", output_filename
+	]
+	return subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()
 
-	print "\nWriting DEPICT input loci"
+
+# Read SNPsnap collection and input SNPs from user
+def construct_depict_loci_helper(infile,collection,df_gene_boundaries,mhc_start,mhc_end):
 
 	# Dictionary with log information
 	log_dict = {}
 
 	# Read users SNPs
-	clumps_df = pd.read_csv("{}/{}.clumped".format(analysis_path,label),delimiter=r"\s+")
-	user_snps = clumps_df.CHR.astype('str') + ":" + clumps_df.BP.astype('str') # Format chr:pos
-
-	# Read SNPsnap collection
-	collection = pd.read_csv(collectionfile, index_col=0, header=0, delimiter="\t", compression = 'gzip')
+	t0 = time()
+	clumps_df = pd.read_csv(infile,delimiter=r"\s+")
+	clumps_df.set_index(clumps_df.CHR.astype('str') + ":" + clumps_df.BP.astype('str'),inplace=True)
+	t1 = time()
+	#print 'Time 1 %f' %(t1-t0)
 
 	# Extract user SNPs
-	collection_usersnps = collection.loc[user_snps,:]
-	
+	collection_usersnps = collection.loc[collection.index.isin(clumps_df.index)]
+	t2 = time()
+	#print 'Time 2 %f' %(t2-t1)
+
 	# Identify and remove SNPs missing	
 	df_index_remove = pd.DataFrame()
-	index_snps_missing, log_dict = record_missing_snps(collection_usersnps,log_dict)
-	index_snps_hla, log_dict = record_hla_snps(collection_usersnps,log_dict,hla_start,hla_end)
+	index_snps_mhc, log_dict = record_mhc_snps(collection_usersnps,log_dict,mhc_start,mhc_end)
 	index_snps_non_autosomal, log_dict = record_sex_chr_snps(collection_usersnps,log_dict)
-	collection_usersnps.drop(collection_usersnps.index[ ( index_snps_missing | index_snps_hla ) | index_snps_non_autosomal] , inplace=True)
+	usersnps_df = collection_usersnps.drop(collection_usersnps.index[ index_snps_mhc | index_snps_non_autosomal])
+	t3 = time()
+	#print 'Time 3 %f' %(t3-t2)
 	
 	# Redefine locus boundaries based on gene boundaries
-	df_gene_boundaries = pd.read_csv(depict_gene_information_file, header = 0, sep='\t', index_col = 0, usecols = [0,5,6])
-	collection_usersnps['locus_gene_boundaries'] = collection_usersnps.apply(lambda x : get_locus_gene_boundaries(x, df_gene_boundaries), axis = 1)
+	usersnps_df['locus_gene_boundaries'] = usersnps_df.apply(lambda x : get_locus_gene_boundaries(x, df_gene_boundaries), axis = 1)
+	usersnps_df = usersnps_df.join(clumps_df['P'],how="inner")
+	usersnps_df.rename(columns={'P': 'gwas_pvalue'}, inplace=True)
+	t4 = time()
+	#print 'Time 4 %f' %(t4-t3)
 	
 	# Merge loci
-	df_final = pd.DataFrame()
-	for chrom in set(collection_usersnps.chr):
-	    df_final = df_final.append(merge_loci(collection_usersnps[collection_usersnps.chr == chrom]))
+	depictloci_df = pd.DataFrame()
+	for chrom in set(usersnps_df.chr):
+	    depictloci_df = depictloci_df.append(merge_loci(usersnps_df[usersnps_df.chr == chrom]))
+	t5 = time()
+	#print 'Time 5 %f' %(t5-t4)
 
 	# Write loci and log to file
-	df_final.chr = df_final.chr.apply(convert)
-	df_final.locus_start = df_final.locus_start.apply(convert)
-	df_final.locus_end = df_final.locus_end.apply(convert)
-	df_final.to_csv(outfile, index=False, quoting=0, doublequote = False, sep='\t',columns=["snp_id","chr","locus_start","locus_end","nearest_gene","genes_in_locus"])
+	depictloci_df.chr = depictloci_df.chr.apply(convert)
+	depictloci_df.locus_start = depictloci_df.locus_start.apply(convert)
+	depictloci_df.locus_end = depictloci_df.locus_end.apply(convert)
+	depictloci_df.drop(['locus_gene_boundaries','pos'], axis=1, inplace=True)
+	t6 = time()
+	#print 'Time 6 %f' %(t6-t5)
 
-	return log_dict
+	return depictloci_df, log_dict
 
+
+# Construct DEPICT loci
+def construct_depict_loci(analysis_path,label,plink_clumping_pvalue,collectionfile,depict_gene_annotation_file,outfile,mhc_start,mhc_end,plink_executable,genotype_data_plink_prefix,plink_clumping_distance,plink_clumping_r2,plink_input_file,number_random_runs,background_plink_clumping_pvalue,plink_clumping_snp_column_header,plink_clumping_pvalue_column_header,background_data_path,null_gwas_prefix,depict_contact_email,req_fraction_of_background_files):
+
+	print "\nReading precomputed 1KG SNP collection file"
+
+	# Read SNPsnap collection and gene information
+	t0 = time()
+	collection = pd.read_csv(collectionfile, index_col=0, header=0, delimiter="\t", compression = 'gzip')
+
+	# Read gene information
+	df_gene_boundaries = pd.read_csv(depict_gene_annotation_file, header = 0, sep='\t', index_col = 0, usecols = [0,2,3])
+	t1 = time()
+	#print '%f sec' %(t1-t0)
+
+	print "\nConstructing DEPICT input loci"
+	log_a_out, log_a_err = run_plink_clumping(plink_executable, genotype_data_plink_prefix, plink_clumping_pvalue, plink_clumping_distance, plink_clumping_r2, "{}/{}".format(analysis_path,plink_input_file), "{}/{}".format(analysis_path,label), plink_clumping_snp_column_header, plink_clumping_pvalue_column_header )
+	t1 = time()
+	depictloci_df, log_dict = construct_depict_loci_helper("{}/{}.clumped".format(analysis_path,label),collection,df_gene_boundaries,mhc_start,mhc_end)
+	t2 = time()
+	#print '%f sec' %(t2-t1)
+
+	# Saving observed loci to file
+	depictloci_df.to_csv(outfile, index=False, quoting=0, doublequote = False, sep='\t',columns=["snp_id","chr","locus_start","locus_end","gwas_pvalue","nearest_gene","genes_in_locus"],float_format="%10.2e")
+
+	print "\nConstructing background loci"
+
+	# Construct background loci
+	def write_background_loci(loci_requested):
+		background_loci_dir = "{path}/nloci{numloci}_nperm{numruns}_kb{dis}_rsq{rsq}_mhc{mhcsta}-{mhcend}_col{collection}/".format(\
+			path=background_data_path,\
+			numloci=loci_requested,\
+			numruns=number_random_runs,\
+			dis=plink_clumping_distance,\
+			rsq=plink_clumping_r2,\
+			mhcsta=mhc_start,\
+			mhcend=mhc_end,\
+			collection=collectionfile.split("/")[-1].replace(".txt.gz","").replace('_','-'))
+		if not os.path.exists(background_loci_dir):
+			os.makedirs(background_loci_dir)
+	
+			# Draw progress bar
+			end_val = number_random_runs
+			bar_length=50
+	
+			# Construct bagground loci sets
+			for i in range(0,number_random_runs):
+				t3 = time()
+				log_back_out, log_back_err = run_plink_clumping(plink_executable,\
+					genotype_data_plink_prefix,\
+					background_plink_clumping_pvalue,\
+					plink_clumping_distance,\
+					plink_clumping_r2,\
+					"{}_{}.tab.gz".format(null_gwas_prefix,i+1),\
+					"{}/{}".format(background_loci_dir,i+1),\
+					plink_clumping_snp_column_header,\
+					plink_clumping_pvalue_column_header)
+				clumped_file = "{}/{}.clumped".format(background_loci_dir,i+1)
+				if not os.path.exists(clumped_file):
+					sys.stdout.write("PLINK problems with null GWAS {} ignoring\n".format(i))
+					continue
+				depictloci_background_df, log_back_dict = construct_depict_loci_helper(clumped_file,\
+					collection, df_gene_boundaries, mhc_start,mhc_end)
+				depictloci_background_df.sort('gwas_pvalue',inplace=True)
+				background_plink_clumping_pvalue_relaxed = background_plink_clumping_pvalue
+				while len(depictloci_background_df) < loci_requested:
+					print('Not enough background loci in iteration {} (need: n={}, found: {}).\
+						Relaxing clumping p value, consider increasing the parameter "background_plink_clumping_pvalue" \
+						in your config file.'.format(loci_requested,len(depictloci_background_df),i))	
+					background_plink_clumping_pvalue_relaxed *= 5
+					log_back_out, log_back_err = run_plink_clumping(plink_executable,\
+						genotype_data_plink_prefix,\
+						background_plink_clumping_pvalue_relaxed,\
+						plink_clumping_distance,\
+						plink_clumping_r2,\
+						"{}_{}.tab.gz".format(null_gwas_prefix,i+1),\
+						"{}/{}".format(background_loci_dir,i+1),\
+						 plink_clumping_snp_column_header,\
+						 plink_clumping_pvalue_column_header)
+					depictloci_background_df, log_back_dict = construct_depict_loci_helper("{}/{}.clumped".format(background_loci_dir,i+1),\
+						collection, df_gene_boundaries, mhc_start,mhc_end)
+					depictloci_background_df.sort('gwas_pvalue',inplace=True)
+				output_file = "{}/permutation{}.txt.gz".format(background_loci_dir,i+1)
+				depictloci_background_df.iloc[0:loci_requested,:].to_csv(\
+					output_file,\
+					index=False,\
+					quoting=0,\
+					doublequote = False,\
+					sep='\t',
+					columns=["snp_id","chr","locus_start","locus_end","gwas_pvalue","nearest_gene","genes_in_locus"],float_format="%10.2e")
+				os.system("gzip {} ".format(output_file))
+				t4 = time()
+				#print '\tBackground loci iteration {}: {} sec'.format(i+1,t4-t3)
+			        percent = float(i+1) / end_val
+			        hashes = '#' * int(round(percent * bar_length))
+	       			spaces = ' ' * (bar_length - len(hashes))
+			        sys.stdout.write("\rPercent: [{0}] {1}%".format(hashes + spaces, int(round(percent * 100))))
+			        sys.stdout.flush()
+	
+			sys.stdout.write("\n")
+		else:
+			# Let's make sure that at least 90% of the requested background files are available
+			background_files_count = len([name for name in glob.glob('{}/*.gz'.format(background_loci_dir)) if os.path.isfile(name)])
+			if background_files_count < (number_random_runs * req_fraction_of_background_files):
+				sys.exit("Exiting.. To few background files in {}. Please remove the folder, rerun DEPICT and contact {} if the error prevails.".format(background_loci_dir,depict_contact_email)) 
+
+		return background_loci_dir 
+
+	background_loci_dir = write_background_loci(len(depictloci_df))
+	#for i in range(450,501):
+	#	write_background_loci(i)
+	
+	return background_loci_dir, log_a_out + "\n".join(["{}: {}".format(key,log_dict[key]) for key in log_dict]) #, log_a_err 
+	
 
 # Helper function to save SNPs that are in my data
 def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_col_name, pos_col_name, sep, genotype_data_plink_prefix, association_pvalue_cutoff):
 
-	print "\nReading user input and writing PLINK output"
+	print "\nReading GWAS and mapping by chromosome and position to genotype data"
 
 	# Read mapping (Faster than using pandas dataframe, because constructing a chr:pos index takes a hell of time
-	infile = open("%s.bim"%genotype_data_plink_prefix,'r')
-	lines = infile.readlines()
-	infile.close()
-	mapping = {}
-	for line in lines:
-		words = line.strip().split()
-		mapping["%s:%s"%(words[0],words[3])] = words[1] 
+	with open("%s.bim"%genotype_data_plink_prefix,'r') as infile:
+		mapping = {}
+		chr_col = 0
+		pos_col = 3
+		rs_id_col = 1
+		for line in infile.readlines():
+			words = line.strip().split()
+			mapping["%s:%s"%(words[chr_col],words[pos_col])] = words[rs_id_col] 
 
 	# Write PLINK input file
 	with ( gzip.open(filename,'r') if '.gz' in filename else open(filename,'r') ) as infile, open("%s/%s_depict.tab"%(path,label),'w') as outfile:
@@ -239,7 +358,7 @@ def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_co
 				if float(words[p_col]) < association_pvalue_cutoff:
 					missing_snps.append(marker_id)
 
-	return {"{} SNPs meet you association p value cutoff, but were not found in the 1000 Genomes Phase 3 data:".format(len(missing_snps)): "{}".format(";".join(missing_snps))} if len(missing_snps)>0 else {}
+	return {"{} SNPs met you association p value cutoff, but were not found in the 1000 Genomes Phase 3 data:".format(len(missing_snps)): "{}".format(";".join(missing_snps))} if len(missing_snps)>0 else {}
 
 
 # Helper function to retrieve PLINK Index SNPs
@@ -261,7 +380,7 @@ def get_plink_index_snps(path,label,cutoff,index_snp_col):
 	return id_df.index[id_df.SNP.isin(index_snps)]
 
 # Function to run DEPICT
-def run_depict(java_executable, depict_jar, background_data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, depict_genelist_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, hla_start_bp, hla_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr):
+def run_depict(java_executable, depict_jar, background_data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, mhc_start_bp, mhc_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr):
 
 	def get_cmd(geneprio_flag, gsea_flag, tissue_flag):
 		cmd = [java_executable,	"-Xms512M", "-Xmx{}M".format(heap_size_in_mb),"-XX:+UseParallelGC", '-XX:ParallelGCThreads=3', "-jar",
@@ -276,21 +395,20 @@ def run_depict(java_executable, depict_jar, background_data_path, locus_file, la
        			analysis_path,  		# 7  String resultsDirectory
       	 		reconstituted_genesets_file, 	# 8  String cofuncMatrixFile
 	       		depict_gene_annotation_file, 	# 9  String filenameGeneAnnotation 
-		        depict_genelist_file, 		# 10 String confineAnalysisToSubsetOfEnsemblGenes
-		        tissue_expression_file, 	# 11 String tissueMatrixFile
-			str(max_top_genes_for_gene_set),# 12 int maxTopGenesPerGeneSet
-			str(nr_repititions),	        # 13 int nrReps
-        		str(nr_permutations),		# 14 int nrPerms
-        		str(hla_start_bp),		# 15 int HLAstart
-			str(hla_end_bp), 		# 16 int HLAend
-		        go_mapping_file,		# 17 String goMappingFile
-		        mgi_mapping_file,		# 18 String mgiMappingFile
-		        inweb_mapping_file,		# 19 String inwebMappingFile
-		        tissue_mapping_file,		# String tissueMappingFile
-			eqtl_mapping_file,		# String filenameGenericIlluminaProbeIDToEnsembl
-			eqtl_file,			# String filenameGenericIlluminaProbeIDEQTLs
-			str(int(prioritize_genes_outside_input_loci)), 	# boolean calculateGenePrioritizationPValueForGenesOutsideLoci
-			leave_out_chr			# String chrToBeLeftOut
+		        tissue_expression_file, 	# 10 String tissueMatrixFile
+			str(max_top_genes_for_gene_set),# 11 int maxTopGenesPerGeneSet
+			str(nr_repititions),	        # 12 int nrReps
+        		str(nr_permutations),		# 13 int nrPerms
+        		str(mhc_start_bp),		# 14 int HLAstart
+			str(mhc_end_bp), 		# 15 int HLAend
+		        go_mapping_file,		# 16 String goMappingFile
+		        mgi_mapping_file,		# 17 String mgiMappingFile
+		        inweb_mapping_file,		# 18 String inwebMappingFile
+		        tissue_mapping_file,		# 19 String tissueMappingFile
+			eqtl_mapping_file,		# 20 String filenameGenericIlluminaProbeIDToEnsembl
+			eqtl_file,			# 21 String filenameGenericIlluminaProbeIDEQTLs
+			str(int(prioritize_genes_outside_input_loci)), 	# 22 boolean calculateGenePrioritizationPValueForGenesOutsideLoci
+			leave_out_chr			# 23 String chrToBeLeftOut
 		]
 		return cmd
 

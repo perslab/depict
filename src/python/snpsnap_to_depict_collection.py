@@ -10,7 +10,7 @@ from datetime import date
 
 depict_data_path = "/home/projects/depict/git/DEPICT/data/"
 depictgenefile = "%s/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_data_path
-depict_gene_information_file = "%s/mapping_and_annotation_files/ENSGToGeneNameHGNCBiotypeChromosomeStartStopStrandAndDescriptionV65.txt"%depict_data_path
+depict_gene_annotation_file = "%s/mapping_and_annotation_files/GPL570ProbeENSGInfo+HGNC_reformatted.txt"%depict_data_path
 
 
 # SNPsnap collections for 1000 Genomes Project phase 3 can be downloaded from http://www.broadinstitute.org/mpg/snpsnap/database_download.html
@@ -21,16 +21,20 @@ collection_file = "/home/data/snpsnap/data/{}/{}.tab.gz".format(geno_flag,collec
 
 
 # Function construct tree with gene intervals
-def get_nearest_gene_intervall_tree(depict_gene_information_file, depictgenes):
-    trees = {}
+def get_nearest_gene_intervall_tree(depict_gene_annotation_file, depictgenes):
+    ens_col = 0
+    chr_col = 6
+    str_col = 1
+    sta_col = 2
+    end_col = 3 trees = {}
     for i in range(1, 23, 1):
             trees[str(i)] = IntervalTree()
-    with open (depict_gene_information_file,'r') as infile:
+    with open (depict_gene_annotation_file,'r') as infile:
         for line in infile.readlines()[1:]:
             words = line.strip().split('\t')
-            if words[0] in depictgenes and words[4] in [str(x) for x in range(1,23,1)]:
-                tss = int(words[5]) if words[7] == '1' else int(words[6])
-                trees[words[4]].insert_interval(Interval(tss, tss, value=words[0])) if words[0] in depictgenes and words[4] in [str(x) for x in range(1,23,1)] else None
+            if words[ens_col] in depictgenes and words[chr_col] in [str(x) for x in range(1,23,1)]:
+                tss = int(words[sta_col]) if words[str_col] == '1' else int(words[end_col])
+                trees[words[chr_col]].insert_interval(Interval(tss, tss, value=words[ens_col])) if words[ens_col] in depictgenes and words[chr_col] in [str(x) for x in range(1,23,1)] else None
     return trees
 
 
@@ -80,7 +84,7 @@ with open (depictgenefile,'r') as infile:
 
 
 # Construct gene interval tree and identify nearest genes for all SNPs in the collection
-trees = get_nearest_gene_intervall_tree(depict_gene_information_file,depictgenes)
+trees = get_nearest_gene_intervall_tree(depict_gene_annotation_file,depictgenes)
 chr_1_bps = 248956422
 my_max_dist = chr_1_bps / 10
 collection['nearest_gene'] =  collection.apply(lambda x : get_nearest(x.chr, int(x.pos)),axis=1)
