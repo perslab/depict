@@ -1540,7 +1540,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                     } else if (fdrBinary_20) {
                         out.write(output + "\t<0.20\n");
                     } else {
-                        out.write(output + "\t> 0.20\n");
+                        out.write(output + "\t>0.20\n");
                     }
                 }
                 out.flush();
