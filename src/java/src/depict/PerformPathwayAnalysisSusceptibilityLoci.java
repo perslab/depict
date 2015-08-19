@@ -703,7 +703,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                     upper *= 1.1D;
                     vecPermutedLociWithSimilarNumberOfGenes.clear();
                 }
-                System.out.println("Locus:\t" + l + "\tcontains:\t" + nrRequestedGenes + "\tgenes. Number of permuted loci from pool that have a similar number of genes:\t" + vecPermutedLociWithSimilarNumberOfGenes.size());
+                System.out.println("Locus " + l + " wants " + nrRequestedGenes + " and gets " + vecPermutedLociWithSimilarNumberOfGenes.size());
                 for (int perm = 0; perm < nrPerms + nrReps; perm++) {
                     boolean validLocus = false;
                     while (!validLocus) {
@@ -1392,7 +1392,8 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                     }
                 }
                 if (conductTissueAnalysis) {
-                    if (cofuncMatrixFile.toLowerCase().contains(gtex_identifier)) {
+                    //System.err.println("XXX"+ tissueMatrixFile.toLowerCase());
+                    if (tissueMatrixFile.toLowerCase().contains(gtex_identifier)) {
                         out.write("GTEx tissue\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
                     } else {
                         out.write("MeSH term\tName\tMeSH first level term\tMeSH second level term\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
