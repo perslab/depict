@@ -65,6 +65,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
         boolean correctForGeneSize = false; // This is taken care of by using background loci
         String correctInPermutationsForEffectiveNrTestedSNPsPerGene = null; //filenameGenePValues;
         String gzip_encoding = "US-ASCII";
+        String gtex_identifier = "gtex";
         
         String filenameDatabaseToUse = cofuncMatrixFile;
         if (conductTissueAnalysis) {
@@ -495,7 +496,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                         }
                     }
                 }
-                System.out.println("Initial number of (potentially overlapping) loci:\t" + vecLoci.size());
+                //System.out.println("Initial number of (potentially overlapping) loci:\t" + vecLoci.size());
             } catch (Exception e) {
                 System.out.println("Error:\t" + e.getMessage());
                 e.printStackTrace();
@@ -1391,7 +1392,11 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                     }
                 }
                 if (conductTissueAnalysis) {
-                    out.write("MeSH term\tName\tMeSH first level term\tMeSH second level term\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
+                    if (cofuncMatrixFile.toLowerCase().contains(gtex_identifier)) {
+                        out.write("GTEx tissue\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
+                    } else {
+                        out.write("MeSH term\tName\tMeSH first level term\tMeSH second level term\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
+                    }
                 }  else {
                     out.write("Original gene set ID\tOriginal gene set description\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
                 }             
