@@ -22,9 +22,15 @@
             <visualProperty name="NODE_DEPTH" default="0.0"/>
             <visualProperty name="NODE_FILL_COLOR" default="#333333">
                 <discreteMapping attributeType="integer" attributeName="within_cluster_min_pval_discrete">
-                    <discreteMappingEntry value="#FFFFB2" attributeValue="1"/>
+                    <discreteMappingEntry value="#EFF3FF" attributeValue="1"/>
+                    <!-- <discreteMappingEntry value="#6BAED6" attributeValue="2"/> -->
+                    <discreteMappingEntry value="#BDD7E7" attributeValue="2"/>
+                    <discreteMappingEntry value="#3182BD" attributeValue="3"/>
+                    <!-- <discreteMappingEntry value="#08519C" attributeValue="3"/> -->
+                    <!-- ORANGE SCHEME -->
+<!--                     <discreteMappingEntry value="#FFFFB2" attributeValue="1"/>
                     <discreteMappingEntry value="#FD8D3C" attributeValue="2"/>
-                    <discreteMappingEntry value="#E31A1C" attributeValue="3"/>
+                    <discreteMappingEntry value="#E31A1C" attributeValue="3"/> -->
                 </discreteMapping>
             </visualProperty>
             <visualProperty name="NODE_CUSTOMGRAPHICS_POSITION_8" default="C,C,c,0.00,0.00"/>
