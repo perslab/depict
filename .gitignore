@@ -13,7 +13,10 @@ example/ldl_teslovich_nature2010_log.txt
 example/.ldl_teslovich_nature2010.cfg.swp
 data/tissue_expression/
 *.swp
-
-
-### OSX ###
-.DS_Store
+data/collections/ld0.5_collection_1000genomesphase3_depict_150429.txt.gz
+data/collections/ld0.5_collection_1000genomespilot_depict_150429.txt.gz
+data/genotype_data_plink/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_noduplicates.bed
+data/genotype_data_plink/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_noduplicates.bim
+data/genotype_data_plink/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_noduplicates.fam
+.pversion
+src/python/depict_library.pyc

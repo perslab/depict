@@ -6,11 +6,11 @@
   * [Python.org](https://www.python.org/downloads/)
 * PIP (used for install Python libraries)
   * `sudo easy_install pip` 
-* Python-bx (on Mac OS X you may be prompted to install XCode)
-  * `sudo pip install bx-python`   
+* Python intervaltree library
+  * `sudo pip install intervaltree`   
 * Pandas (version 0.15.2 or higher)
   * `sudo pip install pandas`
-* PLINK version 1.9 or higher (only needed if you want to construct loci yourself instead of using the precomputed onces for this example)
+* PLINK version 1.9 August 1 relaease (or newer)
   * [PLINK version 1.9](https://www.cog-genomics.org/plink2/) 
 
 
@@ -19,7 +19,7 @@ The following description explains how to download DEPICT, test run it on exampl
 
 
 ## Download DEPICT
-Download the compressed [DEPICT version 1 rel128](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_rel128.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.
+Download the compressed [DEPICT version 1 rel155](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_rel155.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.
 
 
 ## Test run DEPICT
@@ -28,8 +28,8 @@ The following steps outline how to test run DEPICT on LDL cholesterol GWAS summa
 1. Edit `DEPICT/example/ldl_teslovich_nature2010.cfg`
   * Point `plink_executable` to where PLINK executable (version 1.9 or higher) is on our system (e.g. `/usr/bin/plink`)
 2. Run DEPICT on the LDL summary statistics
-  * E.g. `./src/depict.py example/ldl_teslovich_nature2010.cfg`
-3. Investigate the results (see the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki) for a description of the output format).
+  * E.g. `./src/python/depict.py example/ldl_teslovich_nature2010.cfg`
+3. Investigate the results (see the [Wiki](https://github.com/perslab/DEPICT/wiki) for a description of the output format).
   * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
   * Gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
   * Gene set enrichment results `ldl_teslovich_nature2010_genesetenrichment.txt`
@@ -39,9 +39,10 @@ The following steps outline how to test run DEPICT on LDL cholesterol GWAS summa
 ## Run DEPICT based on your GWAS
 The following steps allow you to run DEPICT on your GWAS summary statistics. We advice you to run the above LDL cholesterol example before this point to make sure that you meet all the necessary dependencies to run DEPICT.
 
-1. Make an 'analysis folder' in which your trait-specific DEPICT analysis will be stored
-2. Copy the template config file from `src/template.cfg` to your analysis folder and give the config file a more meaningful name
-3. Edit your config file
+1. Make sure that you use hg19 genomic SNP positions
+2. Make an 'analysis folder' in which your trait-specific DEPICT analysis will be stored
+3. Copy the template config file from `src/python/template.cfg` to your analysis folder and give the config file a more meaningful name
+4. Edit your config file
   * Point `analysis_path` to your analysis folder.  This is the directory to which output files will be written
   * Point `gwas_summary_statistics_file` to your GWAS summary statistics file.  This file can be either in plain text or gzip format (i.e. having the .gz extension)
   * Specify the GWAS association p value cutoff (`association_pvalue_cutoff`). We recommend using `5e-8` or `1e-5`
@@ -57,9 +58,9 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
     * `space`
   * Point `plink_executable` to where PLINK 1.9 executable is on yur system (e.g. `/usr/bin/plink`)
   * If you are using other genotype data than the data part of DEPICT then point `genotype_data_plink_prefix` to where your PLINK binary format 1000 Genomes Project genotype files are on your system. Specify the entire path of the filenames except the extension
-4. Run DEPICT
-  * `<path to DEPICT>/src/depict.py <path to your config file>`
-5. Investigate the results which have been written to your analysis folder. See the [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki) for details on the output format
+5. Run DEPICT
+  * `<path to DEPICT>/src/python/depict.py <path to your config file>`
+6. Investigate the results which have been written to your analysis folder. See the [Wiki](https://github.com/perslab/DEPICT/wiki) for details on the output format
   * Associated loci in file ending with `_loci.txt`
   * Gene prioritization results  in file ending with `_geneprioritization.txt`
   * Gene set enrichment results  in file ending with `_genesetenrichment.txt`
@@ -83,18 +84,3 @@ The overall version of DEPICT follows the DEPICT publications. The current versi
 LDL GWAS [summary statistics](http://csg.sph.umich.edu/abecasis/public/lipids2010/) from [Teslovich, Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html) are used as input in this example. We included all SNPs with P < 5e-8 and manually added chromosome and position columns (hg19/GRCh37). 
 
 1000 Genomes Consortium pilot release and phase 3 release data are used in DEPICT.  Please remember to cite [their paper](http://www.nature.com/nature/journal/v467/n7319/full/nature09534.html) in case you use our tool.
-
-
-# For developers: DEPICT testing version 
-The following steps outline how to run a lightweight, reduced version of DEPICT based on a precomputed LDL cholesterol DEPICT loci file.  For a particular phenotype, the DEPICT loci file specifices which genes map to given set of associated GWAS SNPs.  Note that this example does not support construction of loci or tissue enrichment analysis.  It is meant to give computational biologists lightweight framework to play around with.
-
-1. Clone DEPICT from Github (use this option if you want to use play around with a reduced, lightweight version of DEPICT)
-  * `git clone git@github.com:DEPICTdevelopers/DEPICT.git`
-2. Edit `example/ldl_teslovich_nature2010_reduced_example.cfg` 
-  * Point `analysis_path` to the where DEPICT/example lives on your system
-3. Run DEPICT 
-  * `./src/depict.py example/ldl_teslovich_nature2010_reduced_example.cfg`
-4. Investigate the results which have been written to the following files (See [Wiki](https://github.com/DEPICTdevelopers/DEPICT/wiki) for details on the output format)
-  * Gene prioritization results `ldl_teslovich_nature2010_reduced_example_geneprioritization.txt`
-  * Gene set enrichemtn results `ldl_teslovich_nature2010_reduced_example_genesetenrichment.txt`
-
