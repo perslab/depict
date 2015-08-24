@@ -74,6 +74,9 @@ COLS2READ_GENESETENRICHMENT = ["Original gene set ID", "Original gene set descri
 
 RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL = "-" # update this symbol if the header symbol of the gene names changes
 
+EXPECTED_DEPICT_FDR_CUTOFFS = ["FDR<0.01","FDR<0.5","<= 0.05",">=0.20",">0.20"] # expected DEPICT cut-offs
+
+
 #######################################################################################
 ###################################### FUNCTIONS ######################################
 #######################################################################################
@@ -485,14 +488,22 @@ if not dataset_list: # check if list is empty
 
 CYTOSCAPE_EXECUTABLE = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_executable'))
 CYTOSCAPE_STYLE = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_style'))
+
+FDR_CUTOFFS = cfg.get("GENE SET ENRICHMENT FILE", "fdr_cutoffs")
 NETWORK_CORRELATION_CUTOFF = cfg.getfloat("NETWORK STRUCTURE",'network_correlation_cutoff') # coerces option to a floating point number
 
 #print CYTOSCAPE_EXECUTABLE
 #print CYTOSCAPE_STYLE
 #print NETWORK_CORRELATION_CUTOFF
 
+################## Process config arguments ##################
 if not os.path.exists(CYTOSCAPE_EXECUTABLE):
-	raise Exception("Cytoscape executable {} does not exists".format(CYTOSCAPE_EXECUTABLE))
+	raise Exception("ERROR IN CONFIG: Cytoscape executable {} does not exists".format(CYTOSCAPE_EXECUTABLE))
+
+list_of_fdr_cutoffs = [x.strip() for x in FDR_CUTOFFS.split(",")] # split on comma and remove whitespace
+for fdr in list_of_fdr_cutoffs:
+	if not fdr in EXPECTED_DEPICT_FDR_CUTOFFS:
+		raise Exception("ERROR IN CONFIG: Got unexpected FDR cutoff '{}'".format(fdr))
 
 
 #######################################################################################
@@ -599,13 +610,16 @@ print "Read gene enrichment file"
 #print df_genesetenrichment.head()
 
 ### Subset data based on FDR
-df_genesetenrichment = df_genesetenrichment[(df_genesetenrichment['False discovery rate']=="<0.01") | (df_genesetenrichment['False discovery rate']=="<0.05")]
+df_genesetenrichment = df_genesetenrichment[df_genesetenrichment['False discovery rate'].isin(list_of_fdr_cutoffs)]
+# REF: http://stackoverflow.com/questions/12096252/use-a-list-of-values-to-select-rows-from-a-pandas-dataframe
+# OLD CODE using static FDR 0.05 --> df_genesetenrichment = df_genesetenrichment[(df_genesetenrichment['False discovery rate']=="<0.01") | (df_genesetenrichment['False discovery rate']=="<0.05")]
 n_gene_set_fdr_significant = df_genesetenrichment.shape[0]
 if n_gene_set_fdr_significant == 0:
-	print "Found no gene sets with 'FDR<0.01' or 'FDR<0.5' in file_genesetenrichment. Cannot run analysis. Will exit."
+	print "Found no gene sets with [{}] in file_genesetenrichment. The default settings of this program does not allow to continue the analysis. To be able to run network_plot.py without FDR significant gene sets, you need to make a few changes to the source code. E.g. a p-value cutoff could be used instead.".format(",".join(list_of_fdr_cutoffs))
+	print "Will exit the programme."
 	sys.exit(0)
 else:	
-	print "Found {} number of gene sets with 'FDR<0.01' or 'FDR<0.5'. These gene sets will be used for further analysis".format(n_gene_set_fdr_significant)
+	print "Found {} number of gene sets with [{}]. These gene sets will be used for further analysis".format(n_gene_set_fdr_significant, ",".join(list_of_fdr_cutoffs))
 
 
 ################## Reconstituted geneset matrix ##################
