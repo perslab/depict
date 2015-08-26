@@ -20,3 +20,4 @@ data/genotype_data_plink/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_i
 data/genotype_data_plink/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_noduplicates.fam
 .pversion
 src/python/depict_library.pyc
+/src/java/dist/
