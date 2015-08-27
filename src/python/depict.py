@@ -87,7 +87,7 @@ if not os.path.exists(analysis_path):
 	print "\nCreating directory were results will be saved ({})".format(analysis_path)
 	os.makedirs(analysis_path)
 else:
-	print "\nSaving results to {}".format(analysis_path)
+	print "\nWill store result files to {}".format(analysis_path)
 
 
 # Logging and contact

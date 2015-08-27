@@ -156,7 +156,11 @@ def write_depict_loci_helper(infile,collection,df_gene_boundaries,mhc_start,mhc_
 
 	# Read users SNPs
 	t0 = time()
-	clumps_df = pd.read_csv(infile,delimiter=r"\s+")
+	try:
+		clumps_df = pd.read_csv(infile,delimiter=r"\s+")
+	except IOError:
+		print('\nError when trying to open {}.  Please check the PLINK log.'.format(infile))
+		sys.exit()
 	clumps_df.set_index(clumps_df.CHR.astype('str') + ":" + clumps_df.BP.astype('str'),inplace=True)
 	t1 = time()
 	#print 'Time 1 %f' %(t1-t0)
@@ -359,7 +363,7 @@ def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_co
 				if float(words[p_col]) < association_pvalue_cutoff:
 					missing_snps.append(marker_id)
 
-	return {"{} SNPs met you association p value cutoff, but were not found in the 1000 Genomes Phase 3 data:".format(len(missing_snps)): "{}".format(";".join(missing_snps))} if len(missing_snps)>0 else {}
+	return {"{} SNPs met your association p value cutoff, but were not found in the 1000 Genomes Phase data:".format(len(missing_snps)): "{}".format(";".join(missing_snps))} if len(missing_snps)>0 else {}
 
 
 # Helper function to retrieve PLINK Index SNPs
