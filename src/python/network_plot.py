@@ -16,36 +16,66 @@ import glob
 
 import pdb
 
-######################################  ######################################
+import ConfigParser
 
-#/usr/libexec/java_home -V
+###################################### DEPENDENCIES ######################################
+
+# 1) Cytoscape 3.2.1 or greater. Cytoscape 3.1.1 does not work.
+# 2) Java 1.7, 1.8 or greater
+# 3) Python packages
+	# numpy
+	# pandas
+	# scikit-learn (pip install scikit-learn)
+
+### Check your Java version ### 
+# OSX: /usr/libexec/java_home -V
+	# Should give something like: 
+# Linux/UNIX: TODO
+	#  ??
+
+### Download Java 1.8
+# http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 
 ###################################### USAGE ######################################
 
+### Example Usage
+#python network_plot.py --file_genesetenrichment ../example/test_bio-EA_genesetenrichment.txt --file_reconstituted_genesets_matrix <path to reconstituted gene set matrix> --node_selection cluster_center
+
+
+
+############### EA ###############
 ### Full reconstituted
-#python network_plot.py --file_genesetenrichment /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_network/EA2_EduYears_pooled_Nweighted_single_gc_genesetenrichment.txt --file_reconstituted_genesets_matrix /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.txt.gz --node_selection cluster_center
-### Test set
+#python network_plot.py --file_genesetenrichment /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_network/EA2_EduYears_pooled_Nweighted_single_gc_genesetenrichment.txt --file_reconstituted_genesets_matrix /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.txt.gz --node_selection cluster_center --genesetID_network GO:0048813
+### Reduced gene matrix file
 #python network_plot.py --file_genesetenrichment /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_network/EA2_EduYears_pooled_Nweighted_single_gc_genesetenrichment.txt --file_reconstituted_genesets_matrix /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_reconstituted_genesets/DEPICT_matrix_reconstituted_genesets_EA2_EduYears_297.txt --node_selection cluster_center --genesetID_network GO:0048813
 
-### Test cytoscape script (standalone)
+############### Test files ###############
+### test_rand200-1_genesetenrichment.txt
+#python network_plot.py --file_genesetenrichment /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_network_test/test_rand200-1_genesetenrichment.txt --file_reconstituted_genesets_matrix /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.txt.gz --node_selection cluster_center --genesetID_network MP:0009431
+
+### test_bio-EA_genesetenrichment.txt
+#python network_plot.py --file_genesetenrichment /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_network_test/test_bio-EA_genesetenrichment.txt --file_reconstituted_genesets_matrix /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.txt.gz --node_selection cluster_center --genesetID_network GO:0003713
+
+
+
+#######  Test cytoscape script (standalone) ######
 #/Applications/Cytoscape_v3.2.1/cytoscape.sh -S /Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot_cytoscape_script.txt
 
 
 
-
+#######################################################################################
 ###################################### CONSTANTS ######################################
+#######################################################################################
+
+FILE_CONFIG = os.path.abspath("network_plot.cfg") # assuming that the config file is in the same directory as the 'network_plot.py' script
+
+#NOTE: These are internal variables to the program and should only be updated if the DEPICT output is updated from DEPICT version 1.1
 COLS2READ_GENESETENRICHMENT = ["Original gene set ID", "Original gene set description", "Nominal P value", "False discovery rate"]
 
 RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL = "-" # update this symbol if the header symbol of the gene names changes
 
+EXPECTED_DEPICT_FDR_CUTOFFS = ["FDR<0.01","FDR<0.5","<= 0.05",">=0.20",">0.20"] # expected DEPICT cut-offs
 
-NETWORK_CORRELATION_CUTOFF = 0.3 # GREATHER OR EQUAL TO | this parameter is used to determine the cutoff of when to draw edges between nodes.
-
-
-CYTOSCAPE_EXECUTABLE = "/Applications/Cytoscape_v3.2.1/cytoscape.sh" # path to cytoscape shell launcher (shell script)
-CYTOSCAPE_STYLE = "/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot_CytoscapeStyle_v1.xml" # path to XML file with cytoscape style
-	# OBS: note that the cytoscape style name must match the one in this script. (E.g. DEPICT-style-v1)
-	# The style name can be found in the top part of the XML file: <visualStyle name="DEPICT-style-v1">
 
 #######################################################################################
 ###################################### FUNCTIONS ######################################
@@ -54,11 +84,16 @@ CYTOSCAPE_STYLE = "/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/networ
 def ParseArguments():
 	""" Function to parse commandline arguments """
 	arg_parser = argparse.ArgumentParser(description="DEPICT network plot")
-	arg_parser.add_argument("--file_genesetenrichment", help="DEPICT geneset enrichment file [tab seperated]", required=True)
+	arg_parser.add_argument("--file_genesetenrichment", help="DEPICT geneset enrichment file [tab seperated]. DEPICT 1.1 or greater should be have generated the enrichment file - otherwise the headers of the file will not match", required=True)
 	arg_parser.add_argument("--file_reconstituted_genesets_matrix", help="DEPICT reconstituted geneset matrix file [tab seperated]. The file can be compressed (.gz) or uncompressed.", required=True)
-	arg_parser.add_argument("--out", help="""Output path (absolute or relative) INCLUDING a file-prefix. 
-											 E.g. /Users/john/DEPICT_results/my_phenotype_fileprefix 
-											 *Default output path* is the current working directory (executing terminal path) with the file prefix 'network_plot'  """)
+	arg_parser.add_argument("--out", help="""Output path INCLUDING a *file-prefix*. The path may be absolute or relative.
+											 *The directory will be CREATED, if it does not exist*.
+											 EXAMPLE ABSOLUTE PATH #1: /Users/john/DEPICT_results/my_phenotype_fileprefix
+											 EXAMPLE RELATIVE PATH #1: DEPICT_results/my_phenotype_fileprefix
+											 EXAMPLE RELATIVE PATH #2: ./DEPICT_results/my_phenotype_fileprefix
+											 Where "my_phenotype_fileprefix" is the file-prefix.
+											 *Default output path*: './network_plot/network_plot'""")
+											 #*Default output path* is the subdirectory 'network_plot' in the current working directory (executing terminal path) with the file prefix 'network_plot'
 	
 
 	### Consider using subparses
@@ -71,17 +106,25 @@ def ParseArguments():
 	#arg_subparser_network_selected_enriched_genesets = subparsers.add_parser('network_selection_enriched_genesets')
 
 
-	arg_parser.add_argument("--node_selection", help="""Choose which nodes to visualize in cytoscape network. 
+	arg_parser.add_argument("--node_selection", help="""Choose which nodes to visualize in Cytoscape network. 
 													The option determines how the network_table file is written. 
-													cluster_center: plot cluster representatives genesets (N_nodes=N_clusters); 
-													cluster_min_pval: plot within-cluster mimimum p-value genesets (N_nodes=N_clusters); 
-													all: plot all significant gene set (N_nodes=N_significant_genesets)""", 
+													cluster_center [default]: plot geneset cluster centers (or exemplars) (N_nodes=N_clusters); 
+													cluster_min_pval: plot geneset with within-cluster mimimum p-value (N_nodes=N_clusters); 
+													all: plot all FDR significant gene sets (N_nodes=N_significant_genesets)""", 
 													choices=['cluster_center', 'cluster_min_pval', 'all'], default='cluster_center')
 	
 	#TODO: allow a parameter for the correlation cutoff
 	
 	arg_parser.add_argument("--genesetID_network", help="""Argument value must be a valid genesetID ('Original gene set ID'). 
-															If this argument is supplied, then an additional geneset network will be created for the specified genesetID """)
+															If this argument is supplied, then the geneset network will be created for the specified genesetID """)
+	
+	arg_parser.add_argument("--no_interactive_cytoscape_session", help="""If this argument is given, then the Cytoscape session will automatically be terminated once the plots have been generated.
+																		Thus the user will not be able to edit the Cytoscape networks manually and adjust visual attributes.
+																		We only recommend using this setting for 'quickly generating plots' or automating a pipeline for generating the plots.
+																		By default, this script will open an Cytoscape session that *the user will have to exit* once finished with editing/inspecting the networks.
+																		By default, the script will be waiting for the Cytoscape session to terminate.""", action='store_true') # action='store_true' --> default value is False 
+
+
 	#TODO: check the validity of the genesetID
 	#TODO: implement a function to allow multiple genesetIDs as arguments
 
@@ -103,12 +146,12 @@ def add_cluster_results_to_data_frame(df):
 	df.index.name = 'idx' # just to be nice... not important
 
 	### Initialyze columns with APPROPRIATE default values
-	df['clusterID'] = np.nan # will become integer later
-	df['cluster_center'] = False
-	df['cluster_min_pval'] = False
+	df['Cluster ID'] = np.nan # will become integer later
+	df['Cluster center (boolean)'] = False
+	df['Cluster minimum P value (boolean)'] = False
 
-	df['within_cluster_min_pval_gsID'] = np.nan
-	df['within_cluster_min_pval'] = np.nan
+	df['Cluster gene set with minimum P value'] = np.nan
+	df['Cluster minimum P value'] = np.nan
 
 
 	################## Assigning cluster labels to data frame ##################
@@ -121,34 +164,34 @@ def add_cluster_results_to_data_frame(df):
 	# *by indexing df according to "df_reconstituted_genesets.columns" we order to data frame correctly when assignning the labels*
 	# IMPORTANT --> REQUIRES index to be 'Original gene set ID'
 	#df.ix[['GO:0003712', 'GO:0003713'],:]
-	df.ix[df_reconstituted_genesets.columns,'clusterID'] = labels
+	df.ix[df_reconstituted_genesets.columns,'Cluster ID'] = labels
 
-	################## Assigning cluster_center and within_cluster_min_pval ##################
+	################## Assigning Cluster center (boolean) and Cluster minimum P value ##################
 
 	for k in range(n_clusters): # looping over clusters
 		### REMEMBER ### 
 		# We are mapping *FROM* column index/names in df_reconstituted_genesets, that was used for similarity calculations, *TO* df/df_genesetenrichment to get descriptions (and p-values) of Gene Sets.
 		# We cannot just used the cluster_center_indices as index, because these are *NOT* in sync with the df/df_genesetenrichment
 		
-		### saving cluster centers
+		### saving cluster center (boolean)s
 		cluster_center_ID = df_reconstituted_genesets.columns[cluster_centers_indices[k]] # cluster_center_ID --> a string
-		df.ix[cluster_center_ID, 'cluster_center'] = True
+		df.ix[cluster_center_ID, 'Cluster center (boolean)'] = True
 		
 		class_members_ID = df_reconstituted_genesets.columns[labels == k] # array of strings/genesetsIDs. selecting gene sets names that are members of the current cluster
 		
-		### saving class member with the lowest p-value (including the cluster center observation)
+		### saving class member with the lowest p-value (including the cluster center (boolean) observation)
 		idx_min_pval = df.ix[class_members_ID, "Nominal P value"].idxmin()
-		df.ix[idx_min_pval, 'cluster_min_pval'] = True
+		df.ix[idx_min_pval, 'Cluster minimum P value (boolean)'] = True
 		
 
 		### saving more...
-		df.ix[class_members_ID, 'within_cluster_min_pval'] = df.ix[idx_min_pval, "Nominal P value"] # scalar
-		df.ix[class_members_ID, 'within_cluster_min_pval_gsID'] = df.ix[idx_min_pval, "Original gene set ID"] # scalar
+		df.ix[class_members_ID, 'Cluster minimum P value'] = df.ix[idx_min_pval, "Nominal P value"] # scalar
+		df.ix[class_members_ID, 'Cluster gene set with minimum P value'] = df.ix[idx_min_pval, "Original gene set ID"] # scalar
 
 
 	## safety check
-	assert( sum(df["cluster_center"])==n_clusters )
-	assert( sum(df["cluster_min_pval"])==n_clusters )
+	assert( sum(df["Cluster center (boolean)"])==n_clusters )
+	assert( sum(df["Cluster minimum P value (boolean)"])==n_clusters )
 
 	return df
 
@@ -166,7 +209,7 @@ def set_cytoscape_node_label_text(string):
 		KEGG/REACTOME:
 			a) strip underscores
 			b) strip leading KEGG/REACTOME
-			c) convert string to centence case (all lowercase, except first letter)
+			c) convert string to sentence case (all lowercase, except first letter)
 		PPI:
 			a)
 
@@ -295,13 +338,14 @@ def write_genesetenrichment_cluster_result_file(df):
 	# Original gene set description
 	# Nominal P value
 	# False discovery rate
-	# clusterID
-	# cluster_center
-	# cluster_min_pval
-	# within_cluster_min_pval_gsID
-	# within_cluster_min_pval
+	# Cluster ID
+	# Cluster center (boolean)
+	# Cluster minimum P value (boolean)
+	# Cluster gene set with minimum P value
+	# Cluster minimum P value
 	print "Writing geneset enrichment cluster result file..."
-	df.sort(['clusterID','Nominal P value'], inplace=True)
+	df["Cluster ID"] = df["Cluster ID"] + 1 # looks better in the output
+	df.sort(['Cluster ID','Nominal P value'], inplace=True)
 	df.to_csv(file_genesetenrichment_cluster_result, sep="\t", index=False)
 	print "Done"
 
@@ -329,11 +373,11 @@ def write_node_attribute_file(df):
 	# Original gene set description
 	# Nominal P value
 	# False discovery rate
-	# clusterID
-	# cluster_center
-	# cluster_min_pval
-	# within_cluster_min_pval_gsID
-	# within_cluster_min_pval
+	# Cluster ID
+	# Cluster center (boolean)
+	# Cluster minimum P value (boolean)
+	# Cluster gene set with minimum P value
+	# Cluster minimum P value
 	# node_label_text
 	# node_width
 	# node_height
@@ -341,9 +385,9 @@ def write_node_attribute_file(df):
 	# minuslogten_pval_discrete
 	# within_cluster_min_pval_minuslogten
 	# within_cluster_min_pval_discrete
-
 	print "Writing node attribute file..."
-	df.sort(['clusterID','Nominal P value'], inplace=True)
+	df["Cluster ID"] = df["Cluster ID"] + 1 # looks better in the output
+	df.sort(['Cluster ID','Nominal P value'], inplace=True)
 	df.to_csv(file_node_attribute, sep="\t", index=False)
 	print "Done"
 	
@@ -369,12 +413,12 @@ def write_cytoscape_script():
 
 	### Set layout
 	f.write("""layout kamada-kawai EdgeAttribute=Pearson_correlation unweighted=false"""+"\n")
-		# Kamada and Kawai (1988)
+		# Kamada and Kawai (1988): same as "Spring-Embedded Layout"
 		# Network nodes are treated like physical objects that repel each other, such as electrons. 
 		# The layout algorithm sets the positions of the nodes in a way that minimizes the sum of forces in the network
 	# 1) [yWorks - not available through command line] yFiles Organic Layout: organic layout algorithm is a kind of *spring-embedded algorithm*
 	# 2) layout force-directed EdgeAttribute=Pearson_correlation unweighted=false
-
+	# ---> NOTE: the applying a WEIGHTED layout algorithm may fail if the network is small or has few edges. This is tricky...
 
 	### Load and apply visual style
 	# *OBS*: KEEP STYLE NAME UPDATED - must match name in .xml file
@@ -387,6 +431,11 @@ def write_cytoscape_script():
 	### Export
 	f.write("""view export OutputFile="{file_out}" options=PDF""".format(file_out=file_cytoscape_graphics)+"\n")
 	f.write("""view export OutputFile="{file_out}" options=PNG""".format(file_out=file_cytoscape_graphics)+"\n")
+
+	### OPTIONAL: exit script when done.
+	if no_interactive_cytoscape_session:
+		f.write("""command quit"""+"\n")
+	
 
 	f.close()
 
@@ -404,37 +453,96 @@ def run_cytoscape_script():
 			print "WARNING: found and deleted existing graphics file {}".format(elem)
 
 
-	cmd = "{executable} -S {script}".format(executable=CYTOSCAPE_EXECUTABLE, script=file_cytoscape_script)
+
+	### SHELL VERSION
+	#cmd = "{executable} -S {script}".format(executable=CYTOSCAPE_EXECUTABLE, script=file_cytoscape_script)
+	### EXECUTABLE VERSION
+	cmd = [CYTOSCAPE_EXECUTABLE, "-S", file_cytoscape_script] # <-- remember the structure of the list an arguments.
+		# shlex.split('foo -a -b --bar baz') --> ['foo', '-a', '-b', '--bar', 'baz']
+		# subprocess.list2cmdline(cmd) <-- undocumented, not sure it works perfectly
+
 	print "Running command: {}".format(cmd)
 	with open(os.devnull) as fnull:
-		p = subprocess.Popen(cmd, stdout=fnull, stderr=None, shell=True) # stderr=None --> STDERR goes to the terminal output
-	print "Waiting for process to finish. Please wait..."
-	p.wait()
-	print "Cytoscape done. Graphics are now created."
+		### SHELL VERSION
+		#p = subprocess.Popen(cmd, stdout=fnull, stderr=None, shell=True) # stderr=None --> STDERR goes to the terminal output
+		### EXECUTABLE VERSION
+		p = subprocess.Popen(cmd, stdout=fnull, stderr=None) # stderr=None --> STDERR goes to the terminal output
+	print "Launched Cytoscape session. PID (Process ID): {}".format(p.pid)
+	# print "Waiting for Cytoscape to finish..."
+	# p.wait()
+	# print "Cytoscape done. Graphics are now created."
+
+#############################################################################################
+###################################### GET CONFIG FILE ######################################
+#############################################################################################
+
+cfg = ConfigParser.ConfigParser()
+dataset_list = cfg.read(FILE_CONFIG) # Attempt to read and parse a *list* of filenames, returning a list of filenames which were successfully parsed
+					 # if not files are found, the list will be empty
+if not dataset_list: # check if list is empty
+	print "Could not read config file: {}".format(FILE_CONFIG)
+	print "Please make sure that the config file is located in the same directory as the network_plot.py script."
+	print "Will exit..."
+	sys.exit(0)
+
+
+CYTOSCAPE_EXECUTABLE = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_executable'))
+CYTOSCAPE_STYLE = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_style'))
+
+FDR_CUTOFFS = cfg.get("GENE SET ENRICHMENT FILE", "fdr_cutoffs")
+NETWORK_CORRELATION_CUTOFF = cfg.getfloat("NETWORK STRUCTURE",'network_correlation_cutoff') # coerces option to a floating point number
+
+#print CYTOSCAPE_EXECUTABLE
+#print CYTOSCAPE_STYLE
+#print NETWORK_CORRELATION_CUTOFF
+
+################## Process config arguments ##################
+if not os.path.exists(CYTOSCAPE_EXECUTABLE):
+	raise Exception("ERROR IN CONFIG: Cytoscape executable {} does not exists".format(CYTOSCAPE_EXECUTABLE))
+
+list_of_fdr_cutoffs = [x.strip() for x in FDR_CUTOFFS.split(",")] # split on comma and remove whitespace
+for fdr in list_of_fdr_cutoffs:
+	if not fdr in EXPECTED_DEPICT_FDR_CUTOFFS:
+		raise Exception("ERROR IN CONFIG: Got unexpected FDR cutoff '{}'".format(fdr))
+
 
 #######################################################################################
 ###################################### ARGUMENTS ######################################
 #######################################################################################
 
+time_script_start = time.time() # *START TIME*
+
+
 args = ParseArguments()
 
-file_genesetenrichment = args.file_genesetenrichment
-file_reconstituted_genesets_matrix = args.file_reconstituted_genesets_matrix
+file_genesetenrichment = os.path.abspath(args.file_genesetenrichment)
+file_reconstituted_genesets_matrix = os.path.abspath(args.file_reconstituted_genesets_matrix)
 node_selection = args.node_selection
+no_interactive_cytoscape_session = args.no_interactive_cytoscape_session
 
 
 out = args.out # complete pathname INCLUDING FILE PREFIX
 if out is None:
-	out = os.path.join(os.getcwd(), 'network_plot')
-	# e.g. /Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot
+	out = os.path.join(os.getcwd(), 'network_plot', 'network_plot')
+	out = os.path.abspath(out) # convert to absolute path.
+	# e.g. /Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot/network_plot
+else:
+	out = os.path.abspath(out) # convert to absolute path. # E.g.:
+		# os.path.abspath(".") --> '/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src'
+		# os.path.abspath("./SOMEDIR") --> '/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/SOMEDIR'
+		# os.path.abspath("SOMEDIR/ANOTHERDIR") --> '/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/SOMEDIR/ANOTHERDIR'
+		# os.path.abspath("/Users/pascaltimshel/") --> '/Users/pascaltimshel'
 
-### check that output dir is writable
-if not os.access(os.path.dirname(out), os.W_OK):
-	raise Exception("Output path: {} is not writable. Please fix this...".format(os.path.dirname(out)))
+### Create output directory
+out_dir = os.path.dirname(out)
+if not os.path.exists(out_dir):
+	print "WARNING: out directory does not exist. Will create the directory: {}".format(out_dir)
+	os.makedirs(out_dir)
+
 
 print "Output file-prefix: {}".format(out)
 
-genesetID_network = args.genesetID_network # if not argument is not specified in commandline, the value will be None
+genesetID_network = args.genesetID_network # A gene set ID. If not argument is not specified in commandline, the value will be None
 if genesetID_network:
 	if not isinstance(genesetID_network, str): # just to be sure... MAYBE OVERKILL.
 		raise Exception("Value of genesetID_network argument is not of type string.")
@@ -442,16 +550,50 @@ if genesetID_network:
 
 
 ################## Setting output filenames ##################
-file_network_table = out + ".network_table.txt"
-file_network_table_genesetID = "{out}_genesetID-{gsID_clean}.network_table.{ext}".format(out=out, gsID_clean=re.sub(r'[^\w]', '', genesetID_network), ext="txt") # regex: stripping all symbols from string. keeping only alpha-numeric characters.
+if genesetID_network:
+	gsID_clean = re.sub(r'[^\w]', '', genesetID_network)  # regex: stripping all symbols from string. keeping only alpha-numeric characters.
+	file_network_table = "{out}_genesetID-{gsID}_network_table.{ext}".format(out=out, gsID=gsID_clean, ext="txt")
+	file_cytoscape_graphics = "{out}_genesetID-{gsID}_network_diagram".format(out=out, gsID=gsID_clean) # OBS: no extension - cytoscape will do this
+else:
+	file_network_table= out + "_network_table.txt"
+	file_cytoscape_graphics = out + "network_diagram" # OBS: no extension - cytoscape will do this
 
-file_node_attribute = out + "_nodeattributes.attrs.txt" # *OBS* the file CANNOT be loaded by Cytoscape if the extension is ".attrs"
-file_genesetenrichment_cluster_result = out + "_cluster_result.txt"
+file_cytoscape_script = out + "_tmp_cytoscape_script.txt"
+
+
+file_node_attribute = out + "_nodeattributes.txt" # *OBS* the file CANNOT be loaded by Cytoscape if the extension is ".attrs"
+file_genesetenrichment_cluster_result = out + "_cluster_results.txt"
 
 file_summary = out + "_summary.txt" # file contains the discretizing range mapping and MORE
 
-file_cytoscape_script = out + "_cytoscape_script.txt"
-file_cytoscape_graphics = out + "network_graphic" # OBS: no extension
+
+
+
+### *KEEP ME UPDATED*
+list_of_out_files = [file_network_table,
+					file_node_attribute,
+					file_genesetenrichment_cluster_result,
+					file_summary,
+					file_cytoscape_script,
+					file_cytoscape_graphics] # USED for checking for existing files
+
+flag_existing_out_files = False
+for elem in list_of_out_files:
+	if os.path.exists(elem):
+		flag_existing_out_files = True
+
+### Make sure that the genotype prefix is correct ###
+if flag_existing_out_files:
+	ans = ""
+	print "WARNING: detected that one or more output file already existed in the directory: {}".format(out_dir)
+	print "These files will be overwritten."
+	print "You can accept and continue by typing 'yes'."
+	print "You can stop and kill the program by typing 'no' (or hit Ctrl-c)."
+	while ans != 'yes':
+	 	ans = raw_input("Continue ('yes'/'no'): ")
+	 	if ans == "no":
+	 		sys.exit(0)
+	print "Ok let's start..."
 
 #######################################################################################
 ###################################### READ DATA ######################################
@@ -459,13 +601,26 @@ file_cytoscape_graphics = out + "network_graphic" # OBS: no extension
 
 
 ################## Geneset Enrichment file ##################
+tmp_header_cols = pd.read_csv(file_genesetenrichment, sep="\t", nrows=1).columns[0:len(COLS2READ_GENESETENRICHMENT)] # read only header and first entry | pandas Index
+if not (tmp_header_cols == COLS2READ_GENESETENRICHMENT).all():
+	raise Exception("The DEPICT geneset enrichment file did not fit the correct format for the header.")
+
 df_genesetenrichment = pd.read_csv(file_genesetenrichment, sep="\t", usecols=COLS2READ_GENESETENRICHMENT) # usecols: either column names or position numbers
 print "Read gene enrichment file"
 #print df_genesetenrichment.head()
 
 ### Subset data based on FDR
-df_genesetenrichment = df_genesetenrichment[(df_genesetenrichment['False discovery rate']=="<0.01") | (df_genesetenrichment['False discovery rate']=="<0.05")]
-print "Found {} number of gene sets with 'FDR<0.01' or 'FDR<0.5'. These gene sets will be used for further analysis".format(df_genesetenrichment.shape[0])
+df_genesetenrichment = df_genesetenrichment[df_genesetenrichment['False discovery rate'].isin(list_of_fdr_cutoffs)]
+# REF: http://stackoverflow.com/questions/12096252/use-a-list-of-values-to-select-rows-from-a-pandas-dataframe
+# OLD CODE using static FDR 0.05 --> df_genesetenrichment = df_genesetenrichment[(df_genesetenrichment['False discovery rate']=="<0.01") | (df_genesetenrichment['False discovery rate']=="<0.05")]
+n_gene_set_fdr_significant = df_genesetenrichment.shape[0]
+if n_gene_set_fdr_significant == 0:
+	print "Found no gene sets with [{}] in file_genesetenrichment. The default settings of this program does not allow to continue the analysis. To be able to run network_plot.py without FDR significant gene sets, you need to make a few changes to the source code. E.g. a p-value cutoff could be used instead.".format(",".join(list_of_fdr_cutoffs))
+	print "Will exit the programme."
+	sys.exit(0)
+else:	
+	print "Found {} number of gene sets with [{}]. These gene sets will be used for further analysis".format(n_gene_set_fdr_significant, ",".join(list_of_fdr_cutoffs))
+
 
 ################## Reconstituted geneset matrix ##################
 ## Obs: compressed via .gz
@@ -480,6 +635,9 @@ cols2read_reconstituted_genesets_matrix_with_rowname_symbol = pd.Series([RECONST
 ### Reading data
 time_start = time.time()
 print "Started reading file_reconstituted_genesets_matrix. This may take a few minutes..."
+#TODO implement a file check, reading only the header to check: 
+	# 1) presence of all cols2read [and avoid "ValueError: 'GeneSet_XYZ' is not in list"]
+	# 2) check correct file format.
 df_reconstituted_genesets = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", usecols=cols2read_reconstituted_genesets_matrix_with_rowname_symbol)
 	# OBS 1: if an element (e.g. GeneSet_XYZ) in the argument of "usecols" is not in header Pandas will throw an error --> "ValueError: 'GeneSet_XYZ' is not in list"
 		# ^^ We can check which columns could not be found
@@ -492,12 +650,13 @@ print "Elapsed time for reading DEPICT reconstituted genesets matrix: {:.2f} sec
 print "Dimension of df_reconstituted_genesets: ", df_reconstituted_genesets.shape
 # OBSERVATION: KEGG_DRUG_METABOLISM_CYTOCHROME_P450 does not exists in the "file_reconstituted_genesets_matrix" file BUT ONLY in the "file_genesetenrichment"
 
-### CHECK of missing genesets
+### CHECK of missing genesets 
+# *OBS* THIS IS ACTUALLY NOT NECESSARY because Pandas will throw a "ValueError: XXX is not in list" if a gene set is in col2read, but *NOT* in the geneset matrix
 #assert(df_reconstituted_genesets.shape[1]==len(cols2read_reconstituted_genesets_matrix)) # ## REQUIRE that all columns of interest where loaded correctly --> maybe this is too much.
 bool_gs_not_found = ~cols2read_reconstituted_genesets_matrix.isin(df_reconstituted_genesets) # inverted boolean
-print "Number of gene sets from enrichment file that could not be found in DEPICT matrix: {}".format(sum(bool_gs_not_found))
 df_tmp_not_found = cols2read_reconstituted_genesets_matrix[bool_gs_not_found]
 if not df_tmp_not_found.empty:
+	print "Number of gene sets from enrichment file that could not be found in DEPICT matrix: {}".format(sum(bool_gs_not_found))
 	print "List: ", cols2read_reconstituted_genesets_matrix[bool_gs_not_found]
 
 ##################################################################################################
@@ -506,7 +665,7 @@ if not df_tmp_not_found.empty:
 
 if genesetID_network is not None: # only check if argument is supplied
 	if not df_reconstituted_genesets.columns.isin([genesetID_network]).any(): # we need to make sure the genesetID is in the enrichment file
-		raise Exception("Value of genesetID_network argument '{}' is either not contained in DEPICT reconstituted geneset matrix or the enrichment file. Please ensure you specified a valid identifier".format(genesetID_network))
+		raise Exception("Value of genesetID_network argument '{}' is either not contained in 1) the DEPICT reconstituted geneset matrix or; 2) the FDR significant gene sets in the enrichment file. Please ensure you specified a valid identifier".format(genesetID_network))
 
 ##################################################################################################
 ###################################### Affinity Propagation ######################################
@@ -547,10 +706,13 @@ print "Affinity Propagation done"
 print "Number of iterations used: {}".format(n_iter)
 
 ### Saving labels and centers
-cluster_centers_indices = af.cluster_centers_indices_  # array, shape (n_clusters, n_features) | cluster centers ("exemplars")
+cluster_centers_indices = af.cluster_centers_indices_  # array, shape (n_clusters, n_features) | cluster center (boolean)s ("exemplars")
 													   # cluster_centers_indices take on values in the range {0...n_samples-1}
 labels = af.labels_ # array, shape (n_samples,) | Get the "labels"/assignments of each data point to a cluster index
 					# labels take on values in the range: {0...n_clusters-1}
+
+
+
 ### Display some stats
 n_clusters = len(cluster_centers_indices)
 print('Estimated number of clusters: %d' % n_clusters)
@@ -567,28 +729,23 @@ df = add_cluster_results_to_data_frame(df_genesetenrichment)
 ##########################################################################################
 
 #############################################################
-################## Network table - primary ##################
+####################### Network table #######################
 #############################################################
 
-if node_selection == "cluster_center":
-	df_network_table = df[df["cluster_center"]==True]
-elif node_selection == "cluster_min_pval":
-	df_network_table = df[df["cluster_min_pval"]==True]
-elif node_selection == "all":
-	df_network_table = df
-else:
-	raise Exception("Got unsupported node_selection argument")
-write_network_table_file(df_network_table, file_out=file_network_table)
-
-
-#######################################################################
-################## Network table - genesetID_network ##################
-#######################################################################
-
 if genesetID_network:
-	selected_clusterID = df.ix[genesetID_network,'clusterID'] # returns integer/scalar
-	df_network_table = df[df['clusterID']==selected_clusterID] # extract observations with selected clusterID
-	write_network_table_file(df_network_table, file_out=file_network_table_genesetID)
+	selected_clusterID = df.ix[genesetID_network,'Cluster ID'] # returns integer/scalar
+	df_network_table = df[df['Cluster ID']==selected_clusterID] # extract observations with selected Cluster ID
+	write_network_table_file(df_network_table, file_out=file_network_table)
+else:
+	if node_selection == "cluster_center":
+		df_network_table = df[df["Cluster center (boolean)"]==True]
+	elif node_selection == "cluster_min_pval":
+		df_network_table = df[df["Cluster minimum P value (boolean)"]==True]
+	elif node_selection == "all":
+		df_network_table = df
+	else:
+		raise Exception("Got unsupported node_selection argument")
+	write_network_table_file(df_network_table, file_out=file_network_table)
 
 
 #####################################################
@@ -609,8 +766,8 @@ df_node_attributes['node_label_text'] = df_node_attributes['Original gene set de
 df_node_attributes['node_width'], df_node_attributes['node_height'], df_node_attributes['label_width'] = zip(*df_node_attributes['node_label_text'].map(set_cytoscape_node_height_and_width))
 df_node_attributes['minuslogten_pval_discrete'] = -np.log10(df_node_attributes['Nominal P value']).round(0) # returns integer Series
 
-### discretizing the "within_cluster_min_pval"
-df_node_attributes['within_cluster_min_pval_minuslogten'] = -np.log10(df_node_attributes['within_cluster_min_pval']).round(0)
+### discretizing the "Cluster minimum P value"
+df_node_attributes['within_cluster_min_pval_minuslogten'] = -np.log10(df_node_attributes['Cluster minimum P value']).round(0)
 tmp_scale_min = df_node_attributes['within_cluster_min_pval_minuslogten'].min()
 tmp_scale_max = df_node_attributes['within_cluster_min_pval_minuslogten'].max()
 tmp_scale = np.linspace(tmp_scale_min, tmp_scale_max, num=4, endpoint=True).round(0)
@@ -650,4 +807,32 @@ write_cytoscape_script()
 
 
 run_cytoscape_script()
+
+
+###################################### FINISH ######################################
+time_script_elapsed = time.time() - time_script_start
+print "RUNTIME: {:.1f} sec ({:.1f} min)".format(time_script_elapsed,time_script_elapsed/60)
+print "====== network_plot.py is finished ======"
+
+
+
+
+##############################################################################################
+###################################### OLD CODE ##############################################
+##############################################################################################
+
+# ################## CONFIG ##################
+# CYTOSCAPE_EXECUTABLE = "/Applications/Cytoscape_v3.2.1/cytoscape.sh" # path to cytoscape shell launcher (shell script)
+# CYTOSCAPE_STYLE = "/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot_CytoscapeStyle_v1.xml" # path to XML file with cytoscape style
+# 	# OBS: note that the cytoscape style name must match the one in this script. (E.g. DEPICT-style-v1)
+# 	# The style name can be found in the top part of the XML file: <visualStyle name="DEPICT-style-v1">
+
+# ###################################### CONSTANTS ######################################
+# COLS2READ_GENESETENRICHMENT = ["Original gene set ID", "Original gene set description", "Nominal P value", "False discovery rate"]
+
+# RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL = "-" # update this symbol if the header symbol of the gene names changes
+
+
+# NETWORK_CORRELATION_CUTOFF = 0.3 # GREATHER OR EQUAL TO | this parameter is used to determine the cutoff of when to draw edges between nodes.
+
 
