@@ -29,9 +29,7 @@ import ConfigParser
 
 ### Check your Java version ### 
 # OSX: /usr/libexec/java_home -V
-	# Should give something like: 
-# Linux/UNIX: TODO
-	#  ??
+# Linux/UNIX: java -version
 
 ### Download Java 1.8
 # http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
@@ -39,102 +37,24 @@ import ConfigParser
 ###################################### USAGE ######################################
 
 ### Example Usage
-#python network_plot.py --file_genesetenrichment ../example/test_bio-EA_genesetenrichment.txt --file_reconstituted_genesets_matrix <path to reconstituted gene set matrix> --node_selection cluster_center
-
-
-
-############### EA ###############
-### Full reconstituted
-#python network_plot.py --file_genesetenrichment /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_network/EA2_EduYears_pooled_Nweighted_single_gc_genesetenrichment.txt --file_reconstituted_genesets_matrix /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.txt.gz --node_selection cluster_center --genesetID_network GO:0048813
-### Reduced gene matrix file
-#python network_plot.py --file_genesetenrichment /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_network/EA2_EduYears_pooled_Nweighted_single_gc_genesetenrichment.txt --file_reconstituted_genesets_matrix /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_reconstituted_genesets/DEPICT_matrix_reconstituted_genesets_EA2_EduYears_297.txt --node_selection cluster_center --genesetID_network GO:0048813
-
-############### Test files ###############
-### test_rand200-1_genesetenrichment.txt
-#python network_plot.py --file_genesetenrichment /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_network_test/test_rand200-1_genesetenrichment.txt --file_reconstituted_genesets_matrix /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.txt.gz --node_selection cluster_center --genesetID_network MP:0009431
-
-### test_bio-EA_genesetenrichment.txt
-#python network_plot.py --file_genesetenrichment /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_network_test/test_bio-EA_genesetenrichment.txt --file_reconstituted_genesets_matrix /Users/pascaltimshel/Dropbox/0_Work/DEPICT/DEPICT_scripts_PT/data_reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.txt.gz --node_selection cluster_center --genesetID_network GO:0003713
-
-
-
-#######  Test cytoscape script (standalone) ######
-#/Applications/Cytoscape_v3.2.1/cytoscape.sh -S /Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot_cytoscape_script.txt
-
+#python network_plot.py <config_file.cfg>
 
 
 #######################################################################################
 ###################################### CONSTANTS ######################################
 #######################################################################################
 
-FILE_CONFIG = os.path.abspath("network_plot.cfg") # assuming that the config file is in the same directory as the 'network_plot.py' script
-
-#NOTE: These are internal variables to the program and should only be updated if the DEPICT output is updated from DEPICT version 1.1
+#NOTE: These are internal variables to the program and should only be updated if the DEPICT output is updated from DEPICT version 1.0 rel155
 COLS2READ_GENESETENRICHMENT = ["Original gene set ID", "Original gene set description", "Nominal P value", "False discovery rate"]
 
 RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL = "-" # update this symbol if the header symbol of the gene names changes
 
-EXPECTED_DEPICT_FDR_CUTOFFS = ["FDR<0.01","FDR<0.5","<= 0.05",">=0.20",">0.20"] # expected DEPICT cut-offs
+EXPECTED_DEPICT_FDR_CUTOFFS = ["<0.01","<0.05","<0.20",">=0.20",] # expected DEPICT cut-offs
 
 
 #######################################################################################
-###################################### FUNCTIONS ######################################
+###################################### FUNCTIONS ###################################### 
 #######################################################################################
-
-def ParseArguments():
-	""" Function to parse commandline arguments """
-	arg_parser = argparse.ArgumentParser(description="DEPICT network plot")
-	arg_parser.add_argument("--file_genesetenrichment", help="DEPICT geneset enrichment file [tab seperated]. DEPICT 1.1 or greater should be have generated the enrichment file - otherwise the headers of the file will not match", required=True)
-	arg_parser.add_argument("--file_reconstituted_genesets_matrix", help="DEPICT reconstituted geneset matrix file [tab seperated]. The file can be compressed (.gz) or uncompressed.", required=True)
-	arg_parser.add_argument("--out", help="""Output path INCLUDING a *file-prefix*. The path may be absolute or relative.
-											 *The directory will be CREATED, if it does not exist*.
-											 EXAMPLE ABSOLUTE PATH #1: /Users/john/DEPICT_results/my_phenotype_fileprefix
-											 EXAMPLE RELATIVE PATH #1: DEPICT_results/my_phenotype_fileprefix
-											 EXAMPLE RELATIVE PATH #2: ./DEPICT_results/my_phenotype_fileprefix
-											 Where "my_phenotype_fileprefix" is the file-prefix.
-											 *Default output path*: './network_plot/network_plot'""")
-											 #*Default output path* is the subdirectory 'network_plot' in the current working directory (executing terminal path) with the file prefix 'network_plot'
-	
-
-	### Consider using subparses
-	# subparsers = arg_parser.add_subparsers(dest='subcommand', #---> 'dest' is where the varible is save: args.subcommand/arg_parser.subcommand
-	# 								   title='subcommands in this script',
-	# 								   description='valid subcommands. set subcommand after main program required arguments',
-	# 								   help='You can get additional help by writing <program-name> <subcommand> --help')
-	## Subparsers
-	#arg_subparser_network_all_enriched_genesets = subparsers.add_parser('network_all_enriched_genesets')
-	#arg_subparser_network_selected_enriched_genesets = subparsers.add_parser('network_selection_enriched_genesets')
-
-
-	arg_parser.add_argument("--node_selection", help="""Choose which nodes to visualize in Cytoscape network. 
-													The option determines how the network_table file is written. 
-													cluster_center [default]: plot geneset cluster centers (or exemplars) (N_nodes=N_clusters); 
-													cluster_min_pval: plot geneset with within-cluster mimimum p-value (N_nodes=N_clusters); 
-													all: plot all FDR significant gene sets (N_nodes=N_significant_genesets)""", 
-													choices=['cluster_center', 'cluster_min_pval', 'all'], default='cluster_center')
-	
-	#TODO: allow a parameter for the correlation cutoff
-	
-	arg_parser.add_argument("--genesetID_network", help="""Argument value must be a valid genesetID ('Original gene set ID'). 
-															If this argument is supplied, then the geneset network will be created for the specified genesetID """)
-	
-	arg_parser.add_argument("--no_interactive_cytoscape_session", help="""If this argument is given, then the Cytoscape session will automatically be terminated once the plots have been generated.
-																		Thus the user will not be able to edit the Cytoscape networks manually and adjust visual attributes.
-																		We only recommend using this setting for 'quickly generating plots' or automating a pipeline for generating the plots.
-																		By default, this script will open an Cytoscape session that *the user will have to exit* once finished with editing/inspecting the networks.
-																		By default, the script will be waiting for the Cytoscape session to terminate.""", action='store_true') # action='store_true' --> default value is False 
-
-
-	#TODO: check the validity of the genesetID
-	#TODO: implement a function to allow multiple genesetIDs as arguments
-
-
-	#arg_parser.add_argument("--XXX", help="XXX; [default is false] ", action='store_true')
-	#arg_parser.add_argument("--XXX", type=int, help="XXX", default=0)
-	
-	args = arg_parser.parse_args()
-	return args
-
 
 def add_cluster_results_to_data_frame(df):
 	""" 
@@ -299,7 +219,7 @@ def write_network_table_file(df,file_out):
 				### ---> both source and target MUST be in the input data frame.
 
 			corr = matrix_corr.ix[i_row, j_col] # look-up correlation in the correlation matrix
-			if corr >= NETWORK_CORRELATION_CUTOFF:
+			if corr >= network_correlation_cutoff:
 				flag_singleton = False # withdraw the flag: we found a correlation partner. 
 				line = "{}\t{}\t{}\t{}\n".format(gsID_source, gsID_target, corr, int(round(corr,1)*10) )
 				f_network_table.write(line)
@@ -422,7 +342,7 @@ def write_cytoscape_script():
 
 	### Load and apply visual style
 	# *OBS*: KEEP STYLE NAME UPDATED - must match name in .xml file
-	f.write("""vizmap load file file="{file}" """.format(file=CYTOSCAPE_STYLE)+"\n")
+	f.write("""vizmap load file file="{file}" """.format(file=cytoscape_style)+"\n")
 	f.write("""vizmap apply styles="DEPICT-style-v1" """+"\n")
 	
 	### Set view to fit display
@@ -433,7 +353,7 @@ def write_cytoscape_script():
 	f.write("""view export OutputFile="{file_out}" options=PNG""".format(file_out=file_cytoscape_graphics)+"\n")
 
 	### OPTIONAL: exit script when done.
-	if no_interactive_cytoscape_session:
+	if not interactive_cytoscape_session:
 		f.write("""command quit"""+"\n")
 	
 
@@ -443,7 +363,7 @@ def write_cytoscape_script():
 def run_cytoscape_script():
 	""" Function to run Cytoscape with the input script generated by this program """
 
-	print "The program is now about to launch cytoscape ({}) and run the script".format(CYTOSCAPE_EXECUTABLE)
+	print "The program is now about to launch cytoscape ({}) and run the script".format(cytoscape_executable)
 
 	list_existing_graphics = glob.glob(file_cytoscape_graphics+"*")
 	if list_existing_graphics: # previous results files exists
@@ -455,9 +375,9 @@ def run_cytoscape_script():
 
 
 	### SHELL VERSION
-	#cmd = "{executable} -S {script}".format(executable=CYTOSCAPE_EXECUTABLE, script=file_cytoscape_script)
+	#cmd = "{executable} -S {script}".format(executable=cytoscape_executable, script=file_cytoscape_script)
 	### EXECUTABLE VERSION
-	cmd = [CYTOSCAPE_EXECUTABLE, "-S", file_cytoscape_script] # <-- remember the structure of the list an arguments.
+	cmd = [cytoscape_executable, "-S", file_cytoscape_script] # <-- remember the structure of the list an arguments.
 		# shlex.split('foo -a -b --bar baz') --> ['foo', '-a', '-b', '--bar', 'baz']
 		# subprocess.list2cmdline(cmd) <-- undocumented, not sure it works perfectly
 
@@ -476,52 +396,44 @@ def run_cytoscape_script():
 ###################################### GET CONFIG FILE ######################################
 #############################################################################################
 
+# Get config file delivered as command line argument
+parser = argparse.ArgumentParser(description='DEPICT network plot')
+parser.add_argument('cfg_file', metavar='DEPICT network plot configuration file', type=str, help='DEPICT network plot configuration file, all user inputs are specified in this file')
+args = parser.parse_args()
+
+# Read path to config file
 cfg = ConfigParser.ConfigParser()
-dataset_list = cfg.read(FILE_CONFIG) # Attempt to read and parse a *list* of filenames, returning a list of filenames which were successfully parsed
-					 # if not files are found, the list will be empty
-if not dataset_list: # check if list is empty
+cfg_succes = cfg.read(args.cfg_file) # Attempt to read and parse a *list* of filenames, returning a list of filenames which were successfully parsed. if not files are found, the list will be empty 
+if not cfg_succes: # check if list is empty
 	print "Could not read config file: {}".format(FILE_CONFIG)
 	print "Please make sure that the config file is located in the same directory as the network_plot.py script."
 	print "Will exit..."
 	sys.exit(0)
 
+cytoscape_executable = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_executable'))
+cytoscape_style = cfg.get("CYTOSCAPE",'cytoscape_style')
+file_genesetenrichment = os.path.abspath(cfg.get("INPUT PARAMETERS","file_genesetenrichment"))
+fdr_cutoffs = cfg.get("INPUT PARAMETERS", "fdr_cutoffs")
+file_reconstituted_genesets_matrix = os.path.abspath(cfg.get("RECONSTITUTED GENE SETS","file_reconstituted_genesets_matrix"))
+node_selection = cfg.get("OUTPUT PARAMETERS","node_selection")
+interactive_cytoscape_session = cfg.getboolean("OUTPUT PARAMETERS","interactive_cytoscape_session")
+genesetID_network = cfg.get("OUTPUT PARAMETERS","genesetID_network")
+out = cfg.get("OUTPUT PARAMETERS","output_label")
+network_correlation_cutoff = cfg.getfloat("OUTPUT PARAMETERS",'network_correlation_cutoff') # coerces option to a floating point number
 
-CYTOSCAPE_EXECUTABLE = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_executable'))
-CYTOSCAPE_STYLE = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_style'))
-
-FDR_CUTOFFS = cfg.get("GENE SET ENRICHMENT FILE", "fdr_cutoffs")
-NETWORK_CORRELATION_CUTOFF = cfg.getfloat("NETWORK STRUCTURE",'network_correlation_cutoff') # coerces option to a floating point number
-
-#print CYTOSCAPE_EXECUTABLE
-#print CYTOSCAPE_STYLE
-#print NETWORK_CORRELATION_CUTOFF
 
 ################## Process config arguments ##################
-if not os.path.exists(CYTOSCAPE_EXECUTABLE):
-	raise Exception("ERROR IN CONFIG: Cytoscape executable {} does not exists".format(CYTOSCAPE_EXECUTABLE))
+if not os.path.exists(cytoscape_executable):
+	raise Exception("ERROR IN CONFIG: Cytoscape executable {} does not exists".format(cytoscape_executable))
 
-list_of_fdr_cutoffs = [x.strip() for x in FDR_CUTOFFS.split(",")] # split on comma and remove whitespace
+list_of_fdr_cutoffs = [x.strip() for x in fdr_cutoffs.split(",")] # split on comma and remove whitespace
 for fdr in list_of_fdr_cutoffs:
 	if not fdr in EXPECTED_DEPICT_FDR_CUTOFFS:
 		raise Exception("ERROR IN CONFIG: Got unexpected FDR cutoff '{}'".format(fdr))
 
 
-#######################################################################################
-###################################### ARGUMENTS ######################################
-#######################################################################################
-
 time_script_start = time.time() # *START TIME*
 
-
-args = ParseArguments()
-
-file_genesetenrichment = os.path.abspath(args.file_genesetenrichment)
-file_reconstituted_genesets_matrix = os.path.abspath(args.file_reconstituted_genesets_matrix)
-node_selection = args.node_selection
-no_interactive_cytoscape_session = args.no_interactive_cytoscape_session
-
-
-out = args.out # complete pathname INCLUDING FILE PREFIX
 if out is None:
 	out = os.path.join(os.getcwd(), 'network_plot', 'network_plot')
 	out = os.path.abspath(out) # convert to absolute path.
@@ -542,9 +454,8 @@ if not os.path.exists(out_dir):
 
 print "Output file-prefix: {}".format(out)
 
-genesetID_network = args.genesetID_network # A gene set ID. If not argument is not specified in commandline, the value will be None
-if genesetID_network:
-	if not isinstance(genesetID_network, str): # just to be sure... MAYBE OVERKILL.
+if genesetID_network != "":
+	if not isinstance(genesetID_network, str): # just to be sure...
 		raise Exception("Value of genesetID_network argument is not of type string.")
 	print "genesetID_network argument given: {}".format(genesetID_network)
 
@@ -556,7 +467,7 @@ if genesetID_network:
 	file_cytoscape_graphics = "{out}_genesetID-{gsID}_network_diagram".format(out=out, gsID=gsID_clean) # OBS: no extension - cytoscape will do this
 else:
 	file_network_table= out + "_network_table.txt"
-	file_cytoscape_graphics = out + "network_diagram" # OBS: no extension - cytoscape will do this
+	file_cytoscape_graphics = out + "_network_diagram" # OBS: no extension - cytoscape will do this
 
 file_cytoscape_script = out + "_tmp_cytoscape_script.txt"
 
@@ -595,6 +506,7 @@ if flag_existing_out_files:
 	 		sys.exit(0)
 	print "Ok let's start..."
 
+
 #######################################################################################
 ###################################### READ DATA ######################################
 #######################################################################################
@@ -606,13 +518,11 @@ if not (tmp_header_cols == COLS2READ_GENESETENRICHMENT).all():
 	raise Exception("The DEPICT geneset enrichment file did not fit the correct format for the header.")
 
 df_genesetenrichment = pd.read_csv(file_genesetenrichment, sep="\t", usecols=COLS2READ_GENESETENRICHMENT) # usecols: either column names or position numbers
-print "Read gene enrichment file"
-#print df_genesetenrichment.head()
+print "Gene enrichment file read"
 
 ### Subset data based on FDR
 df_genesetenrichment = df_genesetenrichment[df_genesetenrichment['False discovery rate'].isin(list_of_fdr_cutoffs)]
 # REF: http://stackoverflow.com/questions/12096252/use-a-list-of-values-to-select-rows-from-a-pandas-dataframe
-# OLD CODE using static FDR 0.05 --> df_genesetenrichment = df_genesetenrichment[(df_genesetenrichment['False discovery rate']=="<0.01") | (df_genesetenrichment['False discovery rate']=="<0.05")]
 n_gene_set_fdr_significant = df_genesetenrichment.shape[0]
 if n_gene_set_fdr_significant == 0:
 	print "Found no gene sets with [{}] in file_genesetenrichment. The default settings of this program does not allow to continue the analysis. To be able to run network_plot.py without FDR significant gene sets, you need to make a few changes to the source code. E.g. a p-value cutoff could be used instead.".format(",".join(list_of_fdr_cutoffs))
@@ -638,7 +548,7 @@ print "Started reading file_reconstituted_genesets_matrix. This may take a few m
 #TODO implement a file check, reading only the header to check: 
 	# 1) presence of all cols2read [and avoid "ValueError: 'GeneSet_XYZ' is not in list"]
 	# 2) check correct file format.
-df_reconstituted_genesets = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", usecols=cols2read_reconstituted_genesets_matrix_with_rowname_symbol)
+df_reconstituted_genesets = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", usecols=cols2read_reconstituted_genesets_matrix_with_rowname_symbol, compression='gzip')
 	# OBS 1: if an element (e.g. GeneSet_XYZ) in the argument of "usecols" is not in header Pandas will throw an error --> "ValueError: 'GeneSet_XYZ' is not in list"
 		# ^^ We can check which columns could not be found
 	# Hint: instead of index_col=0, you can use "df_reconstituted_genesets.set_index('-', inplace=True)"
@@ -663,7 +573,7 @@ if not df_tmp_not_found.empty:
 ######################## Safety check for genesetID_network (geneset inset) ######################
 ##################################################################################################
 
-if genesetID_network is not None: # only check if argument is supplied
+if genesetID_network != "": # only check if argument is supplied
 	if not df_reconstituted_genesets.columns.isin([genesetID_network]).any(): # we need to make sure the genesetID is in the enrichment file
 		raise Exception("Value of genesetID_network argument '{}' is either not contained in 1) the DEPICT reconstituted geneset matrix or; 2) the FDR significant gene sets in the enrichment file. Please ensure you specified a valid identifier".format(genesetID_network))
 
@@ -813,26 +723,4 @@ run_cytoscape_script()
 time_script_elapsed = time.time() - time_script_start
 print "RUNTIME: {:.1f} sec ({:.1f} min)".format(time_script_elapsed,time_script_elapsed/60)
 print "====== network_plot.py is finished ======"
-
-
-
-
-##############################################################################################
-###################################### OLD CODE ##############################################
-##############################################################################################
-
-# ################## CONFIG ##################
-# CYTOSCAPE_EXECUTABLE = "/Applications/Cytoscape_v3.2.1/cytoscape.sh" # path to cytoscape shell launcher (shell script)
-# CYTOSCAPE_STYLE = "/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot_CytoscapeStyle_v1.xml" # path to XML file with cytoscape style
-# 	# OBS: note that the cytoscape style name must match the one in this script. (E.g. DEPICT-style-v1)
-# 	# The style name can be found in the top part of the XML file: <visualStyle name="DEPICT-style-v1">
-
-# ###################################### CONSTANTS ######################################
-# COLS2READ_GENESETENRICHMENT = ["Original gene set ID", "Original gene set description", "Nominal P value", "False discovery rate"]
-
-# RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL = "-" # update this symbol if the header symbol of the gene names changes
-
-
-# NETWORK_CORRELATION_CUTOFF = 0.3 # GREATHER OR EQUAL TO | this parameter is used to determine the cutoff of when to draw edges between nodes.
-
 
