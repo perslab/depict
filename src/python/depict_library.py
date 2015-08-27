@@ -122,7 +122,7 @@ def convert(x):
 
 
 # Helper function to run PLINK clumping
-def run_plink_clumping(plink_binary, plink_genotype_data_plink_prefix, plink_clumping_pvalue, plink_clumping_distance, plink_clumping_r2, input_filename, output_filename, plink_clumping_snp_column_header, plink_clumping_pvalue_column_header):
+def run_plink_clumping(plink_binary, plink_genotype_data_plink_prefix, association_pvalue_cutoff, plink_clumping_distance, plink_clumping_r2, input_filename, output_filename, plink_clumping_snp_column_header, plink_clumping_pvalue_column_header):
 	"""
 	Function to run PLINK
 	"""
@@ -137,7 +137,7 @@ def run_plink_clumping(plink_binary, plink_genotype_data_plink_prefix, plink_clu
 	#"--exclude", "/tmp/mylist.txt",
 	cmd = [plink_binary, 
 		"--bfile", plink_genotype_data_plink_prefix,
-		"--clump-p1", str(plink_clumping_pvalue),
+		"--clump-p1", str(association_pvalue_cutoff),
 		"--clump-kb", str(plink_clumping_distance),
 		"--clump-r2", str(plink_clumping_r2),
 		"--clump-snp-field", plink_clumping_snp_column_header,
@@ -149,7 +149,7 @@ def run_plink_clumping(plink_binary, plink_genotype_data_plink_prefix, plink_clu
 
 
 # Read SNPsnap collection and input SNPs from user
-def construct_depict_loci_helper(infile,collection,df_gene_boundaries,mhc_start,mhc_end):
+def write_depict_loci_helper(infile,collection,df_gene_boundaries,mhc_start,mhc_end):
 
 	# Dictionary with log information
 	log_dict = {}
@@ -200,42 +200,35 @@ def construct_depict_loci_helper(infile,collection,df_gene_boundaries,mhc_start,
 
 
 # Construct DEPICT loci
-def construct_depict_loci(analysis_path,label,plink_clumping_pvalue,collectionfile,depict_gene_annotation_file,outfile,mhc_start,mhc_end,plink_executable,genotype_data_plink_prefix,plink_clumping_distance,plink_clumping_r2,plink_input_file,number_random_runs,background_plink_clumping_pvalue,plink_clumping_snp_column_header,plink_clumping_pvalue_column_header,background_data_path,null_gwas_prefix,depict_contact_email,req_fraction_of_background_files):
+def write_depict_loci(analysis_path,label,association_pvalue_cutoff,collection_file,depict_gene_annotation_file,locus_file,mhc_start,mhc_end,plink_executable,genotype_data_plink_prefix,plink_clumping_distance,plink_clumping_r2,plink_input_file,number_random_runs,background_plink_clumping_pvalue,plink_clumping_snp_column_header,plink_clumping_pvalue_column_header,null_gwas_prefix,depict_contact_email,req_fraction_of_background_files,background_loci_dir_suffix,background_data_path):
 
 	print "\nReading precomputed 1KG SNP collection file"
 
 	# Read SNPsnap collection and gene information
 	t0 = time()
-	collection = pd.read_csv(collectionfile, index_col=0, header=0, delimiter="\t", compression = 'gzip')
+	collection = pd.read_csv(collection_file, index_col=0, header=0, delimiter="\t", compression = 'gzip')
 
 	# Read gene information
 	df_gene_boundaries = pd.read_csv(depict_gene_annotation_file, header = 0, sep='\t', index_col = 0, usecols = [0,2,3])
 	t1 = time()
 	#print '%f sec' %(t1-t0)
 
-	print "\nConstructing DEPICT input loci"
-	log_a_out, log_a_err = run_plink_clumping(plink_executable, genotype_data_plink_prefix, plink_clumping_pvalue, plink_clumping_distance, plink_clumping_r2, "{}/{}".format(analysis_path,plink_input_file), "{}/{}".format(analysis_path,label), plink_clumping_snp_column_header, plink_clumping_pvalue_column_header )
+	print "\nWriting DEPICT loci"
+	log_a_out, log_a_err = run_plink_clumping(plink_executable, genotype_data_plink_prefix, association_pvalue_cutoff, plink_clumping_distance, plink_clumping_r2, "{}/{}".format(analysis_path,plink_input_file), "{}/{}".format(analysis_path,label), plink_clumping_snp_column_header, plink_clumping_pvalue_column_header )
 	t1 = time()
-	depictloci_df, log_dict = construct_depict_loci_helper("{}/{}.clumped".format(analysis_path,label),collection,df_gene_boundaries,mhc_start,mhc_end)
+	depictloci_df, log_dict = write_depict_loci_helper("{}/{}.clumped".format(analysis_path,label),collection,df_gene_boundaries,mhc_start,mhc_end)
 	t2 = time()
 	#print '%f sec' %(t2-t1)
 
 	# Saving observed loci to file
-	depictloci_df.to_csv(outfile, index=False, quoting=0, doublequote = False, sep='\t',columns=["snp_id","chr","locus_start","locus_end","gwas_pvalue","nearest_gene","genes_in_locus"],float_format="%10.2e")
+	depictloci_df.to_csv(locus_file, index=False, quoting=0, doublequote = False, sep='\t',columns=["snp_id","chr","locus_start","locus_end","gwas_pvalue","nearest_gene","genes_in_locus"],float_format="%10.2e")
 
-	print "\nConstructing background loci"
+	print "\nRetrieving background loci"
 
 	# Construct background loci
 	def write_background_loci(loci_requested):
-		background_loci_dir = "{path}/nloci{numloci}_nperm{numruns}_kb{dis}_rsq{rsq}_mhc{mhcsta}-{mhcend}_col{collection}/".format(\
-			path=background_data_path,\
-			numloci=loci_requested,\
-			numruns=number_random_runs,\
-			dis=plink_clumping_distance,\
-			rsq=plink_clumping_r2,\
-			mhcsta=mhc_start,\
-			mhcend=mhc_end,\
-			collection=collectionfile.split("/")[-1].replace(".txt.gz","").replace('_','-'))
+
+		background_loci_dir = "{}/nloci{}_{}".format(background_data_path,loci_requested,background_loci_dir_suffix)
 		if not os.path.exists(background_loci_dir):
 			os.makedirs(background_loci_dir)
 	
@@ -259,7 +252,7 @@ def construct_depict_loci(analysis_path,label,plink_clumping_pvalue,collectionfi
 				if not os.path.exists(clumped_file):
 					sys.stdout.write("PLINK problems with null GWAS {} ignoring\n".format(i))
 					continue
-				depictloci_background_df, log_back_dict = construct_depict_loci_helper(clumped_file,\
+				depictloci_background_df, log_back_dict = write_depict_loci_helper(clumped_file,\
 					collection, df_gene_boundaries, mhc_start,mhc_end)
 				depictloci_background_df.sort('gwas_pvalue',inplace=True)
 				background_plink_clumping_pvalue_relaxed = background_plink_clumping_pvalue
@@ -277,7 +270,7 @@ def construct_depict_loci(analysis_path,label,plink_clumping_pvalue,collectionfi
 						"{}/{}".format(background_loci_dir,i+1),\
 						 plink_clumping_snp_column_header,\
 						 plink_clumping_pvalue_column_header)
-					depictloci_background_df, log_back_dict = construct_depict_loci_helper("{}/{}.clumped".format(background_loci_dir,i+1),\
+					depictloci_background_df, log_back_dict = write_depict_loci_helper("{}/{}.clumped".format(background_loci_dir,i+1),\
 						collection, df_gene_boundaries, mhc_start,mhc_end)
 					depictloci_background_df.sort('gwas_pvalue',inplace=True)
 				output_file = "{}/permutation{}.txt.gz".format(background_loci_dir,i+1)
@@ -304,13 +297,13 @@ def construct_depict_loci(analysis_path,label,plink_clumping_pvalue,collectionfi
 			if background_files_count < (number_random_runs * req_fraction_of_background_files):
 				sys.exit("Exiting.. To few background files in {}. Please remove the folder, rerun DEPICT and contact {} if the error prevails.".format(background_loci_dir,depict_contact_email)) 
 
-		return background_loci_dir 
+		return 1 
 
-	background_loci_dir = write_background_loci(len(depictloci_df))
+	write_background_loci(len(depictloci_df))
 	#for i in range(450,501):
 	#	write_background_loci(i)
 	
-	return background_loci_dir, log_a_out + "\n".join(["{}: {}".format(key,log_dict[key]) for key in log_dict]) #, log_a_err 
+	return log_a_out + "\n".join(["{}: {}".format(key,log_dict[key]) for key in log_dict]) #, log_a_err 
 	
 
 # Helper function to save SNPs that are in my data
@@ -431,5 +424,7 @@ def run_depict(java_executable, depict_jar, background_data_path, locus_file, la
 	else:
 		print("\nRunning DEPICT{}{}{}".format(" gene prioritization" if do_geneprio else "", " and" if do_geneprio and do_gsea else ""," gene set enrichment analysis" if do_gsea else " tissue enrichment analysis" if do_tissue else ""))
 		log_out,log_err = subprocess.Popen(get_cmd(do_geneprio, do_gsea, do_tissue), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+
+	print ""
 
 	return log_out, log_err

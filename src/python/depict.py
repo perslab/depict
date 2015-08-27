@@ -1,7 +1,10 @@
 #!/usr/bin/env python2.7
 
+import warnings
+warnings.filterwarnings("ignore")
 import os,sys,pdb,logging,subprocess,ConfigParser,argparse
 from glob import glob
+import pandas as pd
 
 # Read path to config file
 parser = argparse.ArgumentParser(description='DEPICT')
@@ -14,22 +17,21 @@ path_to_depict = os.path.realpath(__file__).split('/')
 depict_path = "/".join(path_to_depict[0:(len(path_to_depict)-3)])
 data_path = "data/"
 sys.path.append("%s/src/python"%depict_path)
-from depict_library import construct_depict_loci,write_plink_input,run_depict
+from depict_library import write_depict_loci,write_plink_input,run_depict
 
 
 # Parse the config file
 cfg = ConfigParser.ConfigParser()
 cfg_file_found = cfg.read(args.cfg_file)
 analysis_path = cfg.get("PATHS",'analysis_path')
-step_write_plink_input = cfg.getboolean("DEPICT SETTINGS", "step_write_plink_input")
-step_construct_depict_loci = cfg.getboolean("DEPICT SETTINGS", "step_construct_depict_loci")
+step_write_depict_loci = cfg.getboolean("DEPICT SETTINGS", "step_construct_depict_loci")
 step_depict_geneprio = cfg.getboolean("DEPICT SETTINGS", "step_depict_geneprio")
 step_depict_gsea = cfg.getboolean("DEPICT SETTINGS", "step_depict_gsea")
 step_depict_tissueenrichment = cfg.getboolean("DEPICT SETTINGS", "step_depict_tissueenrichment")
 
 
 # GWAS summary statistics input file parameters (only autosomal SNPs are included)
-cutoff =  cfg.getfloat("GWAS FILE SETTINGS",'association_pvalue_cutoff')
+association_pvalue_cutoff =  cfg.getfloat("GWAS FILE SETTINGS",'association_pvalue_cutoff')
 filename = cfg.get("GWAS FILE SETTINGS",'gwas_summary_statistics_file')
 label = cfg.get("GWAS FILE SETTINGS",'label_for_output_files')
 pvalue_col_name = cfg.get("GWAS FILE SETTINGS",'pvalue_col_name')
@@ -43,7 +45,7 @@ sep = cfg.get("GWAS FILE SETTINGS",'separator')
 plink_executable = cfg.get("PLINK SETTINGS",'plink_executable')
 genotype_data_plink_prefix = "{}/{}".format(depict_path,cfg.get("PLINK SETTINGS",'genotype_data_plink_prefix')) if cfg.get("PLINK SETTINGS",'genotype_data_plink_prefix').startswith("data/genotype_data_plink") else cfg.get("PLINK SETTINGS",'genotype_data_plink_prefix')
 plink_clumping_snp_column_header = "SNP"
-plink_clumping_pvalue_column_header = "P"
+association_pvalue_cutoff_column_header = "P"
 plink_clumping_distance = 500 
 plink_clumping_r2 = 0.1
 
@@ -80,25 +82,47 @@ prioritize_genes_outside_input_loci= cfg.getboolean("MISC SETTINGS",'prioritize_
 leave_out_chr = cfg.get("MISC SETTINGS",'leave_out_chr')
 
 
+# Construct directory if it does not exist
+if not os.path.exists(analysis_path):
+	print "\nCreating directory were results will be saved ({})".format(analysis_path)
+	os.makedirs(analysis_path)
+else:
+	print "\nSaving results to {}".format(analysis_path)
+
+
 # Logging and contact
 log_file = '%s/%s_log.txt'%(analysis_path,label)
 logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO)
 depict_contact_email = "tunepers@broadinstitute.org"
 
 
-# Parse and discards SNPs not in my 1KG data
-if step_write_plink_input:
-	map_log = write_plink_input(analysis_path, filename, label, marker_col_name, pvalue_col_name, chr_col_name, pos_col_name, sep, genotype_data_plink_prefix, cutoff)
+# Background loci folder
+background_loci_dir_suffix = "nperm{numruns}_kb{dis}_rsq{rsq}_mhc{mhcsta}-{mhcend}_col{collection}/".format(\
+	numruns=number_random_runs,\
+	dis=plink_clumping_distance,\
+	rsq=plink_clumping_r2,\
+	mhcsta=mhc_start_bp,\
+	mhcend=mhc_end_bp,\
+	collection=collection_file.split("/")[-1].replace(".txt.gz","").replace('_','-'))
+
+
+# Read PLINK index SNPs and write DEPICT locus file
+if step_write_depict_loci:
+	map_log = write_plink_input(analysis_path, filename, label, marker_col_name, pvalue_col_name, chr_col_name, pos_col_name, sep, genotype_data_plink_prefix, association_pvalue_cutoff)
 	logging.info(map_log)
 
-
-# Read PLINK index SNPs and construct DEPICT locus file
-if step_construct_depict_loci:
-	background_loci_dir, loci_log = construct_depict_loci(analysis_path,label,cutoff,collection_file,depict_gene_annotation_file,locus_file,mhc_start_bp,mhc_end_bp,plink_executable,genotype_data_plink_prefix,plink_clumping_distance, plink_clumping_r2,"%s_depict.tab"%label,number_random_runs,background_plink_clumping_pvalue,plink_clumping_snp_column_header,plink_clumping_pvalue_column_header,background_data_path,null_gwas_prefix,depict_contact_email,req_fraction_of_background_files)
+	loci_log = write_depict_loci(analysis_path,label,association_pvalue_cutoff,collection_file,depict_gene_annotation_file,locus_file,mhc_start_bp,mhc_end_bp,plink_executable,genotype_data_plink_prefix,plink_clumping_distance, plink_clumping_r2,"%s_depict.tab"%label,number_random_runs,background_plink_clumping_pvalue,plink_clumping_snp_column_header,association_pvalue_cutoff_column_header,null_gwas_prefix,depict_contact_email,req_fraction_of_background_files,background_loci_dir_suffix,background_data_path)
 	logging.info(loci_log)
 
 
 # Run DEPICT
 if step_depict_geneprio or step_depict_gsea or step_depict_tissueenrichment:
-	loci_log = run_depict(java_executable, depict_jar, background_loci_dir, locus_file, label, step_depict_geneprio, step_depict_gsea, step_depict_tissueenrichment, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, mhc_start_bp, mhc_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr)
-	logging.info(loci_log)
+
+	# Check that locus file exists and get the number of loci
+	if os.path.isfile(locus_file):
+		background_loci_dir = "{}/nloci{}_{}".format(background_data_path,pd.read_csv(locus_file).shape[0],background_loci_dir_suffix)
+	else:
+		sys.exit("Exiting: Locus file ({}) not found. Please make sure DEPICT loci have been constructed.".format(locus_file)) 
+
+	depict_log = run_depict(java_executable, depict_jar, background_loci_dir, locus_file, label, step_depict_geneprio, step_depict_gsea, step_depict_tissueenrichment, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, mhc_start_bp, mhc_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr)
+	logging.info(depict_log)
