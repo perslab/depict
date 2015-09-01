@@ -90,11 +90,34 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
         //Load the predicted Z-Scores for a certain database (e.g. GO_BP, MGI, Reactome, KEGG etc.):
         ExpressionDataset dataset = new ExpressionDataset(filenameDatabaseToUse, "\t", null, null);
         
-        //Save cofunc as plain text or binary
-        //dataset.save("/tmp/cofunc.binary");
-        //dataset.save("/tmp/cofunc.txt");
-        //System.exit(0);
+        /*
+        // Save a copy of the cofunc matrix with fewer gene sets
+        try {
+            String filename = "/tmp/genesets_to_be_included.txt";
+            java.io.BufferedReader in = new java.io.BufferedReader(new java.io.FileReader(new File(filename)));
+            
+            HashMap genesetsToBeIncluded = new HashMap();
+            String gs = "";
+            while ((gs = in.readLine()) != null) {
+                genesetsToBeIncluded.put(gs,1);     
+            }
+            ExpressionDataset datasetToBeReduced = new ExpressionDataset(filenameDatabaseToUse, "\t", null, genesetsToBeIncluded);        
+            datasetToBeReduced.save("/tmp/cofunc.binary");        
+            System.exit(0);
+        } catch (Exception e) {
+            System.out.println("Error:\t" + e.getMessage());
+            e.printStackTrace();
+            System.exit(-1);
+        }        
+        */
         
+        /*
+        // Save cofunc as plain text or binary
+        dataset.save("/tmp/cofunc.binary");
+        dataset.save("/tmp/cofunc.txt");
+        System.exit(0);
+        */
+
         // Create mapping from gene set identifier to column in dataset (used to list top genes for a given gene set)
         Map<String, Integer> geneSetIDToMatrixID = new HashMap<String, Integer>();
         for (int gs = 0; gs < dataset.nrSamples; gs++) {
