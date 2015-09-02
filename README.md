@@ -19,7 +19,7 @@ The following description explains how to download DEPICT, test run it on exampl
 
 
 ## Download DEPICT
-Download the compressed [DEPICT version 1 rel173](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_rel173.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.
+Download the compressed [DEPICT version 1 rel173](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_v1_rel173.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.
 
 
 ## Test run DEPICT
