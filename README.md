@@ -10,7 +10,7 @@
   * `sudo pip install intervaltree`   
 * Pandas (version 0.15.2 or higher)
   * `sudo pip install pandas`
-* PLINK version 1.9 August 1 relaease (or newer)
+* PLINK version 1.9 (August 1 release or newer)
   * [PLINK version 1.9](https://www.cog-genomics.org/plink2/) 
 
 
@@ -19,7 +19,7 @@ The following description explains how to download DEPICT, test run it on exampl
 
 
 ## Download DEPICT
-Download the compressed [DEPICT version 1 rel155](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_rel155.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.
+Download the compressed [DEPICT version 1 rel173](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_rel173.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.
 
 
 ## Test run DEPICT
@@ -56,7 +56,7 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
     * `comma`
     * `semicolon`
     * `space`
-  * Point `plink_executable` to where PLINK 1.9 executable is on yur system (e.g. `/usr/bin/plink`)
+  * Point `plink_executable` to where PLINK 1.9 executable (August 1 release or newer) is on your system (e.g. `/usr/bin/plink`)
   * If you are using other genotype data than the data part of DEPICT then point `genotype_data_plink_prefix` to where your PLINK binary format 1000 Genomes Project genotype files are on your system. Specify the entire path of the filenames except the extension
 5. Run DEPICT
   * `<path to DEPICT>/src/python/depict.py <path to your config file>`
