@@ -411,7 +411,7 @@ if not cfg_succes: # check if list is empty
 	sys.exit(0)
 
 cytoscape_executable = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_executable'))
-cytoscape_style = cfg.get("CYTOSCAPE",'cytoscape_style')
+cytoscape_style = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_style'))
 file_genesetenrichment = os.path.abspath(cfg.get("INPUT PARAMETERS","file_genesetenrichment"))
 fdr_cutoffs = cfg.get("INPUT PARAMETERS", "fdr_cutoffs")
 file_reconstituted_genesets_matrix = os.path.abspath(cfg.get("RECONSTITUTED GENE SETS","file_reconstituted_genesets_matrix"))
@@ -434,10 +434,12 @@ for fdr in list_of_fdr_cutoffs:
 
 time_script_start = time.time() # *START TIME*
 
-if out is None:
+if out is None: # hmmm. *LEGACY from argparse* (command line arguments). Not really need with the new configparser setup.
 	out = os.path.join(os.getcwd(), 'network_plot', 'network_plot')
 	out = os.path.abspath(out) # convert to absolute path.
 	# e.g. /Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot/network_plot
+elif out == "": # empty string
+	raise Exception("No output_label label given. Please correct the config file")
 else:
 	out = os.path.abspath(out) # convert to absolute path. # E.g.:
 		# os.path.abspath(".") --> '/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src'
@@ -518,7 +520,7 @@ if not (tmp_header_cols == COLS2READ_GENESETENRICHMENT).all():
 	raise Exception("The DEPICT geneset enrichment file did not fit the correct format for the header.")
 
 df_genesetenrichment = pd.read_csv(file_genesetenrichment, sep="\t", usecols=COLS2READ_GENESETENRICHMENT) # usecols: either column names or position numbers
-print "Gene enrichment file read"
+print "Gene enrichment file read: {}".format(file_genesetenrichment)
 
 ### Subset data based on FDR
 df_genesetenrichment = df_genesetenrichment[df_genesetenrichment['False discovery rate'].isin(list_of_fdr_cutoffs)]
@@ -542,17 +544,39 @@ else:
 cols2read_reconstituted_genesets_matrix = df_genesetenrichment['Original gene set ID'] # cols to read gs from enrichment file. 
 cols2read_reconstituted_genesets_matrix_with_rowname_symbol = pd.Series([RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL]).append(cols2read_reconstituted_genesets_matrix) # pushing "rownames" symbol header to the cols2read - OTHERWISE IT WILL NOT BE READ.
 
+
+### Check for existence of all gene sets in the file_reconstituted_genesets_matrix.
+# This will *AVOID* the exception "ValueError: 'GeneSet_XYZ' is not in list"
+# Reading only the header to check: 
+	# 1) presence of all cols2read
+	# 2) "check correct file format".
+tmp_header_cols = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", nrows=1, index_col=False, compression='infer').columns 
+	# ^^ read only header and first entry | returns pandas Index
+	# *NO INDEX* --> this will include the 'RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL' in the .columns 
+bool_gs_not_found = ~cols2read_reconstituted_genesets_matrix_with_rowname_symbol.isin(tmp_header_cols) # inverted boolean
+index_tmp_not_found = cols2read_reconstituted_genesets_matrix_with_rowname_symbol[bool_gs_not_found]
+if not index_tmp_not_found.empty:
+	# Remember: cols2read_reconstituted_genesets_matrix_with_rowname_symbol is a pd.Series() object
+	print "ERROR: Could not find all gene sets from the DEPICT gene set enrichment file in the DEPICT reconstituted gene set matrix."
+	print "Number of gene sets from enrichment file that could not be found in the DEPICT reconstituted gene set matrix: {}".format(sum(bool_gs_not_found))
+	print "List of gene sets not found: ", cols2read_reconstituted_genesets_matrix_with_rowname_symbol[bool_gs_not_found].values
+	print "Please check that you are using the correct DEPICT reconstituted gene set matrix or that the DEPICT gene set enrichment file is not corrupted."
+	print "The DEPICT version that generated the enrichment file should be the same version as the DEPICT reconstituted gene set matrix."
+	print "Will exit the program..."
+	sys.exit(0)
+else:
+	print "file check of file_reconstituted_genesets_matrix passed"
+
+
 ### Reading data
 time_start = time.time()
-print "Started reading file_reconstituted_genesets_matrix. This may take a few minutes..."
-#TODO implement a file check, reading only the header to check: 
-	# 1) presence of all cols2read [and avoid "ValueError: 'GeneSet_XYZ' is not in list"]
-	# 2) check correct file format.
-df_reconstituted_genesets = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", usecols=cols2read_reconstituted_genesets_matrix_with_rowname_symbol, compression='gzip')
+print "Started reading file_reconstituted_genesets_matrix: {}. This may take a few minutes...".format(file_reconstituted_genesets_matrix)
+df_reconstituted_genesets = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", usecols=cols2read_reconstituted_genesets_matrix_with_rowname_symbol, compression='infer')
 	# OBS 1: if an element (e.g. GeneSet_XYZ) in the argument of "usecols" is not in header Pandas will throw an error --> "ValueError: 'GeneSet_XYZ' is not in list"
 		# ^^ We can check which columns could not be found
 	# Hint: instead of index_col=0, you can use "df_reconstituted_genesets.set_index('-', inplace=True)"
-	# Pandas infer compression automatically
+	# Pandas version >=0.16 infer compression automatically: compression : {'gzip', 'bz2', 'infer', None}, default 'infer'
+		# For on-the-fly decompression of on-disk data. If 'infer', then use gzip or bz2 if filepath_or_buffer is a string ending in '.gz' or '.bz2', respectively, and no decompression otherwise. Set to None for no decompression.
 df_reconstituted_genesets.set_index(RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL, inplace=True) # setting the gene names as index col
 df_reconstituted_genesets.index.name = "ENSG" # just to make it nice
 time_elapsed = time.time() - time_start
@@ -560,14 +584,9 @@ print "Elapsed time for reading DEPICT reconstituted genesets matrix: {:.2f} sec
 print "Dimension of df_reconstituted_genesets: ", df_reconstituted_genesets.shape
 # OBSERVATION: KEGG_DRUG_METABOLISM_CYTOCHROME_P450 does not exists in the "file_reconstituted_genesets_matrix" file BUT ONLY in the "file_genesetenrichment"
 
-### CHECK of missing genesets 
-# *OBS* THIS IS ACTUALLY NOT NECESSARY because Pandas will throw a "ValueError: XXX is not in list" if a gene set is in col2read, but *NOT* in the geneset matrix
-#assert(df_reconstituted_genesets.shape[1]==len(cols2read_reconstituted_genesets_matrix)) # ## REQUIRE that all columns of interest where loaded correctly --> maybe this is too much.
-bool_gs_not_found = ~cols2read_reconstituted_genesets_matrix.isin(df_reconstituted_genesets) # inverted boolean
-df_tmp_not_found = cols2read_reconstituted_genesets_matrix[bool_gs_not_found]
-if not df_tmp_not_found.empty:
-	print "Number of gene sets from enrichment file that could not be found in DEPICT matrix: {}".format(sum(bool_gs_not_found))
-	print "List: ", cols2read_reconstituted_genesets_matrix[bool_gs_not_found]
+# ### CHECK of missing genesets 
+# # *OBS* THIS IS ACTUALLY NOT NECESSARY because Pandas will throw a "ValueError: XXX is not in list" if a gene set is in col2read, but *NOT* in the geneset matrix
+# #assert(df_reconstituted_genesets.shape[1]==len(cols2read_reconstituted_genesets_matrix)) # ## REQUIRE that all columns of interest where loaded correctly --> maybe this is too much.
 
 ##################################################################################################
 ######################## Safety check for genesetID_network (geneset inset) ######################
