@@ -582,7 +582,7 @@ cols2read_reconstituted_genesets_matrix_with_rowname_symbol = pd.Series([RECONST
 # Reading only the header to check: 
 	# 1) presence of all cols2read
 	# 2) "check correct file format".
-tmp_header_cols = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", nrows=1, index_col=False, compression='infer').columns 
+tmp_header_cols = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", nrows=1, index_col=False, compression='gzip').columns 
 	# ^^ read only header and first entry | returns pandas Index
 	# *NO INDEX* --> this will include the 'RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL' in the .columns 
 bool_gs_not_found = ~cols2read_reconstituted_genesets_matrix_with_rowname_symbol.isin(tmp_header_cols) # inverted boolean
@@ -603,7 +603,7 @@ else:
 ### Reading data
 time_start = time.time()
 print "Started reading file_reconstituted_genesets_matrix: {}. This may take a few minutes...".format(file_reconstituted_genesets_matrix)
-df_reconstituted_genesets = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", usecols=cols2read_reconstituted_genesets_matrix_with_rowname_symbol, compression='infer')
+df_reconstituted_genesets = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", usecols=cols2read_reconstituted_genesets_matrix_with_rowname_symbol, compression='gzip')
 	# OBS 1: if an element (e.g. GeneSet_XYZ) in the argument of "usecols" is not in header Pandas will throw an error --> "ValueError: 'GeneSet_XYZ' is not in list"
 		# ^^ We can check which columns could not be found
 	# Hint: instead of index_col=0, you can use "df_reconstituted_genesets.set_index('-', inplace=True)"
