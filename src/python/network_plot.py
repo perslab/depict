@@ -85,6 +85,7 @@ def add_cluster_results_to_data_frame(df):
 	# IMPORTANT --> REQUIRES index to be 'Original gene set ID'
 	#df.ix[['GO:0003712', 'GO:0003713'],:]
 	df.ix[df_reconstituted_genesets.columns,'Cluster ID'] = labels
+		# ^*OBS: these labels will be reassigned later | New September 8th 2015
 
 	################## Assigning Cluster center (boolean) and Cluster minimum P value ##################
 
@@ -112,6 +113,37 @@ def add_cluster_results_to_data_frame(df):
 	## safety check
 	assert( sum(df["Cluster center (boolean)"])==n_clusters )
 	assert( sum(df["Cluster minimum P value (boolean)"])==n_clusters )
+
+	################## [SEMI HACK] *REASSIGNING CLUSTER LABELS/IDs*  ##################
+	# Here we assign the lowest cluster ID/label to the cluster with the smallest "Cluster minimum P value"
+	tmp_current_clusterID = None
+	tmp_clusterID_rank = 0
+	df = df.sort(['Cluster minimum P value', 'Cluster ID']) # SORT!
+	for row_index, row in df.iterrows():
+		# NB: we could just loop over the index instead!
+		if tmp_current_clusterID is None:
+			tmp_current_clusterID = row['Cluster ID']
+
+		if tmp_current_clusterID != row['Cluster ID']:
+			tmp_clusterID_rank += 1
+			tmp_current_clusterID = row['Cluster ID']
+
+		df.ix[row_index, 'Cluster ID'] = tmp_clusterID_rank
+
+
+	### OLD CODE
+	# tmp_cluster_rank = 0
+	# for k in range(n_clusters): # looping over clusters | we could also loop over unique values in df['Cluster ID']
+	# 	df[df['Cluster ID']==k]
+
+		# http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.rank.html
+		# Series.rank(method='average', na_option='keep', ascending=True, pct=False)
+		# rank supports different tie-breaking methods, specified with the method parameter:
+			# average : average rank of tied group
+			# min : lowest rank in the group
+			# max : highest rank in the group
+			# first : ranks assigned in the order they appear in the array
+
 
 	return df
 
