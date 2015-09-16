@@ -14,9 +14,15 @@ depict_gene_annotation_file = "%s/mapping_and_annotation_files/GPL570ProbeENSGIn
 
 
 # SNPsnap collections for 1000 Genomes Project phase 3 can be downloaded from http://www.broadinstitute.org/mpg/snpsnap/database_download.html
+# Broad, ld0.5, Pilot: /cvar/jhlab/snpsnap/data/step3/1KG_snpsnap_production_v1_uncompressed_incl_rsID/ld0.5/ld0.5_collection.tab
+# Broad, ld0.5, Phase 3: /cvar/jhlab/snpsnap/data/step3/1KG_snpsnap_production_v2/ld0.5_collection.tab
+# Broad, kb500, Pilot: /cvar/jhlab/snpsnap/data/step3/1KG_snpsnap_production_v1_uncompressed_incl_rsID/kb500/kb500_collection.tab
+# Broad, kb500, Phase 3: /cvar/jhlab/snpsnap/data/step3/1KG_snpsnap_production_v2/EUR/kb500/kb500_collection.tab.gz
+
 geno_flag =  "1000genomespilot"
 #geno_flag = "1000genomesphase3" 
-collection_id = "ld0.5_collection"
+#collection_id = "ld0.5_collection"
+collection_id = "kb500_collection"
 collection_file = "/home/data/snpsnap/data/{}/{}.tab.gz".format(geno_flag,collection_id)
 
 
@@ -26,7 +32,8 @@ def get_nearest_gene_intervall_tree(depict_gene_annotation_file, depictgenes):
     chr_col = 6
     str_col = 1
     sta_col = 2
-    end_col = 3 trees = {}
+    end_col = 3
+    trees = {}
     for i in range(1, 23, 1):
             trees[str(i)] = IntervalTree()
     with open (depict_gene_annotation_file,'r') as infile:
