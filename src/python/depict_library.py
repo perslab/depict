@@ -101,7 +101,7 @@ def get_locus_gene_boundaries(row,df_gene_boundaries):
 	locus_min = row.locus_start 
 	locus_max = row.locus_end
 	locus_genes = row.nearest_gene.split(';')
-	locus_genes.extend(row.genes_in_locus.split(';')) if not isinstance(row.genes_in_locus, float)  else None # If it empty then then it is NaN which is a float
+	locus_genes.extend(row.genes_in_locus.split(';')) if not isinstance(row.genes_in_locus, float)  else None # If it is empty then then it is NaN which is a float
 	for gene in set(locus_genes):
 		if gene in df_gene_boundaries.index:
 			gene_start = df_gene_boundaries.ix[gene,'ensembl_bp_start']
@@ -157,11 +157,11 @@ def write_depict_loci_helper(infile,collection,df_gene_boundaries,mhc_start,mhc_
 	# Read users SNPs
 	t0 = time()
 	try:
-		clumps_df = pd.read_csv(infile,delimiter=r"\s+")
+		clumps_df = pd.read_csv(infile,delimiter=r"\s+",skip_blank_lines=True)
 	except IOError:
 		print('\nError when trying to open {}.  Please check the PLINK log.'.format(infile))
 		sys.exit()
-	clumps_df.set_index(clumps_df.CHR.astype('str') + ":" + clumps_df.BP.astype('str'),inplace=True)
+	clumps_df.set_index("{}:{}".format(clumps_df.CHR.astype('int'),clumps_df.BP.astype('int')),inplace=True)
 	t1 = time()
 	#print 'Time 1 %f' %(t1-t0)
 
@@ -277,7 +277,7 @@ def write_depict_loci(analysis_path,label,association_pvalue_cutoff,collection_f
 					depictloci_background_df, log_back_dict = write_depict_loci_helper("{}/{}.clumped".format(background_loci_dir,i+1),\
 						collection, df_gene_boundaries, mhc_start,mhc_end)
 					depictloci_background_df.sort('gwas_pvalue',inplace=True)
-				output_file = "{}/permutation{}.txt.gz".format(background_loci_dir,i+1)
+				output_file = "{}/permutation{}.txt".format(background_loci_dir,i+1)
 				depictloci_background_df.iloc[0:loci_requested,:].to_csv(\
 					output_file,\
 					index=False,\
