@@ -456,7 +456,11 @@ network_correlation_cutoff = cfg.getfloat("OUTPUT PARAMETERS",'network_correlati
 
 ################## Process config arguments ##################
 if not os.path.exists(cytoscape_executable):
-	raise Exception("ERROR IN CONFIG: Cytoscape executable {} does not exists".format(cytoscape_executable))
+	raise Exception("ERROR IN CONFIG: Cytoscape executable {} does not exists.".format(cytoscape_executable))
+
+if not os.path.exists(cytoscape_style):
+	raise Exception("ERROR IN CONFIG: Cytoscape style {} does not exists.".format(cytoscape_style))
+
 
 list_of_fdr_cutoffs = [x.strip() for x in fdr_cutoffs.split(",")] # split on comma and remove whitespace
 for fdr in list_of_fdr_cutoffs:
