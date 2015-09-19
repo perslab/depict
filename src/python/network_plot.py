@@ -39,6 +39,13 @@ import ConfigParser
 ### Example Usage
 #python network_plot.py <config_file.cfg>
 
+###################################### Known bugs ######################################
+# 2015-09-19: "Missing edges" with Pearson_correlation close to the cut-off
+	# For some reason, Cytoscape does not draw edges between nodes with Pearson_correlation close to the cut-off.
+	# This is a harmless bug in Cytoscape, but might confuse you if you try to recontruct the graph from the network table.
+
+
+
 
 #######################################################################################
 ###################################### CONSTANTS ######################################
@@ -285,6 +292,11 @@ def write_network_table_file(df,file_out):
 
 
 def write_genesetenrichment_cluster_result_file(df):
+	### Indexing Panda objects can return two fundamentally different objects: a view or a copy.
+	### REF: http://stackoverflow.com/questions/17995328/changing-values-in-pandas-dataframe-doenst-work
+	### OBS: any *modification* to the data frame in "view", modifies the "original" data frame
+	df_write = df.copy(deep=True) # deep "copy" - *OBS: INEFFICIENT MEMORY USAGE*
+
 	### Columns
 	# Original gene set ID
 	# Original gene set description
@@ -296,9 +308,9 @@ def write_genesetenrichment_cluster_result_file(df):
 	# Cluster gene set with minimum P value
 	# Cluster minimum P value
 	print "Writing geneset enrichment cluster result file..."
-	df["Cluster ID"] = df["Cluster ID"] + 1 # looks better in the output
-	df.sort(['Cluster ID','Nominal P value'], inplace=True)
-	df.to_csv(file_genesetenrichment_cluster_result, sep="\t", index=False)
+	df_write["Cluster ID"] = df_write["Cluster ID"] + 1 # looks better in the output
+	df_write.sort(['Cluster ID','Nominal P value'], inplace=True)
+	df_write.to_csv(file_genesetenrichment_cluster_result, sep="\t", index=False)
 	print "Done"
 
 
@@ -320,6 +332,11 @@ def discretize_pval(pval, scale):
 	return value_discretized
 
 def write_node_attribute_file(df):
+	### Indexing Panda objects can return two fundamentally different objects: a view or a copy.
+	### REF: http://stackoverflow.com/questions/17995328/changing-values-in-pandas-dataframe-doenst-work
+	### OBS: any *modification* to the data frame in "view", modifies the "original" data frame
+	df_write = df.copy(deep=True) # deep "copy" - *OBS: INEFFICIENT MEMORY USAGE*
+
 	### Columns
 	# Original gene set ID
 	# Original gene set description
@@ -338,9 +355,9 @@ def write_node_attribute_file(df):
 	# within_cluster_min_pval_minuslogten
 	# within_cluster_min_pval_discrete
 	print "Writing node attribute file..."
-	df["Cluster ID"] = df["Cluster ID"] + 1 # looks better in the output
-	df.sort(['Cluster ID','Nominal P value'], inplace=True)
-	df.to_csv(file_node_attribute, sep="\t", index=False)
+	df_write["Cluster ID"] = df_write["Cluster ID"] + 1 # looks better in the output
+	df_write.sort(['Cluster ID','Nominal P value'], inplace=True)
+	df_write.to_csv(file_node_attribute, sep="\t", index=False)
 	print "Done"
 	
 def write_cytoscape_script():
@@ -355,12 +372,12 @@ def write_cytoscape_script():
 	f = open(file_cytoscape_script, 'w')
 
 	### Import network
-	f.write("""network import file file="{file}" firstRowAsColumnNames=true startLoadRow=2 indexColumnSourceInteraction=1 indexColumnTargetInteraction=2""".format(file=file_network_table)+"\n")
+	f.write("""network import file file="{file}" firstRowAsColumnNames=true startLoadRow=1 indexColumnSourceInteraction=1 indexColumnTargetInteraction=2""".format(file=file_network_table)+"\n")
 
 	### Import node attributes
 	# REF: http://wiki.cytoscape.org/Cytoscape_3/UserManual/Attributes
 	# *OBS*: tab seperated
-	f.write(r"""table import file file="{file}" firstRowAsColumnNames=true startLoadRow=2 keyColumnIndex=1 delimiters="\t" """.format(file=file_node_attribute)+"\n")
+	f.write(r"""table import file file="{file}" firstRowAsColumnNames=true startLoadRow=1 keyColumnIndex=1 delimiters="\t" """.format(file=file_node_attribute)+"\n")
 		### ^ use raw string to inhibit python from setting a "	" character
 
 	### Set layout
@@ -383,6 +400,10 @@ def write_cytoscape_script():
 	### Export
 	f.write("""view export OutputFile="{file_out}" options=PDF""".format(file_out=file_cytoscape_graphics)+"\n")
 	f.write("""view export OutputFile="{file_out}" options=PNG""".format(file_out=file_cytoscape_graphics)+"\n")
+
+	f.write("""session save as file="{file_out}" """.format(file_out=file_cytoscape_session)+"\n")
+
+	
 
 	### OPTIONAL: exit script when done.
 	if not interactive_cytoscape_session:
@@ -503,9 +524,11 @@ if genesetID_network:
 	gsID_clean = re.sub(r'[^\w]', '', genesetID_network)  # regex: stripping all symbols from string. keeping only alpha-numeric characters.
 	file_network_table = "{out}_genesetID-{gsID}_network_table.{ext}".format(out=out, gsID=gsID_clean, ext="txt")
 	file_cytoscape_graphics = "{out}_genesetID-{gsID}_network_diagram".format(out=out, gsID=gsID_clean) # OBS: no extension - cytoscape will do this
+	file_cytoscape_session = "{out}_genesetID-{gsID}_cytoscape_session".format(out=out, gsID=gsID_clean) # OBS: no extension - cytoscape will do this
 else:
 	file_network_table= out + "_network_table.txt"
 	file_cytoscape_graphics = out + "_network_diagram" # OBS: no extension - cytoscape will do this
+	file_cytoscape_session = out + "_cytoscape_session" # OBS: no extension - cytoscape will do this
 
 file_cytoscape_script = out + "_tmp_cytoscape_script.txt"
 
@@ -524,7 +547,8 @@ list_of_out_files = [file_network_table,
 					file_genesetenrichment_cluster_result,
 					file_summary,
 					file_cytoscape_script,
-					file_cytoscape_graphics] # USED for checking for existing files
+					file_cytoscape_graphics,
+					file_cytoscape_session] # USED for checking for existing files
 
 flag_existing_out_files = False
 for elem in list_of_out_files:
