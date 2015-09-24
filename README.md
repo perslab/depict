@@ -19,8 +19,7 @@ The following description explains how to download DEPICT, test run it on exampl
 
 
 ## Download DEPICT
-Download the compressed [DEPICT version 1 rel173](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_v1_rel173.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.
-
+Download the compressed [DEPICT version 1 rel173](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_v1_rel173.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.  If you will run DEPICT at the Broad Insitute, see [below section](#depict_at_broad).
 
 ## Test run DEPICT
 The following steps outline how to test run DEPICT on LDL cholesterol GWAS summary statistics from [Teslovich, Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html). This example is available in both the 1000 Genomes Project pilot phase DEPICT version and the 1000 Genomes Project phase 3 DEPICT version.
@@ -36,7 +35,7 @@ The following steps outline how to test run DEPICT on LDL cholesterol GWAS summa
   * Tissue enrichment results `ldl_teslovich_nature2010_tissueenrichment.txt`
 
 
-## Run DEPICT based on your GWAS
+## <a name="depict_your_gwas"></a>Run DEPICT based on your GWAS
 The following steps allow you to run DEPICT on your GWAS summary statistics. We advice you to run the above LDL cholesterol example before this point to make sure that you meet all the necessary dependencies to run DEPICT.
 
 1. Make sure that you use hg19 genomic SNP positions
@@ -66,6 +65,16 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
   * Gene set enrichment results  in file ending with `_genesetenrichment.txt`
   * Tissue enrichment results in file ending with `_tissueenrichment.txt`
 
+## <a name="depict_at_broad"></a>DEPICT at the Broad Institute 
+
+### Run the LDL example
+ 1. Copy the example config file `/cvar/jhlab/tp/DEPICT/example/ldl_teslovich_nature2010.cfg` to your working directory and `change analysis_path` to that directory
+ 2. Run DEPICT using
+`qsub -e err -o out -cwd -l m_mem_free=12g /cvar/jhlab/tp/DEPICT/src/python/broad_run.sh python /cvar/jhlab/tp/DEPICT/src/python/depict.py <your modified config file>.cfg`
+
+### Run DEPICT on own GWAS
+1. Follow the above [steps 1-4](#depict_your_gwas)
+2. Run DEPICT using `qsub -e err -o out -cwd -l m_mem_free=1g -pe smp 12 /cvar/jhlab/tp/DEPICT/src/python/broad_run.sh python /cvar/jhlab/tp/DEPICT/src/python/depict.py <your modified config file>.cfg`.  Be aware when you can modify the memory used per slot/thread, that DEPICT needs at least needs 14GB
 
 # Troubleshooting
 Please send the log file (ending with `_log.txt`) with a brief description of the problem to Tune H Pers (tunepers@broadinstitute.org).
