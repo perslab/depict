@@ -39,6 +39,13 @@ import ConfigParser
 ### Example Usage
 #python network_plot.py <config_file.cfg>
 
+###################################### Known bugs ######################################
+# 2015-09-19: "Missing edges" with Pearson_correlation close to the cut-off
+	# For some reason, Cytoscape does not draw edges between nodes with Pearson_correlation close to the cut-off.
+	# This is a harmless bug in Cytoscape, but might confuse you if you try to recontruct the graph from the network table.
+
+
+
 
 #######################################################################################
 ###################################### CONSTANTS ######################################
@@ -85,6 +92,7 @@ def add_cluster_results_to_data_frame(df):
 	# IMPORTANT --> REQUIRES index to be 'Original gene set ID'
 	#df.ix[['GO:0003712', 'GO:0003713'],:]
 	df.ix[df_reconstituted_genesets.columns,'Cluster ID'] = labels
+		# ^*OBS: these labels will be reassigned later | New September 8th 2015
 
 	################## Assigning Cluster center (boolean) and Cluster minimum P value ##################
 
@@ -112,6 +120,37 @@ def add_cluster_results_to_data_frame(df):
 	## safety check
 	assert( sum(df["Cluster center (boolean)"])==n_clusters )
 	assert( sum(df["Cluster minimum P value (boolean)"])==n_clusters )
+
+	################## [SEMI HACK] *REASSIGNING CLUSTER LABELS/IDs*  ##################
+	# Here we assign the lowest cluster ID/label to the cluster with the smallest "Cluster minimum P value"
+	tmp_current_clusterID = None
+	tmp_clusterID_rank = 0
+	df = df.sort(['Cluster minimum P value', 'Cluster ID']) # SORT!
+	for row_index, row in df.iterrows():
+		# NB: we could just loop over the index instead!
+		if tmp_current_clusterID is None:
+			tmp_current_clusterID = row['Cluster ID']
+
+		if tmp_current_clusterID != row['Cluster ID']:
+			tmp_clusterID_rank += 1
+			tmp_current_clusterID = row['Cluster ID']
+
+		df.ix[row_index, 'Cluster ID'] = tmp_clusterID_rank
+
+
+	### OLD CODE
+	# tmp_cluster_rank = 0
+	# for k in range(n_clusters): # looping over clusters | we could also loop over unique values in df['Cluster ID']
+	# 	df[df['Cluster ID']==k]
+
+		# http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.rank.html
+		# Series.rank(method='average', na_option='keep', ascending=True, pct=False)
+		# rank supports different tie-breaking methods, specified with the method parameter:
+			# average : average rank of tied group
+			# min : lowest rank in the group
+			# max : highest rank in the group
+			# first : ranks assigned in the order they appear in the array
+
 
 	return df
 
@@ -253,6 +292,11 @@ def write_network_table_file(df,file_out):
 
 
 def write_genesetenrichment_cluster_result_file(df):
+	### Indexing Panda objects can return two fundamentally different objects: a view or a copy.
+	### REF: http://stackoverflow.com/questions/17995328/changing-values-in-pandas-dataframe-doenst-work
+	### OBS: any *modification* to the data frame in "view", modifies the "original" data frame
+	df_write = df.copy(deep=True) # deep "copy" - *OBS: INEFFICIENT MEMORY USAGE*
+
 	### Columns
 	# Original gene set ID
 	# Original gene set description
@@ -264,9 +308,9 @@ def write_genesetenrichment_cluster_result_file(df):
 	# Cluster gene set with minimum P value
 	# Cluster minimum P value
 	print "Writing geneset enrichment cluster result file..."
-	df["Cluster ID"] = df["Cluster ID"] + 1 # looks better in the output
-	df.sort(['Cluster ID','Nominal P value'], inplace=True)
-	df.to_csv(file_genesetenrichment_cluster_result, sep="\t", index=False)
+	df_write["Cluster ID"] = df_write["Cluster ID"] + 1 # looks better in the output
+	df_write.sort(['Cluster ID','Nominal P value'], inplace=True)
+	df_write.to_csv(file_genesetenrichment_cluster_result, sep="\t", index=False)
 	print "Done"
 
 
@@ -288,6 +332,11 @@ def discretize_pval(pval, scale):
 	return value_discretized
 
 def write_node_attribute_file(df):
+	### Indexing Panda objects can return two fundamentally different objects: a view or a copy.
+	### REF: http://stackoverflow.com/questions/17995328/changing-values-in-pandas-dataframe-doenst-work
+	### OBS: any *modification* to the data frame in "view", modifies the "original" data frame
+	df_write = df.copy(deep=True) # deep "copy" - *OBS: INEFFICIENT MEMORY USAGE*
+
 	### Columns
 	# Original gene set ID
 	# Original gene set description
@@ -306,9 +355,9 @@ def write_node_attribute_file(df):
 	# within_cluster_min_pval_minuslogten
 	# within_cluster_min_pval_discrete
 	print "Writing node attribute file..."
-	df["Cluster ID"] = df["Cluster ID"] + 1 # looks better in the output
-	df.sort(['Cluster ID','Nominal P value'], inplace=True)
-	df.to_csv(file_node_attribute, sep="\t", index=False)
+	df_write["Cluster ID"] = df_write["Cluster ID"] + 1 # looks better in the output
+	df_write.sort(['Cluster ID','Nominal P value'], inplace=True)
+	df_write.to_csv(file_node_attribute, sep="\t", index=False)
 	print "Done"
 	
 def write_cytoscape_script():
@@ -323,12 +372,12 @@ def write_cytoscape_script():
 	f = open(file_cytoscape_script, 'w')
 
 	### Import network
-	f.write("""network import file file="{file}" firstRowAsColumnNames=true startLoadRow=2 indexColumnSourceInteraction=1 indexColumnTargetInteraction=2""".format(file=file_network_table)+"\n")
+	f.write("""network import file file="{file}" firstRowAsColumnNames=true startLoadRow=1 indexColumnSourceInteraction=1 indexColumnTargetInteraction=2""".format(file=file_network_table)+"\n")
 
 	### Import node attributes
 	# REF: http://wiki.cytoscape.org/Cytoscape_3/UserManual/Attributes
 	# *OBS*: tab seperated
-	f.write(r"""table import file file="{file}" firstRowAsColumnNames=true startLoadRow=2 keyColumnIndex=1 delimiters="\t" """.format(file=file_node_attribute)+"\n")
+	f.write(r"""table import file file="{file}" firstRowAsColumnNames=true startLoadRow=1 keyColumnIndex=1 delimiters="\t" """.format(file=file_node_attribute)+"\n")
 		### ^ use raw string to inhibit python from setting a "	" character
 
 	### Set layout
@@ -351,6 +400,10 @@ def write_cytoscape_script():
 	### Export
 	f.write("""view export OutputFile="{file_out}" options=PDF""".format(file_out=file_cytoscape_graphics)+"\n")
 	f.write("""view export OutputFile="{file_out}" options=PNG""".format(file_out=file_cytoscape_graphics)+"\n")
+
+	f.write("""session save as file="{file_out}" """.format(file_out=file_cytoscape_session)+"\n")
+
+	
 
 	### OPTIONAL: exit script when done.
 	if not interactive_cytoscape_session:
@@ -411,7 +464,7 @@ if not cfg_succes: # check if list is empty
 	sys.exit(0)
 
 cytoscape_executable = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_executable'))
-cytoscape_style = cfg.get("CYTOSCAPE",'cytoscape_style')
+cytoscape_style = os.path.abspath(cfg.get("CYTOSCAPE",'cytoscape_style'))
 file_genesetenrichment = os.path.abspath(cfg.get("INPUT PARAMETERS","file_genesetenrichment"))
 fdr_cutoffs = cfg.get("INPUT PARAMETERS", "fdr_cutoffs")
 file_reconstituted_genesets_matrix = os.path.abspath(cfg.get("RECONSTITUTED GENE SETS","file_reconstituted_genesets_matrix"))
@@ -424,7 +477,11 @@ network_correlation_cutoff = cfg.getfloat("OUTPUT PARAMETERS",'network_correlati
 
 ################## Process config arguments ##################
 if not os.path.exists(cytoscape_executable):
-	raise Exception("ERROR IN CONFIG: Cytoscape executable {} does not exists".format(cytoscape_executable))
+	raise Exception("ERROR IN CONFIG: Cytoscape executable {} does not exists.".format(cytoscape_executable))
+
+if not os.path.exists(cytoscape_style):
+	raise Exception("ERROR IN CONFIG: Cytoscape style {} does not exists.".format(cytoscape_style))
+
 
 list_of_fdr_cutoffs = [x.strip() for x in fdr_cutoffs.split(",")] # split on comma and remove whitespace
 for fdr in list_of_fdr_cutoffs:
@@ -434,10 +491,12 @@ for fdr in list_of_fdr_cutoffs:
 
 time_script_start = time.time() # *START TIME*
 
-if out is None:
+if out is None: # hmmm. *LEGACY from argparse* (command line arguments). Not really need with the new configparser setup.
 	out = os.path.join(os.getcwd(), 'network_plot', 'network_plot')
 	out = os.path.abspath(out) # convert to absolute path.
 	# e.g. /Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot/network_plot
+elif out == "": # empty string
+	raise Exception("No output_label label given. Please correct the config file")
 else:
 	out = os.path.abspath(out) # convert to absolute path. # E.g.:
 		# os.path.abspath(".") --> '/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src'
@@ -465,9 +524,11 @@ if genesetID_network:
 	gsID_clean = re.sub(r'[^\w]', '', genesetID_network)  # regex: stripping all symbols from string. keeping only alpha-numeric characters.
 	file_network_table = "{out}_genesetID-{gsID}_network_table.{ext}".format(out=out, gsID=gsID_clean, ext="txt")
 	file_cytoscape_graphics = "{out}_genesetID-{gsID}_network_diagram".format(out=out, gsID=gsID_clean) # OBS: no extension - cytoscape will do this
+	file_cytoscape_session = "{out}_genesetID-{gsID}_cytoscape_session".format(out=out, gsID=gsID_clean) # OBS: no extension - cytoscape will do this
 else:
 	file_network_table= out + "_network_table.txt"
 	file_cytoscape_graphics = out + "_network_diagram" # OBS: no extension - cytoscape will do this
+	file_cytoscape_session = out + "_cytoscape_session" # OBS: no extension - cytoscape will do this
 
 file_cytoscape_script = out + "_tmp_cytoscape_script.txt"
 
@@ -486,7 +547,8 @@ list_of_out_files = [file_network_table,
 					file_genesetenrichment_cluster_result,
 					file_summary,
 					file_cytoscape_script,
-					file_cytoscape_graphics] # USED for checking for existing files
+					file_cytoscape_graphics,
+					file_cytoscape_session] # USED for checking for existing files
 
 flag_existing_out_files = False
 for elem in list_of_out_files:
@@ -518,7 +580,7 @@ if not (tmp_header_cols == COLS2READ_GENESETENRICHMENT).all():
 	raise Exception("The DEPICT geneset enrichment file did not fit the correct format for the header.")
 
 df_genesetenrichment = pd.read_csv(file_genesetenrichment, sep="\t", usecols=COLS2READ_GENESETENRICHMENT) # usecols: either column names or position numbers
-print "Gene enrichment file read"
+print "Gene enrichment file read: {}".format(file_genesetenrichment)
 
 ### Subset data based on FDR
 df_genesetenrichment = df_genesetenrichment[df_genesetenrichment['False discovery rate'].isin(list_of_fdr_cutoffs)]
@@ -542,17 +604,39 @@ else:
 cols2read_reconstituted_genesets_matrix = df_genesetenrichment['Original gene set ID'] # cols to read gs from enrichment file. 
 cols2read_reconstituted_genesets_matrix_with_rowname_symbol = pd.Series([RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL]).append(cols2read_reconstituted_genesets_matrix) # pushing "rownames" symbol header to the cols2read - OTHERWISE IT WILL NOT BE READ.
 
+
+### Check for existence of all gene sets in the file_reconstituted_genesets_matrix.
+# This will *AVOID* the exception "ValueError: 'GeneSet_XYZ' is not in list"
+# Reading only the header to check: 
+	# 1) presence of all cols2read
+	# 2) "check correct file format".
+tmp_header_cols = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", nrows=1, index_col=False, compression='gzip').columns 
+	# ^^ read only header and first entry | returns pandas Index
+	# *NO INDEX* --> this will include the 'RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL' in the .columns 
+bool_gs_not_found = ~cols2read_reconstituted_genesets_matrix_with_rowname_symbol.isin(tmp_header_cols) # inverted boolean
+index_tmp_not_found = cols2read_reconstituted_genesets_matrix_with_rowname_symbol[bool_gs_not_found]
+if not index_tmp_not_found.empty:
+	# Remember: cols2read_reconstituted_genesets_matrix_with_rowname_symbol is a pd.Series() object
+	print "ERROR: Could not find all gene sets from the DEPICT gene set enrichment file in the DEPICT reconstituted gene set matrix."
+	print "Number of gene sets from enrichment file that could not be found in the DEPICT reconstituted gene set matrix: {}".format(sum(bool_gs_not_found))
+	print "List of gene sets not found: ", cols2read_reconstituted_genesets_matrix_with_rowname_symbol[bool_gs_not_found].values
+	print "Please check that you are using the correct DEPICT reconstituted gene set matrix or that the DEPICT gene set enrichment file is not corrupted."
+	print "The DEPICT version that generated the enrichment file should be the same version as the DEPICT reconstituted gene set matrix."
+	print "Will exit the program..."
+	sys.exit(0)
+else:
+	print "file check of file_reconstituted_genesets_matrix passed"
+
+
 ### Reading data
 time_start = time.time()
-print "Started reading file_reconstituted_genesets_matrix. This may take a few minutes..."
-#TODO implement a file check, reading only the header to check: 
-	# 1) presence of all cols2read [and avoid "ValueError: 'GeneSet_XYZ' is not in list"]
-	# 2) check correct file format.
+print "Started reading file_reconstituted_genesets_matrix: {}. This may take a few minutes...".format(file_reconstituted_genesets_matrix)
 df_reconstituted_genesets = pd.read_csv(file_reconstituted_genesets_matrix, sep="\t", usecols=cols2read_reconstituted_genesets_matrix_with_rowname_symbol, compression='gzip')
 	# OBS 1: if an element (e.g. GeneSet_XYZ) in the argument of "usecols" is not in header Pandas will throw an error --> "ValueError: 'GeneSet_XYZ' is not in list"
 		# ^^ We can check which columns could not be found
 	# Hint: instead of index_col=0, you can use "df_reconstituted_genesets.set_index('-', inplace=True)"
-	# Pandas infer compression automatically
+	# Pandas version >=0.16 infer compression automatically: compression : {'gzip', 'bz2', 'infer', None}, default 'infer'
+		# For on-the-fly decompression of on-disk data. If 'infer', then use gzip or bz2 if filepath_or_buffer is a string ending in '.gz' or '.bz2', respectively, and no decompression otherwise. Set to None for no decompression.
 df_reconstituted_genesets.set_index(RECONSTITUTED_GENESETS_MATRIX_ROWNAME_SYMBOL, inplace=True) # setting the gene names as index col
 df_reconstituted_genesets.index.name = "ENSG" # just to make it nice
 time_elapsed = time.time() - time_start
@@ -560,14 +644,9 @@ print "Elapsed time for reading DEPICT reconstituted genesets matrix: {:.2f} sec
 print "Dimension of df_reconstituted_genesets: ", df_reconstituted_genesets.shape
 # OBSERVATION: KEGG_DRUG_METABOLISM_CYTOCHROME_P450 does not exists in the "file_reconstituted_genesets_matrix" file BUT ONLY in the "file_genesetenrichment"
 
-### CHECK of missing genesets 
-# *OBS* THIS IS ACTUALLY NOT NECESSARY because Pandas will throw a "ValueError: XXX is not in list" if a gene set is in col2read, but *NOT* in the geneset matrix
-#assert(df_reconstituted_genesets.shape[1]==len(cols2read_reconstituted_genesets_matrix)) # ## REQUIRE that all columns of interest where loaded correctly --> maybe this is too much.
-bool_gs_not_found = ~cols2read_reconstituted_genesets_matrix.isin(df_reconstituted_genesets) # inverted boolean
-df_tmp_not_found = cols2read_reconstituted_genesets_matrix[bool_gs_not_found]
-if not df_tmp_not_found.empty:
-	print "Number of gene sets from enrichment file that could not be found in DEPICT matrix: {}".format(sum(bool_gs_not_found))
-	print "List: ", cols2read_reconstituted_genesets_matrix[bool_gs_not_found]
+# ### CHECK of missing genesets 
+# # *OBS* THIS IS ACTUALLY NOT NECESSARY because Pandas will throw a "ValueError: XXX is not in list" if a gene set is in col2read, but *NOT* in the geneset matrix
+# #assert(df_reconstituted_genesets.shape[1]==len(cols2read_reconstituted_genesets_matrix)) # ## REQUIRE that all columns of interest where loaded correctly --> maybe this is too much.
 
 ##################################################################################################
 ######################## Safety check for genesetID_network (geneset inset) ######################

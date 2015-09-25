@@ -8,17 +8,20 @@
 
 ### === USAGE === ###
 ### Recommended invocation of script (prints to STDOUT)
-# Rscript tissue_plot.R <file_tissue_enrichment>
- # Example call #1: Rscript tissue_plot.R ../example/ldl_teslovich_nature2010_tissueenrichment.txt
- # Example call #2: Rscript tissue_plot.R ../example/ldl_teslovich_nature2010_tissueenrichment_gtex.txt
+# Rscript tissue_plot.R <file_tissue_enrichment> [output_prefix]
+# Example call #1: Rscript tissue_plot.R ../example/ldl_teslovich_nature2010_tissueenrichment.txt ldl_teslovich
+# Example call #2: Rscript tissue_plot.R ../example/ldl_teslovich_nature2010_tissueenrichment_gtex.txt ldl_teslovich
 
 ### Alternative invocation of script (writes STDOUT output to file). (Remember to quote the arguments):
-# R CMD BATCH --no-save --no-restore '--args <file_tissue_enrichment>' tissue_plot.R <OUTPUT_FILENAME>.out
+# R CMD BATCH --no-save --no-restore '--args <file_tissue_enrichment>' tissue_plot.R <R_OUTPUT_FILENAME>.out
 
 ### === ARGUMENT (input) === ### 
-# file_tissue_enrichment: 
-  # - an absolute or relative filepath to the DEPCIT tissue enrichment file.
-  # - the file can be either in "GTEx" or "Gene Network" format.
+# file_tissue_enrichment (required): 
+# - an absolute or relative filepath to the DEPCIT tissue enrichment file.
+# - the file can be either in "GTEx" or "Gene Network" format.
+# output_prefix (optional):
+# - a prefix to the output filenames. 
+# - E.g. if output_prefix is 'ldl_teslovich', the output files would be tissue_plot_ldl_teslovich_PLOTSPECIFICSUFFIX.pdf
 
 ### === OUTPUT === ### 
 # The script writes .pdf file plots to the DIRECTORY FROM WHERE THE SCRIPT IS CALLED (working directory of terminal session).
@@ -71,17 +74,17 @@ function.input_procces <- function(df, cols2keep) {
   df.res <- subset(df, select=cols2keep)
   ### SORTING
   #df.res <- df.res[order(df.res[,sort.colname]),] # IMPORTANT: sorting data frame
-    # ^ <--- no longer needed to sort here. The functions function.*.set_variables* does this!
+  # ^ <--- no longer needed to sort here. The functions function.*.set_variables* does this!
   return(df.res)
 }
 
 function.genenetwork.set_variables_and_split <- function(df) {
   ### USE: Gene Network
   ### STEPS: 
-    # 1) split df into "* System", "Cells", "Tissues" and "dummy_mixed_categories"
-    # 2) clean "group" names
-    # 3) adding new variables
-    # 4) return *list* of data frames
+  # 1) split df into "* System", "Cells", "Tissues" and "dummy_mixed_categories"
+  # 2) clean "group" names
+  # 3) adding new variables
+  # 4) return *list* of data frames
   
   df.res <- df
   ### Set "significance" variable
@@ -105,16 +108,16 @@ function.genenetwork.set_variables_and_split <- function(df) {
   
   ### *Cleaning names in "group" variable*  [AFTER PARTITIONING]
   df.system[,"group"] <- with(df.system, sub("(\\s*Systems\\s*)|(\\s*System\\s*)", "", group, ignore.case=TRUE, perl=TRUE)) #|(Systems\\s+)
-    # e.g. Nervous System --> Nervous
-    # note that there exists a mesh category called "Hemic and Immune Systems". Therefore we need to match "Systems". Remember to place that capture group first in the pattern
-    # sub("(\\s*Systems\\s*)|(\\s*System\\s*)", "X", df.system$MeSH.first.level.term, ignore.case=TRUE, perl=TRUE) #|(Systems\\s+)
+  # e.g. Nervous System --> Nervous
+  # note that there exists a mesh category called "Hemic and Immune Systems". Therefore we need to match "Systems". Remember to place that capture group first in the pattern
+  # sub("(\\s*Systems\\s*)|(\\s*System\\s*)", "X", df.system$MeSH.first.level.term, ignore.case=TRUE, perl=TRUE) #|(Systems\\s+)
   
   #***OBS*** --> the group_variable.genenetwork.cells/group_variable.genenetwork.tissues is used INSTEAD OF GROUP
   # ^ this is done because the PARTITIONING is done on the "MeSH first level term" (group_variable.genenetwork)
   df.cells[,"group"] <- sub("\\s*Cells\\s*", "", df.cells[,group_variable.genenetwork.cells_and_tissues], ignore.case=TRUE, perl=TRUE)
-    #"Cells": Stem Cells --> Stem; Antigen-Presenting Cells --> Antigen-Presenting
+  #"Cells": Stem Cells --> Stem; Antigen-Presenting Cells --> Antigen-Presenting
   df.tissues[,"group"] <- sub("\\s*Tissue\\s*", "", df.tissues[,group_variable.genenetwork.cells_and_tissues], ignore.case=TRUE, perl=TRUE)
-    #"Tissue": Lymphoid Tissue --> Lymphoid; Epithelium -(*IRREGULAR*)-> Epithelium
+  #"Tissue": Lymphoid Tissue --> Lymphoid; Epithelium -(*IRREGULAR*)-> Epithelium
   
   
   ### ***SORTING***  
@@ -175,16 +178,16 @@ function.plot.barplot <- function(df.tissue_enrichment, xlabel="MISSING X-LABEL"
   ### USE: UNIVERSIAL
   ### Function creates a ggplot object [geom_bar()]
   ### INPUT: 
-    # df.tissue_enrichment: a sorted "cleaned" data frame
-    # xlabel: a character string used as xlabel
+  # df.tissue_enrichment: a sorted "cleaned" data frame
+  # xlabel: a character string used as xlabel
   ### OUTPUT: 
-    # p: a ggplot object
+  # p: a ggplot object
   
   ### STEPs
-    # 1) create breaks and labels for plot
-    # 2) *call function* "function.add.spacers()"
-    # 3) make plot and adjust theme
-
+  # 1) create breaks and labels for plot
+  # 2) *call function* "function.add.spacers()"
+  # 3) make plot and adjust theme
+  
   
   ##########################################################
   ################## Preparing for PLOTTING ################
@@ -253,15 +256,16 @@ function.plot.barplot <- function(df.tissue_enrichment, xlabel="MISSING X-LABEL"
   return(p) # return ggplot object
 }
 
-function.plot.save <- function(p, filename.suffix="MISSING-FILENAME-SUFFIX") {
+function.plot.save <- function(p, filename.prefix="MISSING-FILENAME-PREFIX", filename.suffix="MISSING-FILENAME-SUFFIX") {
   ### USE: UNIVERSIAL
   ### Function exports a ggplot object to pdf file
   ### INPUT: 
-    # p: a ggplot object
+  # p: a ggplot object
   ### OUTPUT
-    # NONE
+  # NONE
   # ======================== Save plot =============================== # 
-  p.filename <- sprintf("tissue_plot_%s.pdf", filename.suffix)
+  #p.filename <- sprintf("tissue_plot_%s.pdf", filename.suffix)
+  p.filename <- sprintf("tissue_plot_%s_%s.pdf", filename.prefix, filename.suffix)
   suppressWarnings(ggsave(file=p.filename, width=8, height=4, units="in", dpi=300))
   print(sprintf("Saved plot %s", p.filename))
 }
@@ -321,10 +325,14 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 ### R Base cmd line arguments
 # Accept command line argument | trailingOnly=TRUE means that only the users arguments are returned
 args <- commandArgs(trailingOnly=TRUE)
-if (length(args)!=1) {
+if (length(args)==1) {
+  filename.prefix = "no_prefix"
+} else if (length(args)==2) {
+  filename.prefix = args[2]
+} else {
   cat("### Arguments received ###\n")
   for (i in seq_along(args)) {cat(sprintf("Argument #%s: %s\n", i, args[i]))}
-  stop(sprintf("Received wrong number of arguments. Please only specify 1 argument."))
+  stop(sprintf("Received wrong number of arguments. Please only specify 1 or 2 arguments."))
 }
 
 ### Save arguments ###
@@ -365,7 +373,7 @@ if ( all(colnames(df.input.raw[,1:6]) == colnames.genenetwork) ) { # or use read
   
   # Plot and export
   p.system <- function.plot.barplot(df.system, xlabel="Physiological system")
-  function.plot.save(p.system, filename.suffix="genenetwork_system")
+  function.plot.save(p.system, filename.prefix=filename.prefix, filename.suffix="genenetwork_system")
   
 } else if ( all(colnames(df.input.raw[,1:3]) ==colnames.gtex) ) {
   ### Set flag
@@ -378,7 +386,7 @@ if ( all(colnames(df.input.raw[,1:6]) == colnames.genenetwork) ) { # or use read
   
   # Plot and export
   p.gtex <- function.plot.barplot(df.tissue_enrichment, xlabel="Tissues")
-  function.plot.save(p.gtex, filename.suffix="gtex")
+  function.plot.save(p.gtex, filename.prefix=filename.prefix, filename.suffix="gtex")
   
 } else {
   stop("ERROR. Could not recognize tissue enrichment file format. Please check the file format.")
@@ -392,20 +400,20 @@ if ( all(colnames(df.input.raw[,1:6]) == colnames.genenetwork) ) { # or use read
 ########################## Extended plots ##########################
 if ( as.logical(flag.genenetwork.plot_extended_mesh_categories) & (flag.input_type == "genenetwork") ) {
   print("Plotting exteded files for Gene Networks")
-
+  
   # CELLS | Plot and export
   p.cells <- function.plot.barplot(df.cells, xlabel="Cells")
-  function.plot.save(p.cells, filename.suffix="genenetwork_cells")
+  function.plot.save(p.cells, filename.prefix=filename.prefix, filename.suffix="genenetwork_cells")
   
   # TISSUES | Plot and export
   p.tissues <- function.plot.barplot(df.tissues, xlabel="Tissues")
-  function.plot.save(p.tissues, filename.suffix="genenetwork_tissues")
+  function.plot.save(p.tissues, filename.prefix=filename.prefix, filename.suffix="genenetwork_tissues")
   
   # MULTIPLOT | System, Cells, Tissues
   m.plot.layout <- matrix(c(1,1,2,3), nrow=2, byrow=TRUE)
-  m.plot.filename <- "tissue_plot_genenetwork_multiplot.pdf"
+  m.plot.filename <- sprintf("tissue_plot_%s_genenetwork_multiplot.pdf", filename.prefix)
   pdf(file=m.plot.filename, width=12, height=5)
-    suppressWarnings(multiplot(p.system, p.cells, p.tissues, layout=m.plot.layout))
+  suppressWarnings(multiplot(p.system, p.cells, p.tissues, layout=m.plot.layout))
   print(sprintf("Saved multiplot %s", m.plot.filename))
   dummy <- dev.off() # graphics.off() 
   
