@@ -9,7 +9,7 @@ from datetime import date
 
 
 depict_data_path = "/home/projects/depict/git/DEPICT/data/"
-depictgenefile = "%s/reconstituted_genesets/GPL570-GPL96-GPL1261-GPL1355TermGeneZScores-MGI_MF_CC_RT_IW_BP_KEGG_z_z.binary.rows.txt"%depict_data_path
+depictgenefile = "%s/reconstituted_genesets/reconstituted_genesets_150901.binary.rows.txt"%depict_data_path
 depict_gene_annotation_file = "%s/mapping_and_annotation_files/GPL570ProbeENSGInfo+HGNC_reformatted.txt"%depict_data_path
 
 

@@ -1,0 +1,29 @@
+INFO:root:{}
+INFO:root:PLINK v1.90p 64-bit (5 Aug 2015)           https://www.cog-genomics.org/plink2
+(C) 2005-2015 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to /home/projects/depict/git/DEPICT/example//ldl_teslovich_nature2010.log.
+Options in effect:
+  --bfile /home/projects/depict/git/DEPICT/data/genotype_data_plink/CEU_GBR_TSI_unrelated.phase1_release_v3.20101123.snps_indels_svs.genotypes_ldl_teslovich_nature2010
+  --clump /home/projects/depict/git/DEPICT/example//ldl_teslovich_nature2010_depict.tab
+  --clump-field P
+  --clump-kb 500
+  --clump-p1 5e-08
+  --clump-r2 0.1
+  --clump-snp-field SNP
+  --out /home/projects/depict/git/DEPICT/example//ldl_teslovich_nature2010
+
+193443 MB RAM detected; reserving 96721 MB for main workspace.
+1692 variants loaded from .bim file.
+268 people (0 males, 0 females, 268 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to
+/home/projects/depict/git/DEPICT/example//ldl_teslovich_nature2010.nosex .
+Using 1 thread (no multithreaded calculations invoked.
+Before main variant filters, 268 founders and 0 nonfounders present.
+Calculating allele frequencies... 0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99% done.
+1692 variants and 268 people pass filters and QC.
+Note: No phenotypes present.
+--clump: 111 clumps formed from 1692 top variants.
+Results written to
+/home/projects/depict/git/DEPICT/example//ldl_teslovich_nature2010.clumped .
+snps_mhc: 6:26093141
+INFO:root:('DEPICT run from Tue Sep 01 14:23:06 EDT 2015\n\n', '')
