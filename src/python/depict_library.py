@@ -161,7 +161,8 @@ def write_depict_loci_helper(infile,collection,df_gene_boundaries,mhc_start,mhc_
 	except IOError:
 		print('\nError when trying to open {}.  Please check the PLINK log.'.format(infile))
 		sys.exit()
-	clumps_df.set_index("{}:{}".format(clumps_df.CHR.astype('int'),clumps_df.BP.astype('int')),inplace=True)
+	#pdb.set_trace()
+	clumps_df.index = ["{}:{}".format(a,b) for a,b in zip(clumps_df.CHR.astype('int').tolist(),clumps_df.BP.astype('int').tolist())]
 	t1 = time()
 	#print 'Time 1 %f' %(t1-t0)
 
