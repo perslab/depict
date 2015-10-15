@@ -471,6 +471,7 @@ file_reconstituted_genesets_matrix = os.path.abspath(cfg.get("RECONSTITUTED GENE
 node_selection = cfg.get("OUTPUT PARAMETERS","node_selection")
 interactive_cytoscape_session = cfg.getboolean("OUTPUT PARAMETERS","interactive_cytoscape_session")
 genesetID_network = cfg.get("OUTPUT PARAMETERS","genesetID_network")
+out_dir = os.path.abspath(cfg.get("OUTPUT PARAMETERS","output_dir"))
 out = cfg.get("OUTPUT PARAMETERS","output_label")
 network_correlation_cutoff = cfg.getfloat("OUTPUT PARAMETERS",'network_correlation_cutoff') # coerces option to a floating point number
 
@@ -491,21 +492,7 @@ for fdr in list_of_fdr_cutoffs:
 
 time_script_start = time.time() # *START TIME*
 
-if out is None: # hmmm. *LEGACY from argparse* (command line arguments). Not really need with the new configparser setup.
-	out = os.path.join(os.getcwd(), 'network_plot', 'network_plot')
-	out = os.path.abspath(out) # convert to absolute path.
-	# e.g. /Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/network_plot/network_plot
-elif out == "": # empty string
-	raise Exception("No output_label label given. Please correct the config file")
-else:
-	out = os.path.abspath(out) # convert to absolute path. # E.g.:
-		# os.path.abspath(".") --> '/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src'
-		# os.path.abspath("./SOMEDIR") --> '/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/SOMEDIR'
-		# os.path.abspath("SOMEDIR/ANOTHERDIR") --> '/Users/pascaltimshel/Dropbox/0_Projects/git/DEPICT/src/SOMEDIR/ANOTHERDIR'
-		# os.path.abspath("/Users/pascaltimshel/") --> '/Users/pascaltimshel'
-
 ### Create output directory
-out_dir = os.path.dirname(out)
 if not os.path.exists(out_dir):
 	print "WARNING: out directory does not exist. Will create the directory: {}".format(out_dir)
 	os.makedirs(out_dir)
