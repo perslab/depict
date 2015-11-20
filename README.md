@@ -49,7 +49,7 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
   * Specify the name of the association p value column in your GWAS summary statistics file (`pvalue_col_name`)
   * Specify the name of the marker column (`marker_col_name`). Format: <chr:pos>, ie. '6:2321'.  If this column does not exist chr_col and pos_col will be used, then leave if empty
   * Specify the name of the chromosome column (`chr_col_name`).  Leave empty if the above `marker_col_name` is set
-  * Specify the name of the position column (`pos_col_name`).  Leave empty if the above `marker_col_name` is set. Please make sure that your SNP positions used human genome build GRCh37
+  * Specify the name of the position column (`pos_col_name`).  Leave empty if the above `marker_col_name` is set. Please make sure that your SNP positions used human genome build GRCh37 (hg19)
   * Specify the separator used in the GWAS summary statistics file (`separator`). Options are
     * `tab`
     * `comma`
