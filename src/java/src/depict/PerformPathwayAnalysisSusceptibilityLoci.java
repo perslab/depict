@@ -1319,65 +1319,8 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
 				repPValuesOutside[rep][vl] = pValue;
 			}
                     }
-
-                    /*
-                    if (rep == -1 && vecGenePValuesOutsideLociNotUsedForPrioritization != null) {
-
-                        //Take all the prioritized genes outside the loci, and make QQ plots in bins of 1000 genes, sorted on the prioritization P-Value, do we see enrichment of signals outside the significant GWAS genes?
-                        Vector vectorGWASGenePValuePrioritizationPValue = new Vector();
-                        for (int g = 0; g < vecGenePValuesOutsideLociNotUsedForPrioritization.size(); g++) {
-                            String ensembl = (String) vecGenePValuesOutsideLociNotUsedForPrioritization.get(g);
-                            if (hashCofunctionalityPValueGenesOutsideLoci.containsKey(ensembl)) {
-                                double gwasGenePValue = ((Double) hashGenePValuesOutsideLociNotUsedForPrioritization.get(ensembl)).doubleValue();
-                                double prioritizationPValue = ((Double) hashCofunctionalityPValueGenesOutsideLoci.get(ensembl)).doubleValue();
-                                depict.math.DoubleDoubleObject object = new depict.math.DoubleDoubleObject(gwasGenePValue, prioritizationPValue);
-                                vectorGWASGenePValuePrioritizationPValue.add(object);
-                            }
-                        }
-                        depict.math.DoubleDoubleObjectSorter doubleDoubleObjectsorter = new depict.math.DoubleDoubleObjectSorter();
-                        doubleDoubleObjectsorter.sort(vectorGWASGenePValuePrioritizationPValue);
-
-
-                        int binIncrement = 500;
-                        System.out.println("\n\nQQPLot of GWAS Gene PValues of genes with decreasing prioritization signficance:\n");
-                        System.out.println("Bin\tNrGenesPerBin\tMedianChiSquareObserved\tMedianChiSquareExpected\tLambdaInflation");
-                        for (int bin = 0; bin < vectorGWASGenePValuePrioritizationPValue.size(); bin += binIncrement) {
-                            Vector vecObs = new Vector();
-                            for (int a = 0; a < binIncrement; a++) {
-                                if (bin + a < vectorGWASGenePValuePrioritizationPValue.size()) {
-                                    depict.math.DoubleDoubleObject doubleDoubleObject = (depict.math.DoubleDoubleObject) vectorGWASGenePValuePrioritizationPValue.get(bin + a);
-                                    vecObs.add(doubleDoubleObject.doubleValue);
-                                }
-                            }
-                            if (vecObs.size() > 1) {
-                                double[] valsObs = new double[vecObs.size()];
-                                double[] valsExp = new double[vecObs.size()];
-                                double startExpP = 0.5d / (double) vecObs.size();
-                                JSci.maths.statistics.ChiSqrDistribution chiSqrDistribution = new JSci.maths.statistics.ChiSqrDistribution(1);
-                                for (int v = 0; v < valsObs.length; v++) {
-                                    valsObs[v] = ((Double) vecObs.get(v)).doubleValue();
-                                    valsExp[v] = startExpP;
-                                    valsObs[v] = chiSqrDistribution.inverse(1 - valsObs[v]);
-                                    valsExp[v] = chiSqrDistribution.inverse(1 - valsExp[v]);
-                                    startExpP += 1.0d / (double) vecObs.size();
-                                }
-                                Arrays.sort(valsObs);
-                                Arrays.sort(valsExp);
-                                double medianObs = cern.jet.stat.Descriptive.median(new cern.colt.list.DoubleArrayList(valsObs));
-                                double medianExp = cern.jet.stat.Descriptive.median(new cern.colt.list.DoubleArrayList(valsExp));
-                                double lambda = medianObs / medianExp;
-                                System.out.println(bin + "\t" + vecObs.size() + "\t" + medianObs + "\t" + medianExp + "\t" + lambda);
-                            }
-                        }        
-                    }
-
-                    if (rep == -1) {
-                        System.out.println("\n\n\n");
-                    }
-                    */    
                 }
             }
-
         }
         threadPool.shutdown();
 
