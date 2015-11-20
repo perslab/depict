@@ -1570,7 +1570,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                             if (geneID.equals("-")) {
                                 geneID = tmp[1];
                             }
-                            String fdrString = ">=0.20";
+                            String fdrString = "\t>=0.20";
                             if (fdrBinary_01) {
                                 fdrString = "\t<0.01";
                             } else if (fdrBinary_05) {
