@@ -161,12 +161,15 @@ def write_depict_loci_helper(infile,collection,df_gene_boundaries,mhc_start,mhc_
 	except IOError:
 		print('\nError when trying to open {}.  Please check the PLINK log.'.format(infile))
 		sys.exit()
-	clumps_df.set_index("{}:{}".format(clumps_df.CHR.astype('int'),clumps_df.BP.astype('int')),inplace=True)
+	clumps_df.index = ["{}:{}".format(a,b) for a,b in zip(clumps_df.CHR.astype('int').tolist(),clumps_df.BP.astype('int').tolist())]
 	t1 = time()
 	#print 'Time 1 %f' %(t1-t0)
 
 	# Extract user SNPs
 	collection_usersnps = collection.loc[collection.index.isin(clumps_df.index)]
+	if not collection_usersnps.shape[0]:
+		print('\nNo SNPs found after clumping and discarding SNPs not in collection. Please check the PLINK log and your genome build.')
+		sys.exit()
 	t2 = time()
 	#print 'Time 2 %f' %(t2-t1)
 
@@ -363,7 +366,7 @@ def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_co
 				if float(words[p_col]) < association_pvalue_cutoff:
 					missing_snps.append(marker_id)
 
-	return {"{} SNPs met your association p value cutoff, but were not found in the 1000 Genomes Phase data:".format(len(missing_snps)): "{}".format(";".join(missing_snps))} if len(missing_snps)>0 else {}
+	return {"{} SNPs met your association p value cutoff, but were in the HLA region, on a sex chromosome, or not found in the 1000 Genomes Project data:".format(len(missing_snps)): "{}".format(";".join(missing_snps))} if len(missing_snps)>0 else {}
 
 
 # Helper function to retrieve PLINK Index SNPs
