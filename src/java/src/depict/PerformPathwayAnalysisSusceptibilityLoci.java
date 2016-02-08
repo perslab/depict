@@ -88,21 +88,26 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
         String outputTissueFileName = resultsDirectory + "/" + outputFileLabel + "_tissueenrichment.txt";
 
         //Load the predicted Z-Scores for a certain database (e.g. GO_BP, MGI, Reactome, KEGG etc.):
+        // Note that data is not standardized across gene sets for tissues/cell types in the DEPICT gene set enrichement and tissue/cell type enrichment analysis. Make sure to do this yourself.
         ExpressionDataset dataset = new ExpressionDataset(filenameDatabaseToUse, "\t", null, null);
         
         /*
-        // Save a copy of the cofunc matrix with fewer gene sets
+        // Save a copy of the cofunc matrix with fewer gene sets or genes
         try {
-            String filename = "/tmp/genesets_to_be_included.txt";
+            //String filename = "/cvar/jhlab/tp/depict_runs/data/dropseq/151116_retina_persnatcom2015_auc0-7.tab";
+            //String filename = "/tmp/auc0-9.tab";
+            String filename = "/tmp/reconstituted_genesets_150901_downscaled_to_151116_retina.binary.rows.txt";
             java.io.BufferedReader in = new java.io.BufferedReader(new java.io.FileReader(new File(filename)));
             
-            HashMap genesetsToBeIncluded = new HashMap();
+            HashMap itemsToBeIncluded = new HashMap();
             String gs = "";
             while ((gs = in.readLine()) != null) {
-                genesetsToBeIncluded.put(gs,1);     
+                System.out.println(gs);
+                itemsToBeIncluded.put(gs,1);     
             }
-            ExpressionDataset datasetToBeReduced = new ExpressionDataset(filenameDatabaseToUse, "\t", null, genesetsToBeIncluded);        
-            datasetToBeReduced.save("/tmp/cofunc.binary");        
+            //ExpressionDataset datasetToBeReduced = new ExpressionDataset(filenameDatabaseToUse, "\t", null, itemsToBeIncluded);        
+            ExpressionDataset datasetToBeReduced = new ExpressionDataset(filenameDatabaseToUse, "\t", itemsToBeIncluded, null);
+            datasetToBeReduced.save("/tmp/151116_retina_persnatcom2015_downscaled_to_reconstituted_genesets_150901.binary");        
             System.exit(0);
         } catch (Exception e) {
             System.out.println("Error:\t" + e.getMessage());
@@ -228,14 +233,15 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
             System.exit(0);
         }
 
-        //Determine whether the correlation matrix has already been calculated for this particular database:
+        //Determine whether the correlation matrix has already been calculated for this particular database
+        // NB: Does not to be computed, when doing tissue/cell type enrichment analysis only
         String coexpressionSuffix = ".Coexpression.dat";
         File fileCoexpressionNetwork = new File(dataset.fileName + coexpressionSuffix);
         if (!fileCoexpressionNetwork.canRead()) {
 
             System.out.println("Correlation matrix has not been generated yet: Calculating this now. This will take a while!");
-            dataset.standardNormalizeData();
-
+            dataset.standardNormalizeData(); // Normalize, each gene will be N(0,1) across all TC or tissues/cell types
+            
             //Initialize symmetric matrix, in short format (2 bytes per gene-pair), to save space:
             depict.matrix.SymmetricShortDistanceMatrix matrix = new depict.matrix.SymmetricShortDistanceMatrix(dataset.nrProbes);
 
@@ -405,7 +411,6 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
             System.out.println("Error:\t" + e.getMessage());
             e.printStackTrace();
         }
-
 
 
         //Gene definitions have been loaded, now load the locus information!!!
@@ -1358,7 +1363,6 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                     }
                 }
                 if (conductTissueAnalysis) {
-                    //System.err.println("XXX"+ tissueMatrixFile.toLowerCase());
                     if (tissueMatrixFile.toLowerCase().contains(gtex_identifier)) {
                         out.write("GTEx tissue\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
                     } else {
@@ -1367,7 +1371,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                 }  else {
                     out.write("Original gene set ID\tOriginal gene set description\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
                 }             
-                
+                               
                 // Loop over gene sets
                 boolean fdrBinary_01 = true;
                 boolean fdrBinary_05 = true;
@@ -1399,7 +1403,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                                 counter++;
                             }
                         } else {
-                            break; // Maxium number of top genes found for gene set
+                            break; // Maximum number of top genes found for gene set
                         }
                     } 
                     
