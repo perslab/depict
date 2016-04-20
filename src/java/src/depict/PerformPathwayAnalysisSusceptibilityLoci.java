@@ -524,7 +524,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                         }
                     }
                 }
-                //System.out.println("Initial number of (potentially overlapping) loci:\t" + vecLoci.size());
+            //System.out.println("Initial number of (potentially overlapping) loci:\t" + vecLoci.size());
             } catch (Exception e) {
                 System.out.println("Error:\t" + e.getMessage());
                 e.printStackTrace();
@@ -704,8 +704,8 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
             sorter2.sort(vecPermutedLoci);
 
             nrUniqueLociEmpiricPerms = new int[nrPerms + nrReps];
-            nrGenesPerUniqueLociEmpiricPerms = new int[nrPerms + nrReps][1000];
-            geneStartIndexPermutedLociEmpiricPerms = new int[nrPerms + nrReps][1000];
+            nrGenesPerUniqueLociEmpiricPerms = new int[nrPerms + nrReps][nrUniqueLoci];
+            geneStartIndexPermutedLociEmpiricPerms = new int[nrPerms + nrReps][nrUniqueLoci];
 
             for (int perm = 0; perm < nrPerms + nrReps; perm++) {
                 nrUniqueLociEmpiricPerms[perm] = nrUniqueLoci;
@@ -994,32 +994,39 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                 descriptionPerUniqueLoci[l] = "chr" + chr + ":" + minPos + "-" + maxPos;
             }
 
+            // Gene set enrichment and tissue enrichment analyses
             if ( ( conductTissueAnalysis || conductPathwayAnalysis ) && repPathwayPValues != null) {
                 
-                //Process each gene in this locus l:
+                // For each loci, determine average Z-score for each gene set (if there is just one gene then OK, other average to avoid co-localization problems)
                 double[][] meanValPerLocus = new double[dataset.nrSamples][nrUniqueLoci];
+                // Loop over loci
                 for (int l = 0; l < nrUniqueLoci; l++) {
                   
-                    //Get all genes for locus l:
+                    // Get all genes for locus l
                     Vector vecGenesL = (Vector) vecUniqueLoci.get(l);
+                    // Loop over genes
                     for (int vl = 0; vl < vecGenesL.size(); vl++) {
                     
-                        //Get the gene index:
+                        // Get the gene index
                         int geneL = ((Integer) dataset.hashProbes.get((String) vecGenesL.get(vl))).intValue();
-                        for (int s = 0; s < dataset.nrSamples; s++) {
+                        // Loop over gene sets/tissues
+                        for (int s = 0; s < dataset.nrSamples; s++) { 
                             double zScore = dataset.rawData[geneL][s];
                             meanValPerLocus[s][l] += zScore;
                         }
                     }
+                    // Compute mean gene set/tissue z-score at each locus
                     for (int s = 0; s < dataset.nrSamples; s++) {
                         meanValPerLocus[s][l] /= (double) vecGenesL.size();
                     }
                 }
 
-
+                // Adjust for background by using null loci
                 cern.jet.random.engine.RandomEngine randomEngine = new cern.jet.random.engine.DRand();
+                // Loop over gene sets/tissues
                 for (int s = 0; s < dataset.nrSamples; s++) {
 
+                    // Transform gene set/tissue score to z-score
                     double realZScore = mean(meanValPerLocus[s]) / JSci.maths.ArrayMath.standardDeviation(meanValPerLocus[s]);
 
                     double[] zScoresPerms = new double[nrPerms];
@@ -1069,6 +1076,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                 }
             }
 
+            // Gene prioritization
             if (conductNetworkAnalysis) {
 
                 // Prioritize genes in associated loci
@@ -1329,6 +1337,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
         }
         threadPool.shutdown();
 
+        // False-discovery rates for reconstituted gene set enrichment analysis and tissue enrichment analysis
         if ( (conductTissueAnalysis || conductPathwayAnalysis ) && repPathwayPValues != null) {
             StringDoubleObjectSorter stringDoubleObjectSorter = new StringDoubleObjectSorter();
             stringDoubleObjectSorter.sort(vecResultsRealPathwayAnalysis);
