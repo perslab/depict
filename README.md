@@ -19,7 +19,7 @@ The following description explains how to download DEPICT, test run it on exampl
 
 
 ## Download DEPICT
-Download the compressed [DEPICT version 1 rel173](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_v1_rel173.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.  If you run DEPICT at the Broad Institute, see [below section](#depict_at_broad).
+Download the compressed [DEPICT version 1 rel194](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_v1_rel194.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.  If you run DEPICT at the Broad Institute, see [below section](#depict_at_broad).
 
 ## Test run DEPICT
 The following steps outline how to test run DEPICT on LDL cholesterol GWAS summary statistics from [Teslovich, Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html). This example is available in both the 1000 Genomes Project pilot phase DEPICT version and the 1000 Genomes Project phase 3 DEPICT version.
@@ -68,13 +68,13 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
 ## <a name="depict_at_broad"></a>DEPICT at the Broad Institute 
 
 ### Run the LDL example
- 1. Copy the example config file `/cvar/jhlab/tp/DEPICT/example/ldl_teslovich_nature2010.cfg` to your working directory and `change analysis_path` to that directory
+ 1. Copy the example config file `/cvar/jhlab/tp/depict/example/ldl_teslovich_nature2010.cfg` to your working directory and `change analysis_path` to that directory
  2. Run DEPICT using
-`qsub -e err -o out -cwd -l m_mem_free=12g /cvar/jhlab/tp/DEPICT/src/python/broad_run.sh python /cvar/jhlab/tp/DEPICT/src/python/depict.py <your modified config file>.cfg`
+`qsub -e err -o out -cwd -l m_mem_free=12g /cvar/jhlab/tp/depict/src/python/broad_run.sh python /cvar/jhlab/tp/depict/src/python/depict.py <your modified config file>.cfg`
 
 ### Run DEPICT on own GWAS
 1. Follow the above [steps 1-4](#depict_your_gwas)
-2. Run DEPICT using `qsub -e err -o out -cwd -l m_mem_free=2.5g -pe smp 6 /cvar/jhlab/tp/DEPICT/src/python/broad_run.sh python /cvar/jhlab/tp/DEPICT/src/python/depict.py <your modified config file>.cfg`.  Be aware when you can modify the memory used per slot/thread, that DEPICT needs at least needs 14GB
+2. Run DEPICT using `qsub -e err -o out -cwd -l m_mem_free=2.5g -pe smp 6 /cvar/jhlab/tp/depict/src/python/broad_run.sh python /cvar/jhlab/tp/DEPICT/src/python/depict.py <your modified config file>.cfg`.  Be aware when you can modify the memory used per slot/thread, that DEPICT needs at least needs 14GB
 
 # Troubleshooting
 Please send the log file (ending with `_log.txt`) with a brief description of the problem to Tune H Pers (tunepers@broadinstitute.org).

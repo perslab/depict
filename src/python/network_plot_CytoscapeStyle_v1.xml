@@ -117,14 +117,26 @@
             <visualProperty name="EDGE_PAINT" default="#323232"/>
             <visualProperty name="EDGE_TARGET_ARROW_UNSELECTED_PAINT" default="#000000"/>
             <visualProperty name="EDGE_TARGET_ARROW_SHAPE" default="NONE"/>
-            <visualProperty name="EDGE_WIDTH" default="3.0">
+            <!-- VISUAL MAPPING EDGE: v1 (first version) -->
+<!--        <visualProperty name="EDGE_WIDTH" default="3.0">
                 <continuousMapping attributeType="float" attributeName="Pearson_correlation">
-                    <continuousMappingPoint lesserValue="1.0" greaterValue="2.616844567385587" equalValue="2.616844567385587" attrValue="0.303897206671836"/>
-                    <continuousMappingPoint lesserValue="2.616844567385587" greaterValue="2.616844567385587" equalValue="2.616844567385587" attrValue="0.4063850643547765"/>
-                    <continuousMappingPoint lesserValue="4.978387225757945" greaterValue="4.978387225757945" equalValue="4.978387225757945" attrValue="0.4132634417028215"/>
-                    <continuousMappingPoint lesserValue="4.990396200572157" greaterValue="4.990396200572157" equalValue="4.990396200572157" attrValue="0.5026823782836446"/>
-                    <continuousMappingPoint lesserValue="7.426883757322092" greaterValue="7.426883757322092" equalValue="7.426883757322092" attrValue="0.5047136426888899"/>
-                    <continuousMappingPoint lesserValue="8.278186638596166" greaterValue="1.0" equalValue="8.278186638596166" attrValue="0.651255366268902"/>
+                    <continuousMappingPoint lesserValue="1.0" greaterValue="2.5" equalValue="2.5" attrValue="0.30"/>
+                    <continuousMappingPoint lesserValue="2.5" greaterValue="2.5" equalValue="2.5" attrValue="0.40"/>
+                    <continuousMappingPoint lesserValue="5" greaterValue="5" equalValue="5" attrValue="0.41"/>
+                    <continuousMappingPoint lesserValue="5" greaterValue="5" equalValue="5" attrValue="0.50"/>
+                    <continuousMappingPoint lesserValue="7.5" greaterValue="7.5" equalValue="7.5" attrValue="0.51"/>
+                    <continuousMappingPoint lesserValue="8.5" greaterValue="1.0" equalValue="8.5" attrValue="0.651255366268902"/>
+                </continuousMapping>
+            </visualProperty> -->
+            <!-- VISUAL MAPPING EDGE: v2 (from 2015-12-18) -->
+            <visualProperty name="EDGE_WIDTH" default="0"> <!-- Note the default EDGE_WDITH is zero. -->
+                <continuousMapping attributeType="float" attributeName="Pearson_correlation">
+                    <continuousMappingPoint lesserValue="0.0" greaterValue="3" equalValue="3" attrValue="0.30"/>
+                    <continuousMappingPoint lesserValue="3.5" greaterValue="3.5" equalValue="3.5" attrValue="0.50"/>
+                    <continuousMappingPoint lesserValue="5.5" greaterValue="5.5" equalValue="5.5" attrValue="0.501"/>
+                    <continuousMappingPoint lesserValue="5.6" greaterValue="5.6" equalValue="5.6" attrValue="0.60"/>
+                    <continuousMappingPoint lesserValue="7.5" greaterValue="7.5" equalValue="7.5" attrValue="0.601"/>
+                    <continuousMappingPoint lesserValue="8.5" greaterValue="1.0" equalValue="8.5" attrValue="1.00"/>
                 </continuousMapping>
             </visualProperty>
             <visualProperty name="EDGE_CURVED" default="true"/>
@@ -132,14 +144,26 @@
             <visualProperty name="EDGE_SOURCE_ARROW_SELECTED_PAINT" default="#FFFF00"/>
             <visualProperty name="EDGE_LABEL" default=""/>
             <visualProperty name="EDGE_STROKE_UNSELECTED_PAINT" default="#666666"/>
+            <!-- VISUAL MAPPING : v1 (first version) -->
+<!--        <visualProperty name="EDGE_TRANSPARENCY" default="80">
+                <continuousMapping attributeType="float" attributeName="Pearson_correlation">
+                    <continuousMappingPoint lesserValue="1" greaterValue="53" equalValue="53" attrValue="0.3"/>
+                    <continuousMappingPoint lesserValue="57" greaterValue="57" equalValue="57" attrValue="0.4"/>
+                    <continuousMappingPoint lesserValue="129" greaterValue="129" equalValue="129" attrValue="0.4"/>
+                    <continuousMappingPoint lesserValue="131" greaterValue="131" equalValue="131" attrValue="0.45"/>
+                    <continuousMappingPoint lesserValue="206" greaterValue="206" equalValue="206" attrValue="0.48"/>
+                    <continuousMappingPoint lesserValue="206" greaterValue="1" equalValue="206" attrValue="0.65"/>
+                </continuousMapping>
+            </visualProperty> -->
+            <!-- VISUAL MAPPING: v2 (from 2015-12-18) -->
             <visualProperty name="EDGE_TRANSPARENCY" default="80">
                 <continuousMapping attributeType="float" attributeName="Pearson_correlation">
-                    <continuousMappingPoint lesserValue="1" greaterValue="53" equalValue="53" attrValue="0.303897206671836"/>
-                    <continuousMappingPoint lesserValue="57" greaterValue="57" equalValue="57" attrValue="0.40088235419467666"/>
-                    <continuousMappingPoint lesserValue="129" greaterValue="129" equalValue="129" attrValue="0.40297186975327326"/>
-                    <continuousMappingPoint lesserValue="131" greaterValue="131" equalValue="131" attrValue="0.47757628647036904"/>
-                    <continuousMappingPoint lesserValue="206" greaterValue="206" equalValue="206" attrValue="0.4817541374504585"/>
-                    <continuousMappingPoint lesserValue="206" greaterValue="1" equalValue="206" attrValue="0.651255366268902"/>
+                    <continuousMappingPoint lesserValue="1" greaterValue="53" equalValue="53" attrValue="0.30"/>
+                    <continuousMappingPoint lesserValue="57" greaterValue="57" equalValue="57" attrValue="0.50"/>
+                    <continuousMappingPoint lesserValue="129" greaterValue="129" equalValue="129" attrValue="0.501"/>
+                    <continuousMappingPoint lesserValue="131" greaterValue="131" equalValue="131" attrValue="0.60"/>
+                    <continuousMappingPoint lesserValue="206" greaterValue="206" equalValue="206" attrValue="0.601"/>
+                    <continuousMappingPoint lesserValue="206" greaterValue="1" equalValue="206" attrValue="1.00"/>
                 </continuousMapping>
             </visualProperty>
             <visualProperty name="EDGE_LABEL_TRANSPARENCY" default="255"/>

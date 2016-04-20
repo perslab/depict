@@ -344,7 +344,7 @@ def write_plink_input(path, filename, label, marker_col_name, p_col_name, chr_co
 				header = 0
 				continue
 			if marker_col_name is not None:
-				chrom = int(words[marker_col].split(":")[0])
+				chrom = 23 if words[marker_col].split(":")[0] == "X" else int(words[marker_col].split(":")[0])
 				pos = int(words[marker_col].split(":")[1])
 				marker_id = words[marker_col] 
 			elif chr_col_name is not None and pos_col_name is not None:
