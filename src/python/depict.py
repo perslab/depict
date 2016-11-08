@@ -81,6 +81,12 @@ eqtl_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","eqtl_file")) if 
 prioritize_genes_outside_input_loci= cfg.getboolean("MISC SETTINGS",'prioritize_genes_outside_input_loci')
 leave_out_chr = cfg.get("MISC SETTINGS",'leave_out_chr')
 
+# EXPORT reconstituted matrix parameters
+export_cofunc_and_exit = cfg.getboolean("MISC SETTINGS","export_cofunc_and_exit")
+export_cofunc_type = cfg.get("MISC SETTINGS","export_cofunc_type")
+export_cofunc_label = cfg.get("MISC SETTINGS","export_cofunc_label")
+export_cofunc_path = cfg.get("MISC SETTINGS","export_cofunc_path")
+
 
 # Construct directory if it does not exist
 if not os.path.exists(analysis_path):
@@ -124,5 +130,11 @@ if step_depict_geneprio or step_depict_gsea or step_depict_tissueenrichment:
 	else:
 		sys.exit("Exiting: Locus file ({}) not found. Please make sure DEPICT loci have been constructed.".format(locus_file)) 
 
-	depict_log = run_depict(java_executable, depict_jar, background_loci_dir, locus_file, label, step_depict_geneprio, step_depict_gsea, step_depict_tissueenrichment, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, mhc_start_bp, mhc_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr)
-	logging.info(depict_log)
+	# depict_log = run_depict(java_executable, depict_jar, background_loci_dir, locus_file, label, step_depict_geneprio, step_depict_gsea, step_depict_tissueenrichment, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, mhc_start_bp, mhc_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr, export_cofunc_and_exit, export_cofunc_type, export_cofunc_label, export_cofunc_path)
+	log_out, log_err = run_depict(java_executable, depict_jar, background_loci_dir, locus_file, label, step_depict_geneprio, step_depict_gsea, step_depict_tissueenrichment, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, mhc_start_bp, mhc_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr, export_cofunc_and_exit, export_cofunc_type, export_cofunc_label, export_cofunc_path)
+	logging.info("DEPICT.jar log | stdout")
+	for line in log_out.splitlines():
+		logging.info(line)
+	logging.info("DEPICT.jar log | stderr")
+	for line in log_err.splitlines():
+		logging.info(line)

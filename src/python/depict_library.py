@@ -388,7 +388,7 @@ def get_plink_index_snps(path,label,cutoff,index_snp_col):
 	return id_df.index[id_df.SNP.isin(index_snps)]
 
 # Function to run DEPICT
-def run_depict(java_executable, depict_jar, background_data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, mhc_start_bp, mhc_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr):
+def run_depict(java_executable, depict_jar, background_data_path, locus_file, label, do_geneprio, do_gsea, do_tissue, ncores, analysis_path, reconstituted_genesets_file, depict_gene_annotation_file, tissue_expression_file, max_top_genes_for_gene_set, nr_repititions, nr_permutations, mhc_start_bp, mhc_end_bp, go_mapping_file, mgi_mapping_file, inweb_mapping_file, tissue_mapping_file, eqtl_mapping_file, eqtl_file, heap_size_in_mb, prioritize_genes_outside_input_loci, leave_out_chr, export_cofunc_and_exit, export_cofunc_type, export_cofunc_label, export_cofunc_path):
 
 	def get_cmd(geneprio_flag, gsea_flag, tissue_flag):
 		cmd = [java_executable,	"-Xms512M", "-Xmx{}M".format(heap_size_in_mb),"-XX:+UseParallelGC", '-XX:ParallelGCThreads=3', "-jar",
@@ -416,7 +416,11 @@ def run_depict(java_executable, depict_jar, background_data_path, locus_file, la
 			eqtl_mapping_file,		# 20 String filenameGenericIlluminaProbeIDToEnsembl
 			eqtl_file,			# 21 String filenameGenericIlluminaProbeIDEQTLs
 			str(int(prioritize_genes_outside_input_loci)), 	# 22 boolean calculateGenePrioritizationPValueForGenesOutsideLoci
-			leave_out_chr			# 23 String chrToBeLeftOut
+			leave_out_chr,			# 23 String chrToBeLeftOut
+			str(int(export_cofunc_and_exit)),         # 24 Export cofunctionality matrix
+			export_cofunc_type,             # 25 Export as binary or text format
+			export_cofunc_label,            # 26 Label of the exported cofunctionality file
+			export_cofunc_path              # 27 Path of the exported cofunctionality file
 		]
 		return cmd
 

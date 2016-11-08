@@ -1,0 +1,18 @@
+INFO:root:DEPICT.jar log | stdout
+INFO:root:DEPICT run from Tue Nov 08 10:21:42 CET 2016
+INFO:root:
+INFO:root:DEPICT run from Tue Nov 08 10:21:42 CET 2016
+INFO:root:
+INFO:root:DEPICT.jar log | stderr
+INFO:root:Exception in thread "main" java.lang.NumberFormatException: For input string: ""
+INFO:root:	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+INFO:root:	at java.lang.Integer.parseInt(Integer.java:592)
+INFO:root:	at java.lang.Integer.parseInt(Integer.java:615)
+INFO:root:	at depict.PerformPathwayAnalysisSusceptibilityLoci.<init>(PerformPathwayAnalysisSusceptibilityLoci.java:56)
+INFO:root:	at depict.DEPICT.main(DEPICT.java:12)
+INFO:root:Exception in thread "main" java.lang.NumberFormatException: For input string: ""
+INFO:root:	at java.lang.NumberFormatException.forInputString(NumberFormatException.java:65)
+INFO:root:	at java.lang.Integer.parseInt(Integer.java:592)
+INFO:root:	at java.lang.Integer.parseInt(Integer.java:615)
+INFO:root:	at depict.PerformPathwayAnalysisSusceptibilityLoci.<init>(PerformPathwayAnalysisSusceptibilityLoci.java:56)
+INFO:root:	at depict.DEPICT.main(DEPICT.java:12)

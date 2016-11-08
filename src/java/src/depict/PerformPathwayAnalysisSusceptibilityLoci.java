@@ -88,26 +88,21 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
         String outputTissueFileName = resultsDirectory + "/" + outputFileLabel + "_tissueenrichment.txt";
 
         //Load the predicted Z-Scores for a certain database (e.g. GO_BP, MGI, Reactome, KEGG etc.):
-        // Note that data is not standardized across gene sets for tissues/cell types in the DEPICT gene set enrichement and tissue/cell type enrichment analysis. Make sure to do this yourself.
         ExpressionDataset dataset = new ExpressionDataset(filenameDatabaseToUse, "\t", null, null);
         
         /*
-        // Save a copy of the cofunc matrix with fewer gene sets or genes
+        // Save a copy of the cofunc matrix with fewer gene sets
         try {
-            //String filename = "/cvar/jhlab/tp/depict_runs/data/dropseq/151116_retina_persnatcom2015_auc0-7.tab";
-            //String filename = "/tmp/auc0-9.tab";
-            String filename = "/tmp/reconstituted_genesets_150901_downscaled_to_151116_retina.binary.rows.txt";
+            String filename = "/tmp/genesets_to_be_included.txt";
             java.io.BufferedReader in = new java.io.BufferedReader(new java.io.FileReader(new File(filename)));
             
-            HashMap itemsToBeIncluded = new HashMap();
+            HashMap genesetsToBeIncluded = new HashMap();
             String gs = "";
             while ((gs = in.readLine()) != null) {
-                System.out.println(gs);
-                itemsToBeIncluded.put(gs,1);     
+                genesetsToBeIncluded.put(gs,1);     
             }
-            //ExpressionDataset datasetToBeReduced = new ExpressionDataset(filenameDatabaseToUse, "\t", null, itemsToBeIncluded);        
-            ExpressionDataset datasetToBeReduced = new ExpressionDataset(filenameDatabaseToUse, "\t", itemsToBeIncluded, null);
-            datasetToBeReduced.save("/tmp/151116_retina_persnatcom2015_downscaled_to_reconstituted_genesets_150901.binary");        
+            ExpressionDataset datasetToBeReduced = new ExpressionDataset(filenameDatabaseToUse, "\t", null, genesetsToBeIncluded);        
+            datasetToBeReduced.save("/tmp/cofunc.binary");        
             System.exit(0);
         } catch (Exception e) {
             System.out.println("Error:\t" + e.getMessage());
@@ -233,15 +228,14 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
             System.exit(0);
         }
 
-        //Determine whether the correlation matrix has already been calculated for this particular database
-        // NB: Does not to be computed, when doing tissue/cell type enrichment analysis only
+        //Determine whether the correlation matrix has already been calculated for this particular database:
         String coexpressionSuffix = ".Coexpression.dat";
         File fileCoexpressionNetwork = new File(dataset.fileName + coexpressionSuffix);
         if (!fileCoexpressionNetwork.canRead()) {
 
             System.out.println("Correlation matrix has not been generated yet: Calculating this now. This will take a while!");
-            dataset.standardNormalizeData(); // Normalize, each gene will be N(0,1) across all TC or tissues/cell types
-            
+            dataset.standardNormalizeData();
+
             //Initialize symmetric matrix, in short format (2 bytes per gene-pair), to save space:
             depict.matrix.SymmetricShortDistanceMatrix matrix = new depict.matrix.SymmetricShortDistanceMatrix(dataset.nrProbes);
 
@@ -413,6 +407,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
         }
 
 
+
         //Gene definitions have been loaded, now load the locus information!!!
         if (correctInPermutationsForEffectiveNrTestedSNPsPerGene != null) {
             vecEnsemblGeneLengths = new Vector();
@@ -524,7 +519,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                         }
                     }
                 }
-            //System.out.println("Initial number of (potentially overlapping) loci:\t" + vecLoci.size());
+                //System.out.println("Initial number of (potentially overlapping) loci:\t" + vecLoci.size());
             } catch (Exception e) {
                 System.out.println("Error:\t" + e.getMessage());
                 e.printStackTrace();
@@ -704,8 +699,8 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
             sorter2.sort(vecPermutedLoci);
 
             nrUniqueLociEmpiricPerms = new int[nrPerms + nrReps];
-            nrGenesPerUniqueLociEmpiricPerms = new int[nrPerms + nrReps][nrUniqueLoci];
-            geneStartIndexPermutedLociEmpiricPerms = new int[nrPerms + nrReps][nrUniqueLoci];
+            nrGenesPerUniqueLociEmpiricPerms = new int[nrPerms + nrReps][1000];
+            geneStartIndexPermutedLociEmpiricPerms = new int[nrPerms + nrReps][1000];
 
             for (int perm = 0; perm < nrPerms + nrReps; perm++) {
                 nrUniqueLociEmpiricPerms[perm] = nrUniqueLoci;
@@ -994,39 +989,32 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                 descriptionPerUniqueLoci[l] = "chr" + chr + ":" + minPos + "-" + maxPos;
             }
 
-            // Gene set enrichment and tissue enrichment analyses
             if ( ( conductTissueAnalysis || conductPathwayAnalysis ) && repPathwayPValues != null) {
                 
-                // For each loci, determine average Z-score for each gene set (if there is just one gene then OK, other average to avoid co-localization problems)
+                //Process each gene in this locus l:
                 double[][] meanValPerLocus = new double[dataset.nrSamples][nrUniqueLoci];
-                // Loop over loci
                 for (int l = 0; l < nrUniqueLoci; l++) {
                   
-                    // Get all genes for locus l
+                    //Get all genes for locus l:
                     Vector vecGenesL = (Vector) vecUniqueLoci.get(l);
-                    // Loop over genes
                     for (int vl = 0; vl < vecGenesL.size(); vl++) {
                     
-                        // Get the gene index
+                        //Get the gene index:
                         int geneL = ((Integer) dataset.hashProbes.get((String) vecGenesL.get(vl))).intValue();
-                        // Loop over gene sets/tissues
-                        for (int s = 0; s < dataset.nrSamples; s++) { 
+                        for (int s = 0; s < dataset.nrSamples; s++) {
                             double zScore = dataset.rawData[geneL][s];
                             meanValPerLocus[s][l] += zScore;
                         }
                     }
-                    // Compute mean gene set/tissue z-score at each locus
                     for (int s = 0; s < dataset.nrSamples; s++) {
                         meanValPerLocus[s][l] /= (double) vecGenesL.size();
                     }
                 }
 
-                // Adjust for background by using null loci
+
                 cern.jet.random.engine.RandomEngine randomEngine = new cern.jet.random.engine.DRand();
-                // Loop over gene sets/tissues
                 for (int s = 0; s < dataset.nrSamples; s++) {
 
-                    // Transform gene set/tissue score to z-score
                     double realZScore = mean(meanValPerLocus[s]) / JSci.maths.ArrayMath.standardDeviation(meanValPerLocus[s]);
 
                     double[] zScoresPerms = new double[nrPerms];
@@ -1076,7 +1064,6 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                 }
             }
 
-            // Gene prioritization
             if (conductNetworkAnalysis) {
 
                 // Prioritize genes in associated loci
@@ -1332,12 +1319,68 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
 				repPValuesOutside[rep][vl] = pValue;
 			}
                     }
+
+                    /*
+                    if (rep == -1 && vecGenePValuesOutsideLociNotUsedForPrioritization != null) {
+
+                        //Take all the prioritized genes outside the loci, and make QQ plots in bins of 1000 genes, sorted on the prioritization P-Value, do we see enrichment of signals outside the significant GWAS genes?
+                        Vector vectorGWASGenePValuePrioritizationPValue = new Vector();
+                        for (int g = 0; g < vecGenePValuesOutsideLociNotUsedForPrioritization.size(); g++) {
+                            String ensembl = (String) vecGenePValuesOutsideLociNotUsedForPrioritization.get(g);
+                            if (hashCofunctionalityPValueGenesOutsideLoci.containsKey(ensembl)) {
+                                double gwasGenePValue = ((Double) hashGenePValuesOutsideLociNotUsedForPrioritization.get(ensembl)).doubleValue();
+                                double prioritizationPValue = ((Double) hashCofunctionalityPValueGenesOutsideLoci.get(ensembl)).doubleValue();
+                                depict.math.DoubleDoubleObject object = new depict.math.DoubleDoubleObject(gwasGenePValue, prioritizationPValue);
+                                vectorGWASGenePValuePrioritizationPValue.add(object);
+                            }
+                        }
+                        depict.math.DoubleDoubleObjectSorter doubleDoubleObjectsorter = new depict.math.DoubleDoubleObjectSorter();
+                        doubleDoubleObjectsorter.sort(vectorGWASGenePValuePrioritizationPValue);
+
+
+                        int binIncrement = 500;
+                        System.out.println("\n\nQQPLot of GWAS Gene PValues of genes with decreasing prioritization signficance:\n");
+                        System.out.println("Bin\tNrGenesPerBin\tMedianChiSquareObserved\tMedianChiSquareExpected\tLambdaInflation");
+                        for (int bin = 0; bin < vectorGWASGenePValuePrioritizationPValue.size(); bin += binIncrement) {
+                            Vector vecObs = new Vector();
+                            for (int a = 0; a < binIncrement; a++) {
+                                if (bin + a < vectorGWASGenePValuePrioritizationPValue.size()) {
+                                    depict.math.DoubleDoubleObject doubleDoubleObject = (depict.math.DoubleDoubleObject) vectorGWASGenePValuePrioritizationPValue.get(bin + a);
+                                    vecObs.add(doubleDoubleObject.doubleValue);
+                                }
+                            }
+                            if (vecObs.size() > 1) {
+                                double[] valsObs = new double[vecObs.size()];
+                                double[] valsExp = new double[vecObs.size()];
+                                double startExpP = 0.5d / (double) vecObs.size();
+                                JSci.maths.statistics.ChiSqrDistribution chiSqrDistribution = new JSci.maths.statistics.ChiSqrDistribution(1);
+                                for (int v = 0; v < valsObs.length; v++) {
+                                    valsObs[v] = ((Double) vecObs.get(v)).doubleValue();
+                                    valsExp[v] = startExpP;
+                                    valsObs[v] = chiSqrDistribution.inverse(1 - valsObs[v]);
+                                    valsExp[v] = chiSqrDistribution.inverse(1 - valsExp[v]);
+                                    startExpP += 1.0d / (double) vecObs.size();
+                                }
+                                Arrays.sort(valsObs);
+                                Arrays.sort(valsExp);
+                                double medianObs = cern.jet.stat.Descriptive.median(new cern.colt.list.DoubleArrayList(valsObs));
+                                double medianExp = cern.jet.stat.Descriptive.median(new cern.colt.list.DoubleArrayList(valsExp));
+                                double lambda = medianObs / medianExp;
+                                System.out.println(bin + "\t" + vecObs.size() + "\t" + medianObs + "\t" + medianExp + "\t" + lambda);
+                            }
+                        }        
+                    }
+
+                    if (rep == -1) {
+                        System.out.println("\n\n\n");
+                    }
+                    */    
                 }
             }
+
         }
         threadPool.shutdown();
 
-        // False-discovery rates for reconstituted gene set enrichment analysis and tissue enrichment analysis
         if ( (conductTissueAnalysis || conductPathwayAnalysis ) && repPathwayPValues != null) {
             StringDoubleObjectSorter stringDoubleObjectSorter = new StringDoubleObjectSorter();
             stringDoubleObjectSorter.sort(vecResultsRealPathwayAnalysis);
@@ -1372,6 +1415,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                     }
                 }
                 if (conductTissueAnalysis) {
+                    //System.err.println("XXX"+ tissueMatrixFile.toLowerCase());
                     if (tissueMatrixFile.toLowerCase().contains(gtex_identifier)) {
                         out.write("GTEx tissue\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
                     } else {
@@ -1380,7 +1424,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                 }  else {
                     out.write("Original gene set ID\tOriginal gene set description\tNominal P value\tFalse discovery rate" + new String(genesInGeneSetHeader) + "\n");
                 }             
-                               
+                
                 // Loop over gene sets
                 boolean fdrBinary_01 = true;
                 boolean fdrBinary_05 = true;
@@ -1412,7 +1456,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                                 counter++;
                             }
                         } else {
-                            break; // Maximum number of top genes found for gene set
+                            break; // Maxium number of top genes found for gene set
                         }
                     } 
                     
@@ -1583,7 +1627,7 @@ public class PerformPathwayAnalysisSusceptibilityLoci {
                             if (geneID.equals("-")) {
                                 geneID = tmp[1];
                             }
-                            String fdrString = "\t>=0.20";
+                            String fdrString = ">=0.20";
                             if (fdrBinary_01) {
                                 fdrString = "\t<0.01";
                             } else if (fdrBinary_05) {
