@@ -43,20 +43,20 @@ sep = cfg.get("GWAS FILE SETTINGS",'separator')
 
 # PLINK and genotype files
 plink_executable = cfg.get("PLINK SETTINGS",'plink_executable')
-genotype_data_plink_prefix = "{}/{}".format(depict_path,cfg.get("PLINK SETTINGS",'genotype_data_plink_prefix')) if cfg.get("PLINK SETTINGS",'genotype_data_plink_prefix').startswith("data/genotype_data_plink") else cfg.get("PLINK SETTINGS",'genotype_data_plink_prefix')
-plink_clumping_snp_column_header = "SNP"
-association_pvalue_cutoff_column_header = "P"
-plink_clumping_distance = 500 
-plink_clumping_r2 = 0.1
+genotype_data_plink_prefix = "{}/{}".format(depict_path,cfg.get("PLINK SETTINGS",'genotype_data_plink_prefix')) if cfg.get("PLINK SETTINGS",'genotype_data_plink_prefix').startswith("data/") else cfg.get("PLINK SETTINGS",'genotype_data_plink_prefix')
+plink_clumping_snp_column_header = cfg.get("PLINK SETTINGS",'plink_clumping_snp_column_header')
+association_pvalue_cutoff_column_header = cfg.get("PLINK SETTINGS",'association_pvalue_cutoff_column_header')
+plink_clumping_distance = cfg.getint("PLINK SETTINGS",'plink_clumping_distance')
+plink_clumping_r2 = cfg.getfloat("PLINK SETTINGS",'plink_clumping_r2')
 
 # Locus construction paramenters
-collection_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS",'collection_file'))
+collection_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS",'collection_file'))  if cfg.get("MISC SETTINGS",'collection_file').startswith("data/") else cfg.get("MISC SETTINGS",'collection_file')
 locus_file = "%s/%s_loci.txt"%(analysis_path,label)
 number_random_runs = cfg.getint("MISC SETTINGS",'number_random_runs')
 background_plink_clumping_pvalue = cfg.getfloat("MISC SETTINGS",'background_plink_clumping_pvalue')
-background_data_path = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","background_data_path"))
+background_data_path = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","background_data_path")) if cfg.get("MISC SETTINGS","background_data_path").startswith("data/") else cfg.get("MISC SETTINGS","background_data_path")
 null_gwas_prefix = "{}/null_gwas/dgi_1kg_hg19_null".format(background_data_path)
-req_fraction_of_background_files = 0.9
+req_fraction_of_background_files = cfg.getfloat("MISC SETTINGS",'req_fraction_of_background_files')
 
 
 # DEPICT parameters
@@ -69,15 +69,15 @@ nr_repititions = cfg.getint("MISC SETTINGS",'nr_repititions')
 nr_permutations = cfg.getint("MISC SETTINGS",'nr_permutations')
 mhc_start_bp = cfg.getint("MISC SETTINGS",'mhc_start_bp')
 mhc_end_bp = cfg.getint("MISC SETTINGS",'mhc_end_bp')
-reconstituted_genesets_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","reconstituted_genesets_file")) if cfg.get("MISC SETTINGS",'reconstituted_genesets_file').startswith("data/reconstituted_genesets") else cfg.get("MISC SETTINGS",'reconstituted_genesets_file')
-tissue_expression_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","tissue_expression_file"))
-depict_gene_annotation_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","depict_gene_annotation_file"))
-go_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","go_mapping_file"))
-mgi_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","mgi_mapping_file"))
-inweb_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","inweb_mapping_file"))
-tissue_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","tissue_mapping_file"))
-eqtl_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","eqtl_mapping_file"))
-eqtl_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","eqtl_file"))
+reconstituted_genesets_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","reconstituted_genesets_file")) if cfg.get("MISC SETTINGS",'reconstituted_genesets_file').startswith("data/") else cfg.get("MISC SETTINGS",'reconstituted_genesets_file')
+tissue_expression_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","tissue_expression_file")) if cfg.get("MISC SETTINGS",'tissue_expression_file').startswith("data/") else cfg.get("MISC SETTINGS",'tissue_expression_file')
+tissue_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","tissue_mapping_file"))  if cfg.get("MISC SETTINGS",'tissue_mapping_file').startswith("data/") else cfg.get("MISC SETTINGS",'tissue_mapping_file')
+depict_gene_annotation_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","depict_gene_annotation_file")) if cfg.get("MISC SETTINGS","depict_gene_annotation_file").startswith("data/") else cfg.get("MISC SETTINGS","depict_gene_annotation_file")
+go_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","go_mapping_file")) if cfg.get("MISC SETTINGS","go_mapping_file").startswith("data/") else cfg.get("MISC SETTINGS","go_mapping_file")
+mgi_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","mgi_mapping_file")) if cfg.get("MISC SETTINGS","mgi_mapping_file").startswith("data/") else cfg.get("MISC SETTINGS","mgi_mapping_file")
+inweb_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","inweb_mapping_file")) if cfg.get("MISC SETTINGS","inweb_mapping_file").startswith("data/") else cfg.get("MISC SETTINGS","inweb_mapping_file")
+eqtl_mapping_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","eqtl_mapping_file")) if cfg.get("MISC SETTINGS","eqtl_mapping_file").startswith("data/") else cfg.get("MISC SETTINGS","eqtl_mapping_file")
+eqtl_file = "{}/{}".format(depict_path,cfg.get("MISC SETTINGS","eqtl_file")) if cfg.get("MISC SETTINGS","eqtl_file").startswith("data/") else cfg.get("MISC SETTINGS","eqtl_file")
 prioritize_genes_outside_input_loci= cfg.getboolean("MISC SETTINGS",'prioritize_genes_outside_input_loci')
 leave_out_chr = cfg.get("MISC SETTINGS",'leave_out_chr')
 export_cofunc_and_exit = cfg.getboolean("MISC SETTINGS",'export_cofunc_and_exit')
