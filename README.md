@@ -74,7 +74,12 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
 
 ### Run DEPICT on own GWAS
 1. Follow the above [steps 1-4](#depict_your_gwas)
-2. Run DEPICT using `qsub -e err -o out -cwd -l m_mem_free=2.5g -pe smp 6 /cvar/jhlab/tp/depict/src/python/broad_run.sh python /cvar/jhlab/tp/DEPICT/src/python/depict.py <your modified config file>.cfg`.  Be aware when you can modify the memory used per slot/thread, that DEPICT needs at least needs 14GB
+2. Run DEPICT using 
+``` bash
+use UGER
+qsub -e err -o out -cwd -l m_mem_free=2.5g -pe smp 6 /cvar/jhlab/tp/depict/src/python/broad_run.sh python /cvar/jhlab/tp/DEPICT/src/python/depict.py <your modified config file>.cfg
+```
+Be aware that DEPICT needs at least needs 14GB memory when if modify the memory used per slot/thread.
 
 # Troubleshooting
 Please send the log file (ending with `_log.txt`) with a brief description of the problem to Tune H Pers (tunepers@broadinstitute.org).
