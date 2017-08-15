@@ -70,7 +70,7 @@ The following steps allow you to run DEPICT on your GWAS summary statistics. We 
 ### Run the LDL example
  1. Copy the example config file `/cvar/jhlab/tp/depict/example/ldl_teslovich_nature2010.cfg` to your working directory and `change analysis_path` to that directory
  2. Run DEPICT using
-`qsub -e err -o out -cwd -l m_mem_free=12g /cvar/jhlab/tp/depict/src/python/broad_run.sh python /cvar/jhlab/tp/depict/src/python/depict.py <your modified config file>.cfg`
+`qsub -e err -o out -cwd -l h_vmem=12g /cvar/jhlab/tp/depict/src/python/broad_run.sh python /cvar/jhlab/tp/depict/src/python/depict.py <your modified config file>.cfg`
 
 ### Run DEPICT on own GWAS
 1. Follow the above [steps 1-4](#depict_your_gwas)
