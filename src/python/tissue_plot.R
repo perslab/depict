@@ -56,13 +56,15 @@ n.blank_spacers <- 4 # integer | number of empty bars between "groups"
 
 ### =========== INTERNAL PARAMETERS =========== ###
 colnames.genenetwork <-  make.names(c("MeSH term","Name","MeSH first level term","MeSH second level term","Nominal P value","False discovery rate"))
-colnames.gtex <- make.names(c("Name","Nominal P value","False discovery rate"))
+# colnames.gtex <- make.names(c("Name","Nominal P value","False discovery rate"))
+colnames.gtex <- make.names(c("GTEx tissue","Nominal P value","False discovery rate"))
 
 
 # OBS: these variable is used for GROUPING and SORTING the data frame
 group_variable.genenetwork.general <- make.names("MeSH first level term") # col_no = 3
 group_variable.genenetwork.cells_and_tissues <- make.names("MeSH second level term") # col_no = 4 | *THIS IS USED TO SET CORRECT GROUP IN function.genenetwork.set_variables_and_split()*
-group_variable.gtex <- make.names("Name")
+# group_variable.gtex <- make.names("Name")
+group_variable.gtex <- make.names("GTEx tissue")
 
 
 ######################################################
@@ -146,6 +148,7 @@ function.gtex.set_variables <- function(df) {
   
   ### ***SORTING*** 
   df.res <- df.res[order(df.res[,group_variable.gtex]),] # IMPORTANT: sorting data frame
+  # df.res <- df.res[order(df.res[,group_variable.gtex], df.res[,"Nominal.P.value"]),] # IMPORTANT: sorting data frame
   
   return(df.res)
 }
