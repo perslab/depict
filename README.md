@@ -31,9 +31,9 @@ The following steps outline how to test run DEPICT on LDL cholesterol GWAS summa
 2. Download the collections file. 
   *  Download the collections file and place in `data/collections/ld0.5_collection_1000genomespilot_depict_150429.txt.gz` 
   *  The files is located in https://data.broadinstitute.org/mpg/depict/depict_download/collections/ld0.5_collection_1000genomespilot_depict_150429.txt.gz
-2. Run DEPICT on the LDL summary statistics
+3. Run DEPICT on the LDL summary statistics
   * E.g. `./src/python/depict.py example/ldl_teslovich_nature2010.cfg`
-3. Investigate the results (see the [Wiki](https://github.com/perslab/DEPICT/wiki) for a description of the output format).
+4. Investigate the results (see the [Wiki](https://github.com/perslab/DEPICT/wiki) for a description of the output format).
   * DEPICT loci `ldl_teslovich_nature2010_loci.txt`
   * Gene prioritization results `ldl_teslovich_nature2010_geneprioritization.txt`
   * Gene set enrichment results `ldl_teslovich_nature2010_genesetenrichment.txt`
