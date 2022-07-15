@@ -19,7 +19,7 @@ The following description explains how to download DEPICT, test run it on exampl
 
 
 ## Download DEPICT
-Download the compressed [DEPICT version 1 rel194](http://www.broadinstitute.org/mpg/depict/depict_download/bundles/DEPICT_v1_rel194.tar.gz) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.  If you run DEPICT at the Broad Institute, see [below section](#depict_at_broad).
+Download the compressed [DEPICT version 1 rel194](https://drive.google.com/file/d/0B3TrbUOwncN-NG9nTFdDbC1rNXc/view?usp=sharing&resourcekey=0-Jts51YpkcZcGpvsOP29Kfw) files and unzip the archive to where you would like the DEPICT tool to live on your system. Note that you when using DEPICT can write your analysis files to a different folder.  Be sure to that you meet all the dependencies described above.  If you run DEPICT at the Broad Institute, see [below section](#depict_at_broad).
 
 ## Test run DEPICT
 The following steps outline how to test run DEPICT on LDL cholesterol GWAS summary statistics from [Teslovich, Nature 2010](http://www.nature.com/nature/journal/v466/n7307/full/nature09270.html). This example is available in both the 1000 Genomes Project pilot phase DEPICT version and the 1000 Genomes Project phase 3 DEPICT version.
