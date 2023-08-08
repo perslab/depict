@@ -261,7 +261,7 @@ def write_depict_loci(analysis_path,label,association_pvalue_cutoff,collection_f
 					continue
 				depictloci_background_df, log_back_dict = write_depict_loci_helper(clumped_file,\
 					collection, df_gene_boundaries, mhc_start,mhc_end)
-				depictloci_background_df.sort('gwas_pvalue',inplace=True)
+				depictloci_background_df.sort_values('gwas_pvalue',inplace=True)
 				background_plink_clumping_pvalue_relaxed = background_plink_clumping_pvalue
 				while len(depictloci_background_df) < loci_requested:
 					print('Not enough background loci in iteration {} (need: n={}, found: {}).\
@@ -279,7 +279,7 @@ def write_depict_loci(analysis_path,label,association_pvalue_cutoff,collection_f
 						 plink_clumping_pvalue_column_header)
 					depictloci_background_df, log_back_dict = write_depict_loci_helper("{}/{}.clumped".format(background_loci_dir,i+1),\
 						collection, df_gene_boundaries, mhc_start,mhc_end)
-					depictloci_background_df.sort('gwas_pvalue',inplace=True)
+					depictloci_background_df.sort_values('gwas_pvalue',inplace=True)
 				output_file = "{}/permutation{}.txt".format(background_loci_dir,i+1)
 				depictloci_background_df.iloc[0:loci_requested,:].to_csv(\
 					output_file,\
